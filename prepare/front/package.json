@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "format": "prettier --check --ignore-path .gitignore .",
+    "format:fix": "prettier --write --ignore-path .gitignore .",
     "dev": "next"
   },
   "author": "vitamin777",
@@ -15,7 +17,8 @@
     "prop-types": "^15.8.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "styled-component": "^2.8.0"
+    "styled-component": "^2.8.0",
+    "styled-components": "^5.3.5"
   },
   "devDependencies": {
     "eslint": "^8.12.0",

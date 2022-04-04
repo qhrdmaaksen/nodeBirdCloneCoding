@@ -1,6 +1,6 @@
-import React from 'react';
-import AppLayout from '../component/AppLayout';
-import Head from 'next/head';
+import React from 'react'
+import AppLayout from '../component/AppLayout'
+import Head from 'next/head'
 
 const Signup = () => {
   return (
@@ -12,7 +12,7 @@ const Signup = () => {
         <div>회원 가입 페이지</div>
       </AppLayout>
     </>
-  );
-};
+  )
+}
 
-export default Signup;
+export default Signup

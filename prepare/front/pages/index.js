@@ -1,5 +1,5 @@
-import React from 'react'; // Next 에서는 이 구문이 필요가 없다.
-import AppLayout from '../component/AppLayout';
+import React from 'react' // Next 에서는 이 구문이 필요가 없다.
+import AppLayout from '../component/AppLayout'
 
 const Home = () => {
   return (
@@ -8,7 +8,7 @@ const Home = () => {
       <div>Hello, Next</div>
       {/*이와같이 AppLayout 으로 감싼 이부분은 AppLayout 의 children 이된다.*/}
     </AppLayout>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

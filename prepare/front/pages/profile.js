@@ -1,6 +1,6 @@
-import React from 'react';
-import AppLayout from '../component/AppLayout';
-import Head from 'next/head';
+import React from 'react'
+import AppLayout from '../component/AppLayout'
+import Head from 'next/head'
 
 const Profile = () => {
   return (
@@ -12,7 +12,7 @@ const Profile = () => {
         <div>내 프로필</div>
       </AppLayout>
     </>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

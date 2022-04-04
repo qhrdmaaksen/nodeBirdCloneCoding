@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
-import PropTypes from 'prop-types';
-import { Menu, Input, Row, Col } from 'antd'; // antd 에 Menu 사용
-import UserProfile from '../component/UserProfile';
-import LoginForm from '../component/LoginForm';
+import React, { useState } from 'react'
+import Link from 'next/link'
+import PropTypes from 'prop-types'
+import { Menu, Input, Row, Col } from 'antd' // antd 에 Menu 사용
+import styled from 'styled-components'
+import UserProfile from '../component/UserProfile'
+import LoginForm from '../component/LoginForm'
+
+const SearchInput = styled(Input.Search)`
+  // antd 에서 사용한 Input.Search 를 styled component 로 바꿔 넣어줌
+  verticalalign: middle;
+`
 
 const AppLayout = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState()
   return (
     <div>
       <Menu mode="horizontal">
@@ -21,7 +27,7 @@ const AppLayout = ({ children }) => {
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <Input.Search enterButton style={{ verticalAlign: 'middle' }} />
+          <SearchInput enterButton />
         </Menu.Item>
         <Menu.Item>
           <Link href="/signup">
@@ -34,27 +40,23 @@ const AppLayout = ({ children }) => {
         {/*antd design 은 세로줄을 24 픽셀로 나눔*/}
         <Col xs={24} md={6}>
           {/*dummy data*/}
-          {isLoggedIn ? <UserProfile /> : <LoginForm />}
+          {isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn}/> : <LoginForm setIsLoggedIn={setIsLoggedIn} />}
         </Col>
         <Col xs={24} md={12}>
           {children} {/*여기는 AppLayout 의 children*/}
         </Col>
         <Col xs={24} md={6}>
-          <a
-            href="https://qhrdmaaksen.github.io/"
-            target={'_blank'}
-            rel="noreferrer noopener"
-          >
+          <a href="https://qhrdmaaksen.github.io/" target={'_blank'} rel="noreferrer noopener">
             Made in Vitamin
           </a>
         </Col>
       </Row>
     </div>
-  );
-};
+  )
+}
 
 AppLayout.propTypes = {
   children: PropTypes.node.isRequired,
-};
+}
 
-export default AppLayout;
+export default AppLayout
