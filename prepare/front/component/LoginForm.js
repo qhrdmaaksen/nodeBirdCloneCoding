@@ -36,12 +36,11 @@ const LoginForm = ({ setIsLoggedIn }) => {
 
   return (
     <FormWrapper onFinish={onSubmitFrom}>
-      {' '}
       {/*onFinish 는 이미 e.preventDefault() 가 적용되어있다.*/}
       <div>
         <label htmlFor="user-id">아이디</label>
         <br />
-        <Input name="user-id" value="id" onChange={onChangeId} required />
+        <Input name="user-id" value={id} onChange={onChangeId} required />
       </div>
       <div>
         <label htmlFor="user-password">비밀번호</label>
@@ -49,7 +48,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
         <Input
           name="user-password"
           type="password"
-          value="password"
+          value={password}
           onChange={onChangePassword}
           required
         />
