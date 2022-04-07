@@ -1,18 +1,21 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import { Menu, Input, Row, Col } from 'antd' // antd 에 Menu 사용
 import styled from 'styled-components'
 import UserProfile from '../component/UserProfile'
 import LoginForm from '../component/LoginForm'
+import { useSelector } from 'react-redux'
 
+// antd 에서 사용한 Input.Search 를 styled component 로 바꿔 넣어줌
 const SearchInput = styled(Input.Search)`
-  // antd 에서 사용한 Input.Search 를 styled component 로 바꿔 넣어줌
-  verticalalign: middle;
+  vertical-align: middle;
 `
 
 const AppLayout = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState()
+  //const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const isLoggedIn = useSelector((state) => state.user.isLoggedIn)
+
   return (
     <div>
       <Menu mode="horizontal">
@@ -40,7 +43,8 @@ const AppLayout = ({ children }) => {
         {/*antd design 은 세로줄을 24 픽셀로 나눔*/}
         <Col xs={24} md={6}>
           {/*dummy data*/}
-          {isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn}/> : <LoginForm setIsLoggedIn={setIsLoggedIn} />}
+          {/*{isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn}/> : <LoginForm setIsLoggedIn={setIsLoggedIn} />}*/}
+          {isLoggedIn ? <UserProfile /> : <LoginForm  />}
         </Col>
         <Col xs={24} md={12}>
           {children} {/*여기는 AppLayout 의 children*/}
