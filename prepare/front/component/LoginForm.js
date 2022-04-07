@@ -1,10 +1,11 @@
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback } from 'react'
 import { Form, Input, Button } from 'antd'
 import Link from 'next/link'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
+import useInput from '../hooks/useInput'
 
 const ButtonWrapper = styled.div`
-  // div tag 가 된다.
   margin-top: 10px;
 `
 
@@ -12,18 +13,9 @@ const FormWrapper = styled(Form)`
   padding: 10px;
 `
 
-// eslint-disable-next-line react/prop-types
 const LoginForm = ({ setIsLoggedIn }) => {
-  const [id, setId] = useState('')
-  const [password, setPassword] = useState('')
-
-  const onChangeId = useCallback((e) => {
-    setId(e.target.value)
-  }, [])
-
-  const onChangePassword = useCallback((e) => {
-    setPassword(e.target.value)
-  }, [])
+  const [id, onChangeId] = useInput('')
+  const [password, onChangePassword] = useInput('')
 
   // const style = useMemo(()=>({ // styled component 를 사용원치 않을때 useMemo 사용
   //   marginTop: 10
@@ -45,18 +37,11 @@ const LoginForm = ({ setIsLoggedIn }) => {
       <div>
         <label htmlFor="user-password">비밀번호</label>
         <br />
-        <Input
-          name="user-password"
-          type="password"
-          value={password}
-          onChange={onChangePassword}
-          required
-        />
+        <Input name="user-password" type="password" value={password} onChange={onChangePassword} required />
       </div>
       <ButtonWrapper>
-        {/*style={style}*/}
         <Button type="primary" htmlType="submit" loading={false}>
-          로그인 {/*htmlType 을 붙여줘야 submit이된다*/}
+          로그인 {/*htmlType 을 붙여줘야 submit 이 된다*/}
         </Button>
         <Link href="/signup">
           <a>
@@ -64,11 +49,12 @@ const LoginForm = ({ setIsLoggedIn }) => {
           </a>
         </Link>
       </ButtonWrapper>
-      <div></div>
-      <div></div>
-      <div></div>
     </FormWrapper>
   )
+}
+
+LoginForm.propTypes = {
+  setIsLoggedIn: PropTypes.func.isRequired,
 }
 
 export default LoginForm
