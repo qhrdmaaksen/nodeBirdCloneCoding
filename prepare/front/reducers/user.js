@@ -1,6 +1,6 @@
 export const initialState = {
 	isLoggedIn: false,
-	user: null,
+	me: null,
 	signUpData: {},
 	loginData: {},
 }
@@ -25,14 +25,14 @@ const reducer = (state = initialState, action) => {
 				// store 에서 보낸 state 가 만들어짐, state 자체가 uiser.js 의 state 임
 					...state,
 					isLoggedIn: true,
-					user: action.data,
+					me: action.data,
 			}
 		case 'LOG_OUT':
 			return {
 				// store 에서 보낸 state 가 만들어짐
 					...state,
 					isLoggedIn: false,
-					user: null,
+					me: null,
 			}
 		default:
 			return state;
