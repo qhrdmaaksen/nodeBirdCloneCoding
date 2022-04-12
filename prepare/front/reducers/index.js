@@ -1,6 +1,6 @@
 //import { store } from 'next/dist/build/output/store'
-import {HYDRATE} from 'next-redux-wrapper'
-import {combineReducers} from 'redux'
+import { HYDRATE } from 'next-redux-wrapper'
+import { combineReducers } from 'redux'
 import user from './user'
 import post from './post'
 
@@ -28,11 +28,18 @@ changeNickname('vitamin777')*/
 
 // 리듀서 : 이전상태와 액션을 통해 다음 상태를 만들어내는 함수
 const rootReducer = combineReducers({
-	// user 이니셜스테이트, post 이니셜스테이트 컴바인 리듀서가 알아서 한방에 묶어줌
-	index: (state = {}, action) => {
-	},
-	user,
-	post,
+  // user 이니셜스테이트, post 이니셜스테이트 컴바인 리듀서가 알아서 한방에 묶어줌
+  index: (state = {}, action) => {
+    switch (action.type) {
+      case HYDRATE:
+        console.log('HYDRATE', action)
+        return { ...state, ...action.payload }
+      default:
+        return state
+    }
+  },
+  user,
+  post,
 })
 
 export default rootReducer

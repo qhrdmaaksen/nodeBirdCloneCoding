@@ -7,7 +7,13 @@ export const initialState = {
         nickname: '비타민',
       },
       content: '첫 번째 게시글 #해시태그 #익스프레스',
-      Images: [{ src: '' }, { src: '' }, { src: '' }],
+      Images: [{
+        src: 'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
+      }, {
+        src: 'https://gimg.gilbut.co.kr/book/BN001958/rn_view_BN001958.jpg',
+      }, {
+        src: 'https://gimg.gilbut.co.kr/book/BN001998/rn_view_BN001998.jpg',
+      }],
       Comments: [
         {
           User: {
@@ -50,11 +56,14 @@ const reducer = (state = initialState, action) => {
     case ADD_POST:
       return {
       ...state,
-        mainPost: [dummyPost, ...state.mainPosts], // 불변성 지켜주며 앞에다가 추가해야 게시글 위에올라감
+        mainPosts: [dummyPost, ...state.mainPosts], // 불변성 지켜주며 앞에다가 추가해야 게시글 위에올라감
         postAdded: true,
       }
-    default:
-      return state
+    default:{
+      return {
+        ...state,
+      }
+    }
   }
 }
 
