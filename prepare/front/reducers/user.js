@@ -23,20 +23,20 @@ const reducer = (state = initialState, action) => {
 		case 'LOG_IN':
 			return {
 				// store 에서 보낸 state 가 만들어짐, state 자체가 uiser.js 의 state 임
-					...state,
-					isLoggedIn: true,
-					me: action.data,
+				...state,
+				isLoggedIn: true,
+				me: action.data,
 			}
 		case 'LOG_OUT':
 			return {
 				// store 에서 보낸 state 가 만들어짐
-					...state,
-					isLoggedIn: false,
-					me: null,
+				...state,
+				isLoggedIn: false,
+				me: null,
 			}
 		default:
 			return state;
 	}
 }
 
-export default reducer ;
+export default reducer;
