@@ -2,10 +2,26 @@ import React from 'react'
 import Link from 'next/link'
 import PropTypes from 'prop-types'
 import {Menu, Input, Row, Col} from 'antd' // antd 에 Menu 사용
-import styled from 'styled-components'
+import styled, {createGlobalStyle} from 'styled-components'
 import UserProfile from '../component/UserProfile'
 import LoginForm from '../component/LoginForm'
 import {useSelector} from 'react-redux'
+
+
+const Global = createGlobalStyle`
+	.ant-row {
+		margin-right: 0 !important;
+		margin-left: 0 !important;
+	}
+
+	.ant-col:first-child {
+		padding-left: 0 !important;
+	}
+	
+	.ant-col:last-child {
+		padding-right: 0 !important;
+	}
+`
 
 // antd 에서 사용한 Input.Search 를 styled component 로 바꿔 넣어줌
 const SearchInput = styled(Input.Search)`
@@ -20,6 +36,7 @@ const AppLayout = ({children}) => {
 
 	return (
 			<div>
+				<Global />
 				<Menu mode="horizontal">
 					<Menu.Item key="home">
 						<Link href="/">

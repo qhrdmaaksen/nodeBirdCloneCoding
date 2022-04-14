@@ -23,7 +23,7 @@ const PostCard = ({post}) => {
 	return (
 			<div style={{marginBottom: 20}}>
 				<Card
-						cover={post.Images[0] && <PostImages images={post.Images}/>}
+						cover={post.Images[0] && <PostImages images={post.Images}/>} // 이미지가 한개 이상있을때 포스트 이미지스
 						actions={[
 							<RetweetOutlined key="retweet"/>, // 리트윗 버튼
 							liked

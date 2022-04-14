@@ -41,5 +41,7 @@ const rootReducer = combineReducers({
 	user,
 	post,
 })
-
+/*reducers/index.js 보시면 user랑 post를 불러와서 합치고 있습니다.
+rootReducer가 state고, user와 post는 각각 state.user, state.post가 됩니다.
+user.js의 me는 state.user.me가 됩니다.*/
 export default rootReducer
