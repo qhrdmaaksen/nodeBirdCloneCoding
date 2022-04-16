@@ -21,5 +21,7 @@ V
 &prepare/front/component/UserProfile.js,1\9\197af95898e2a9e3dbf146615bf86880c35cc3ea
 U
 %prepare/front/component/FollowList.js,4\e\4ef42bf4418fe0eb063f3aff19dfdc27ff96c5b5
-U
-%prepare/front/store/configureStore.js,9\3\939d3b67bdbb7a0d563bb2b027f890109f552410
+O
+prepare/front/reducers/index.js,3\3\33b0055d8939d6d7f34ce59646251c2abf4ccde5
+L
+prepare/front/pages/index.js,b\c\bcd54d4f7990128857588e3994e5cf618f88be8a

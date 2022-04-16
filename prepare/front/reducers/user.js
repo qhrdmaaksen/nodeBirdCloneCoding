@@ -5,16 +5,63 @@ export const initialState = {
 	loginData: {},
 }
 
-// 액션 생성기
-export const loginAction = (data) => {
+// 로그인 액션 생성기
+export const loginAction = (data) => { // 함수를 리턴하는 비동기 액션 크리에이터가 추가
+	return (dispatch, getState) => {
+		const state = getState()
+		dispatch(loginRequestAction())
+		axios.post('/api/login')
+				.then((res) => {
+					dispatch(loginSuccessAction(res.data))
+				})
+				.catch((err) => {
+					dispatch(loginFailureAction(err))
+				})
+	}
+}
+export const loginRequestAction = (data) => {
 	return {
-		type: 'LOG_IN',
+		type: 'LOG_IN_REQUEST',
 		data,
 	}
 }
-export const logoutAction = () => {
+export const loginSuccessAction = (data) => {
 	return {
-		type: 'LOG_OUT',
+		type: 'LOG_IN_SUCCESS',
+		data,
+	}
+}
+export const loginFailureAction = (data) => {
+	return {
+		type: 'LOG_IN_FAILURE',
+		data,
+	}
+}
+// 로그아웃 액션 생성기
+export const logoutAction = (data) => {
+	return (dispatch) => {
+		axios.post('/api/logout')
+				.then(() => {
+					dispatch(logoutSuccessAction())
+				})
+				.catch(() => {
+					dispatch(logoutFailureAction())
+				})
+	}
+}
+export const logoutRequestAction = () => {
+	return {
+		type: 'LOG_OUT_REQUEST',
+	}
+}
+export const logoutSuccessAction = () => {
+	return {
+		type: 'LOG_OUT_SUCCESS',
+	}
+}
+export const logoutFailureAction = () => {
+	return {
+		type: 'LOG_OUT_FAILURE',
 	}
 }
 
