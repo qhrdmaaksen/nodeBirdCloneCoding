@@ -1,8 +1,10 @@
 import { createWrapper } from 'next-redux-wrapper'
 import { applyMiddleware, compose, createStore } from 'redux'
-import reducer from '../reducers'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import thunkMiddleware from 'redux-thunk'
+//import thunkMiddleware from 'redux-thunk'
+import createSagaMiddleware from 'redux-saga'
+import reducer from '../reducers'
+import rootSaga from '../sagas'
 
 
 const loggerMiddleware = ({ dispatch, getState}) => (next) => (action) => {
@@ -11,17 +13,14 @@ const loggerMiddleware = ({ dispatch, getState}) => (next) => (action) => {
 }
 
 const configureStore = () => {
-  const middlewares = [thunkMiddleware, loggerMiddleware]
+  const sagaMiddleware = createSagaMiddleware() // saga 설정 방법
+  const middlewares = [sagaMiddleware, loggerMiddleware]
   const enhancer =
     process.env.NODE_ENV === 'production'
       ? compose(applyMiddleware(...middlewares))
       : composeWithDevTools(applyMiddleware(...middlewares))
   const store = createStore(reducer, enhancer)
-  store.dispatch({
-    // 디스패치하는 순간 타입과 데이터가 리듀서로 보내진다.
-    type: 'CHANGE_NICKNAME',
-    data: 'vitamin777',
-  })
+  store.sagaTask = sagaMiddleware.run(rootSaga)
   return store
 }
 

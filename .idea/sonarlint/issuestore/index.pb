@@ -25,3 +25,7 @@ O
 prepare/front/reducers/index.js,3\3\33b0055d8939d6d7f34ce59646251c2abf4ccde5
 L
 prepare/front/pages/index.js,b\c\bcd54d4f7990128857588e3994e5cf618f88be8a
+S
+#prepare/front/component/PostCard.js,0\e\0eecb169cdd59fea691f05eedf2b4911878d0de7
+N
+prepare/front/reducers/post.js,4\e\4e988f98c7f08486c554c8cf1e593070a8b87cc4
