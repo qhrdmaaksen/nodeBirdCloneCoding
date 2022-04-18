@@ -32,7 +32,7 @@ const AppLayout = ({children}) => {
 	//const [isLoggedIn, setIsLoggedIn] = useState(false)
 	// 유저 자체를 받아와서 유저 안에서 isLoggedIn 을 구조분해 할당
 	//const { isLoggedIn } = useSelector((state) => state.user)
-	const isLoggedIn = useSelector((state) => state.user.isLoggedIn)
+	const {me} = useSelector((state) => state.user)
 
 	return (
 			<div>
@@ -63,7 +63,7 @@ const AppLayout = ({children}) => {
 					<Col xs={24} md={6}>
 						{/*dummy data*/}
 						{/*{isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn}/> : <LoginForm setIsLoggedIn={setIsLoggedIn} />}*/}
-						{isLoggedIn ? <UserProfile/> : <LoginForm/>}
+						{me ? <UserProfile/> : <LoginForm/>}
 					</Col>
 					<Col xs={24} md={12}>
 						{children} {/*여기는 AppLayout 의 children*/}

@@ -17,8 +17,8 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
 	const dispatch = useDispatch()
-	const {isLoggingIn} = useSelector((state) => state.user)
-	const [id, onChangeId] = useInput('')
+	const {logInLoading} = useSelector((state) => state.user)
+	const [email, onChangeEmail] = useInput('')
 	const [password, onChangePassword] = useInput('')
 
 	// const style = useMemo(()=>({ // styled component 를 사용원치 않을때 useMemo 사용
@@ -26,18 +26,18 @@ const LoginForm = () => {
 	// }), []);
 
 	const onSubmitFrom = useCallback(() => {
-		console.log('id : ' + id + ',' + ' password : ' + password)
+		console.log('email : ' + email + ',' + ' password : ' + password)
 		//setIsLoggedIn(true)
-		dispatch(loginRequestAction({id, password}))
-	}, [id, password])
+		dispatch(loginRequestAction({email, password})) // 동적 create
+	}, [email, password])
 
 	return (
 			<FormWrapper onFinish={onSubmitFrom}>
 				{/*onFinish 는 이미 e.preventDefault() 가 적용되어있다.*/}
 				<div>
-					<label htmlFor="user-id">아이디</label>
+					<label htmlFor="user-email">이메일</label>
 					<br/>
-					<Input name="user-id" value={id} onChange={onChangeId} required/>
+					<Input name="user-email" type="email" value={email} onChange={onChangeEmail} required/>
 				</div>
 				<div>
 					<label htmlFor="user-password">비밀번호</label>
@@ -45,7 +45,7 @@ const LoginForm = () => {
 					<Input name="user-password" type="password" value={password} onChange={onChangePassword} required/>
 				</div>
 				<ButtonWrapper>
-					<Button type="primary" htmlType="submit" loading={isLoggingIn}>
+					<Button type="primary" htmlType="submit" loading={logInLoading}>
 						로그인 {/*htmlType 을 붙여줘야 submit 이 된다*/}
 					</Button>
 					<Link href="/signup">

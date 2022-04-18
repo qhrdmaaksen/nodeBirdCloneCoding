@@ -5,5 +5,5 @@ export default (initialValue = null) => { // 커스텀 hooks
 	const handler = useCallback((e) => {
 		setValue(e.target.value)
 	}, [])
-	return [value, handler]
+	return [value, handler, setValue]
 }
