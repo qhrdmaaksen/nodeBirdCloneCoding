@@ -4,8 +4,8 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import useInput from '../hooks/useInput'
-import {useDispatch} from "react-redux";
-import {loginAction} from "../reducers/user";
+import {useDispatch, useSelector} from "react-redux";
+import {loginAction, loginRequestAction} from "../reducers/user";
 
 const ButtonWrapper = styled.div`
 	margin-top: 10px;
@@ -17,6 +17,7 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
 	const dispatch = useDispatch()
+	const {isLoggingIn} = useSelector((state) => state.user)
 	const [id, onChangeId] = useInput('')
 	const [password, onChangePassword] = useInput('')
 
@@ -27,7 +28,7 @@ const LoginForm = () => {
 	const onSubmitFrom = useCallback(() => {
 		console.log('id : ' + id + ',' + ' password : ' + password)
 		//setIsLoggedIn(true)
-		dispatch(loginAction({id, password}))
+		dispatch(loginRequestAction({id, password}))
 	}, [id, password])
 
 	return (
@@ -44,7 +45,7 @@ const LoginForm = () => {
 					<Input name="user-password" type="password" value={password} onChange={onChangePassword} required/>
 				</div>
 				<ButtonWrapper>
-					<Button type="primary" htmlType="submit" loading={false}>
+					<Button type="primary" htmlType="submit" loading={isLoggingIn}>
 						로그인 {/*htmlType 을 붙여줘야 submit 이 된다*/}
 					</Button>
 					<Link href="/signup">

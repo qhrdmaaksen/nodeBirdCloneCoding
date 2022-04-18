@@ -7,21 +7,21 @@ import FollowList from '../component/FollowList'
 
 
 const Profile = () => {
-  const followingList = [{ nickname: '비타민'}, { nickname: '엠알민'}, {nickname: '올마스터'}]
-  const followerList = [{ nickname: '비타민'}, { nickname: '엠알민'}, {nickname: '올마스터'}]
+	const followingList = [{nickname: '비타민'}, {nickname: '엠알민'}, {nickname: '올마스터'}]
+	const followerList = [{nickname: '비타민'}, {nickname: '엠알민'}, {nickname: '올마스터'}]
 
-  return (
-    <>
-      <Head>
-        <title>내 프로필 | NodeBird</title>
-      </Head>
-      <AppLayout>
-        <NicknameEditForm />
-        <FollowList  header="팔로윙 목록" data={followingList} />
-        <FollowList header="팔로워 목록" data={followerList} />
-      </AppLayout>
-    </>
-  )
+	return (
+			<>
+				<Head>
+					<title>내 프로필 | NodeBird</title>
+				</Head>
+				<AppLayout>
+					<NicknameEditForm/>
+					<FollowList header="팔로윙 목록" data={followingList}/>
+					<FollowList header="팔로워 목록" data={followerList}/>
+				</AppLayout>
+			</>
+	)
 }
 
 export default Profile

@@ -17,7 +17,7 @@ const Global = createGlobalStyle`
 	.ant-col:first-child {
 		padding-left: 0 !important;
 	}
-	
+
 	.ant-col:last-child {
 		padding-right: 0 !important;
 	}
@@ -36,7 +36,7 @@ const AppLayout = ({children}) => {
 
 	return (
 			<div>
-				<Global />
+				<Global/>
 				<Menu mode="horizontal">
 					<Menu.Item key="home">
 						<Link href="/">
