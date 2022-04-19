@@ -1,3 +1,5 @@
+import produce from 'immer'
+
 export const initialState = {
 	logInLoading: false, // 로그인 시도중일땐 로딩중 띄울거임
 	logInDone: false, // 로그인 됨
@@ -93,109 +95,91 @@ export const logoutRequestAction = () => {
 	}
 }
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action) => produce(state, (draft) => {
 	switch (action.type) {
 		case LOG_IN_REQUEST:
 			console.log('reducer login')
-			return {
-				// store 에서 보낸 state 가 만들어짐, state 자체가 uiser.js 의 state 임
-				...state,
-				logInLoading: true,
-				logInError: null, // 로딩 중일때는 에러 없앰
-				logInDone: false,
-			}
+			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
+			draft.logInLoading = true
+			draft.logInError = null // 로딩 중일때는 에러 없앰
+			draft.logInDone = false
+			break;
 		case LOG_IN_SUCCESS:
-			return {
-				...state,
-				logInLoading: false,
-				logInDone: true,
-				me: dummyUser(action.data),
-			}
+			draft.logInLoading = false
+			draft.logInDone = true
+			draft.me = dummyUser(action.data)
+			break;
 		case LOG_IN_FAILURE:
-			return {
-				...state,
-				logInLoading: false,
-				logInDone: false,
-			}
+			console.error('loginFail : ' + err)
+			draft.logInLoading = false
+			draft.logInError = action.error
+			break;
 		case LOG_OUT_REQUEST:
-			return {
-				...state,
-				logOutLoading: true,
-				logOutDone: false,
-				logOutError: null,
-			}
+			draft.logOutLoading = true
+			draft.logOutDone = false
+			draft.logOutError = null
+			break;
 		case LOG_OUT_SUCCESS:
-			return {
-				...state,
-				logOutLoading: false,
-				logOutDone: true,
-				me: null,
-			}
+			draft.logOutLoading = false
+			draft.logOutDone = true
+			draft.me = null
+			break;
 		case LOG_OUT_FAILURE:
-			return {
-				...state,
-				logOutLoading: false,
-				logOutError: action.error,
-			}
+			console.error('logoutFail : ' + err)
+			draft.logOutLoading = false
+			draft.logOutError = action.error
+			break
 		case SIGN_UP_REQUEST:
-			return {
-				...state,
-				signUpLoading: true,
-				signUpDone: false,
-				signUpError: null,
-			}
+			draft.signUpLoading = true
+			draft.signUpDone = false
+			draft.signUpError = null
+			break;
 		case SIGN_UP_SUCCESS:
-			return {
-				...state,
-				signUpLoading: false,
-				signUpDone: true,
-				me: null,
-			}
+			draft.signUpLoading = false
+			draft.signUpDone = true
+			break
 		case SIGN_UP_FAILURE:
-			return {
-				...state,
-				signUpLoading: false,
-				signUpError: action.error,
-			}
+			console.error('signUpFail : ' + err)
+			draft.signUpLoading = false
+			draft.signUpError = action.error
+			break
 		case CHANGE_NICKNAME_REQUEST:
-			return {
-				...state,
-				changeNicknameLoading: true,
-				changeNicknameDone: false,
-				changeNicknameError: null,
-			}
+			draft.changeNicknameLoading = true
+			draft.changeNicknameDone = false
+			draft.changeNicknameError = null
+			break
 		case CHANGE_NICKNAME_SUCCESS:
-			return {
-				...state,
-				changeNicknameLoading: false,
-				changeNicknameDone: true,
-				me: null,
-			}
+			draft.changeNicknameLoading = false
+			draft.changeNicknameDone = true
+			break;
 		case CHANGE_NICKNAME_FAILURE:
-			return {
-				...state,
-				changeNicknameLoading: false,
-				changeNicknameError: action.error,
-			}
-		case ADD_POST_TO_ME:
-			return { // 게시글을 쓰면 게시글 아이디가 여기로 들어와서 하나가 추가된다
-				...state,
-				me: {
-					...state.me,
-					Posts: [{id: action.data}, ...state.me.Posts],
-				}
-			}
+			console.error('changeNickFail : ' + err)
+			draft.changeNicknameLoading = false
+			draft.changeNicknameError = action.error
+			break;
+		case ADD_POST_TO_ME: // 게시글을 쓰면 게시글 아이디가 여기로 들어와서 하나가 추가된다
+			draft.me.Posts.unshift({id: action.data})
+			break
+			// return {
+			// 	...state,
+			// 	me: {
+			// 		...state.me,
+			// 		Posts: [{id: action.data}, ...state.me.Posts],
+			// 	}
+			// }
 		case REMOVE_POST_OF_ME:
-			return { // 불변성을 지키며 게시글을 지워야한다.
-				...state,
-				me: {
-					...state.me,
-					Posts: state.me.Posts.filter((v)=> v.id !== action.data)
-				}
-			}
+			draft.me.Posts = draft.me.Posts.filter((v) => v.id !== action.data)
+			break;
+			// return { // 불변성을 지키며 게시글을 지워야한다.
+			// 	...state,
+			// 	me: {
+			// 		...state.me,
+			// 		Posts: state.me.Posts.filter((v) => v.id !== action.data)
+			// 	}
+			// }
 		default:
-			return state;
+			break;
 	}
-}
+})
 
 export default reducer;

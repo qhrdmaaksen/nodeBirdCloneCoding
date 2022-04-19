@@ -37,3 +37,23 @@ L
 prepare/front/pages/index.js,b\c\bcd54d4f7990128857588e3994e5cf618f88be8a
 V
 &prepare/front/component/CommentForm.js,7\f\7f29d309d9e3917fccfa6356ec3ae0670d0e7f04
+U
+%prepare/front/component/PostImages.js,8\1\81396bcda1316129806a11daeae379d8b53fd2f5
+S
+#prepare/front/component/PostForm.js,9\1\91d91633b46832cb07673cf3d9394685523b25d5
+S
+#prepare/front/component/PostCard.js,0\e\0eecb169cdd59fea691f05eedf2b4911878d0de7
+V
+&prepare/front/component/UserProfile.js,1\9\197af95898e2a9e3dbf146615bf86880c35cc3ea
+N
+prepare/front/reducers/user.js,1\f\1f7b7bc27205ffc17369fa7075eb35fd42d3592b
+K
+prepare/front/sagas/post.js,0\1\011f07f2b6b27a1c155e11f1a87b52859d86c830
+G
+prepare/front/.eslintrc,4\b\4b89a07131f24ff1abc6ed14697166e90bd3a9ce
+K
+prepare/front/sagas/user.js,7\1\7130ab1ea2935156551f1677f272e2ee50e48703
+Z
+*prepare/front/component/PostCardContent.js,0\d\0dbcf9ab91fae7c2aed7d2af37479e8f25f0813a
+N
+prepare/front/reducers/post.js,4\e\4e988f98c7f08486c554c8cf1e593070a8b87cc4
