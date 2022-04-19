@@ -185,6 +185,14 @@ const reducer = (state = initialState, action) => {
 					Posts: [{id: action.data}, ...state.me.Posts],
 				}
 			}
+		case REMOVE_POST_OF_ME:
+			return { // 불변성을 지키며 게시글을 지워야한다.
+				...state,
+				me: {
+					...state.me,
+					Posts: state.me.Posts.filter((v)=> v.id !== action.data)
+				}
+			}
 		default:
 			return state;
 	}
