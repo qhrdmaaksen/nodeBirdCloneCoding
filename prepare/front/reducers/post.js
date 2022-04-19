@@ -1,28 +1,38 @@
+import shortId from 'shortid'
+
+
 export const initialState = {
 	mainPosts: [
 		{
-			id: 1,
+			id: shortId.generate(),
 			User: {
-				id: 1,
+				id: shortId.generate(),
 				nickname: '비타민',
 			},
 			content: '첫 번째 게시글 #해시태그 #익스프레스',
 			Images: [{
+				id: shortId.generate(),
 				src: 'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
 			}, {
+				id: shortId.generate(),
 				src: 'https://gimg.gilbut.co.kr/book/BN001958/rn_view_BN001958.jpg',
 			}, {
+				id: shortId.generate(),
 				src: 'https://gimg.gilbut.co.kr/book/BN001998/rn_view_BN001998.jpg',
 			}],
 			Comments: [
 				{
+					id: shortId.generate(),
 					User: {
+						id: shortId.generate(),
 						nickname: 'nero',
 					},
 					content: '개정판이 나왔네요!?',
 				},
 				{
+					id: shortId.generate(),
 					User: {
+						id: shortId.generate(),
 						nickname: 'hero',
 					},
 					content: '정말정말 신기하당!',
@@ -34,6 +44,9 @@ export const initialState = {
 	addPostLoading: false,
 	addPostDone: false, // 게시물 추가가 완료되었을때 true 변환
 	addPostError: null,
+	addCommentLoading: false,
+	addCommentDone: false, // 게시물 추가가 완료되었을때 true 변환
+	addCommentError: null,
 }
 
 //게시글 작성하는 액션
@@ -45,9 +58,10 @@ export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST'; // 변수로 따로 �
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
 
-export const addPost = {
+export const addPost = (data) => ({
 	type: ADD_POST_REQUEST,
-}
+	data,
+})
 
 // dynamic action create
 export const addComment = (data) => ({
@@ -55,16 +69,25 @@ export const addComment = (data) => ({
 	data,
 })
 
-const dummyPost = {
-	id: 2,
-	content: '더미데이터입니당',
+const dummyPost = (data) => ({
+	id: data.id,
+	content: data.content,
 	User: {
 		id: 1,
-		nickname: 'vitamin',
+		nickname: '비타민',
 	},
 	Images: [],
 	Comments: [],
-}
+})
+
+const dummyComment = (data) => ({
+	id: shortId.generate(),
+	content: data,
+	User: {
+		id: 1,
+		nickname: '비타민',
+	}
+})
 
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
@@ -78,7 +101,7 @@ const reducer = (state = initialState, action) => {
 		case ADD_POST_SUCCESS:
 			return {
 				...state,
-				mainPosts: [dummyPost, ...state.mainPosts], // 불변성 지켜주며 앞에다가 추가해야 게시글 위에올라감
+				mainPosts: [dummyPost(action.data), ...state.mainPosts], // 불변성 지켜주며 앞에다가 추가해야 게시글 위에올라감
 				addPostLoading: false,
 				addPostDone: true,
 			}
@@ -95,13 +118,21 @@ const reducer = (state = initialState, action) => {
 				addCommentDone: false,
 				addCommentError: null,
 			}
-		case ADD_COMMENT_SUCCESS:
+		case ADD_COMMENT_SUCCESS:{
+			//action.data.content, postId, userId
+			const postIndex = state.mainPosts.findIndex((v) => v.id === action.data.postId)
+			const post = {...state.mainPosts[postIndex]}
+			post.Comments = [dummyComment(action.data.content), ...post.Comments]
+			const mainPosts = [...state.mainPosts]
+			mainPosts[postIndex] = post
 			return {
 				...state,
-				mainPosts: [dummyPost, ...state.mainPosts], // 불변성 지켜주며 앞에다가 추가해야 게시글 위에올라감
+				mainPosts,
+				//mainPosts: [dummyPost, ...state.mainPosts], // 불변성 지켜주며 앞에다가 추가해야 게시글 위에올라감
 				addCommentLoading: false,
 				addCommentDone: true,
 			}
+		}
 		case ADD_COMMENT_FAILURE:
 			return {
 				...state,

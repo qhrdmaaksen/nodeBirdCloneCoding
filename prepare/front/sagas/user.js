@@ -6,7 +6,10 @@ import {
 	LOG_IN_SUCCESS,
 	LOG_OUT_FAILURE,
 	LOG_OUT_REQUEST,
-	LOG_OUT_SUCCESS, SIGN_UP_FAILURE, SIGN_UP_REQUEST, SIGN_UP_SUCCESS,
+	LOG_OUT_SUCCESS,
+	SIGN_UP_FAILURE,
+	SIGN_UP_REQUEST,
+	SIGN_UP_SUCCESS,
 } from "../reducers/user";
 
 
@@ -21,7 +24,7 @@ function logInAPI(data) { // gererator 아님
 /////////////////
 function* logIn(action) { // login action request 가 action 에 전달
 	try { // 요청 실패 대비
-		console.log('saga login')
+		console.log('saga logIn')
 		yield delay(1000)
 		//const result = yield call(logInAPI, action.data) // 서버에서 받은 결과 값을 받음
 		yield put({
@@ -30,6 +33,7 @@ function* logIn(action) { // login action request 가 action 에 전달
 			//data: result.data // (성공 결과 담김)
 		})
 	} catch (err) {
+		console.error('logIn' + err)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_IN_FAILURE,
 			error: err.response.data // (실패 결과 담김)
@@ -50,6 +54,7 @@ function* logOut() {
 			//data: result.data // (성공 결과 담김)
 		})
 	} catch (err) {
+		console.error('logOut : ' + err)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_OUT_FAILURE,
 			error: err.response.data // (실패 결과 담김)
@@ -58,10 +63,10 @@ function* logOut() {
 }
 
 function signUpAPI() {
-	return axios.signup('/api/signup')
+	return axios.post('/api/signup')
 }
 
-function* singUp() {
+function* signUp() {
 	try {
 		yield delay(1000)
 		yield put({
@@ -69,6 +74,7 @@ function* singUp() {
 			// data: result.data
 		})
 	} catch (err) {
+		console.error('signUp : ' + err)
 		yield put({
 			type: SIGN_UP_FAILURE,
 			error: err.response.data

@@ -8,6 +8,9 @@ export const initialState = {
 	signUpLoading: false, // 회원가입 로딩중
 	signUpDone: false, // 회원 가입 완료
 	signUpError: null,
+	changeNicknameLoading: false, // 닉네임 변경 로딩중
+	changeNicknameDone: false, // 닉네임 변경 완료
+	changeNicknameError: null,
 	me: null,
 	signUpData: {}, // 회원 가입 데이터
 	loginData: {},
@@ -41,6 +44,10 @@ export const SIGN_UP_REQUEST = 'SIGN_UP_REQUEST'
 export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS'
 export const SIGN_UP_FAILURE = 'SIGN_UP_FAILURE'
 
+export const CHANGE_NICKNAME_REQUEST = 'CHANGE_NICKNAME_REQUEST'
+export const CHANGE_NICKNAME_SUCCESS = 'CHANGE_NICKNAME_SUCCESS'
+export const CHANGE_NICKNAME_FAILURE = 'CHANGE_NICKNAME_FAILURE'
+
 export const FOLLOW_REQUEST = 'FOLLOW_REQUEST'
 export const FOLLOW_SUCCESS = 'FOLLOW_SUCCESS'
 export const FOLLOW_FAILURE = 'FOLLOW_FAILURE'
@@ -49,13 +56,17 @@ export const UNFOLLOW_REQUEST = 'UNFOLLOW_REQUEST'
 export const UNFOLLOW_SUCCESS = 'UNFOLLOW_SUCCESS'
 export const UNFOLLOW_FAILURE = 'UNFOLLOW_FAILURE'
 
+// 유저 리듀서의 상태를 바꿀수있는 액션 생성
+export const ADD_POST_TO_ME = 'ADD_POST_TO_ME'
+export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'
+
 const dummyUser = (data) => ({
 	...data,
 	nickname: '비타민',
 	id: 1,
-	Posts:[],
-	Followings: [],
-	Followers: [],
+	Posts: [{id: 1}],
+	Followings: [{nickname: '외노'}, {nickname: '음메'}, {nickname: '썽'}, {nickname: '오댕'}, {nickname: '만뽀'}],
+	Followers: [{nickname: '까매'}, {nickname: '만두'}, {nickname: '보챙'}, {nickname: '뒷가'}, {nickname: '야덩'}],
 })
 
 export const loginRequestAction = (data) => {
@@ -95,7 +106,6 @@ const reducer = (state = initialState, action) => {
 			}
 		case LOG_IN_SUCCESS:
 			return {
-				// store 에서 보낸 state 가 만들어짐, state 자체가 uiser.js 의 state 임
 				...state,
 				logInLoading: false,
 				logInDone: true,
@@ -103,14 +113,12 @@ const reducer = (state = initialState, action) => {
 			}
 		case LOG_IN_FAILURE:
 			return {
-				// store 에서 보낸 state 가 만들어짐, state 자체가 uiser.js 의 state 임
 				...state,
 				logInLoading: false,
 				logInDone: false,
 			}
 		case LOG_OUT_REQUEST:
 			return {
-				// store 에서 보낸 state 가 만들어짐
 				...state,
 				logOutLoading: true,
 				logOutDone: false,
@@ -118,7 +126,6 @@ const reducer = (state = initialState, action) => {
 			}
 		case LOG_OUT_SUCCESS:
 			return {
-				// store 에서 보낸 state 가 만들어짐
 				...state,
 				logOutLoading: false,
 				logOutDone: true,
@@ -126,14 +133,12 @@ const reducer = (state = initialState, action) => {
 			}
 		case LOG_OUT_FAILURE:
 			return {
-				// store 에서 보낸 state 가 만들어짐
 				...state,
 				logOutLoading: false,
 				logOutError: action.error,
 			}
 		case SIGN_UP_REQUEST:
 			return {
-				// store 에서 보낸 state 가 만들어짐
 				...state,
 				signUpLoading: true,
 				signUpDone: false,
@@ -141,7 +146,6 @@ const reducer = (state = initialState, action) => {
 			}
 		case SIGN_UP_SUCCESS:
 			return {
-				// store 에서 보낸 state 가 만들어짐
 				...state,
 				signUpLoading: false,
 				signUpDone: true,
@@ -149,10 +153,37 @@ const reducer = (state = initialState, action) => {
 			}
 		case SIGN_UP_FAILURE:
 			return {
-				// store 에서 보낸 state 가 만들어짐
 				...state,
 				signUpLoading: false,
 				signUpError: action.error,
+			}
+		case CHANGE_NICKNAME_REQUEST:
+			return {
+				...state,
+				changeNicknameLoading: true,
+				changeNicknameDone: false,
+				changeNicknameError: null,
+			}
+		case CHANGE_NICKNAME_SUCCESS:
+			return {
+				...state,
+				changeNicknameLoading: false,
+				changeNicknameDone: true,
+				me: null,
+			}
+		case CHANGE_NICKNAME_FAILURE:
+			return {
+				...state,
+				changeNicknameLoading: false,
+				changeNicknameError: action.error,
+			}
+		case ADD_POST_TO_ME:
+			return { // 게시글을 쓰면 게시글 아이디가 여기로 들어와서 하나가 추가된다
+				...state,
+				me: {
+					...state.me,
+					Posts: [{id: action.data}, ...state.me.Posts],
+				}
 			}
 		default:
 			return state;

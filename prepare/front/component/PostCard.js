@@ -53,7 +53,7 @@ const PostCard = ({post}) => {
 				</Card>
 				{commentFormOpened && (
 						<div>
-							<CommentForm/>
+							<CommentForm post={post}/>
 							<List
 									header={`${post.Comments.length}개의 댓글`}
 									itemLayout="horizontal"
@@ -79,7 +79,7 @@ PostCard.propTypes = {
 		id: PropTypes.number,
 		User: PropTypes.object,
 		content: PropTypes.string,
-		createdAt: PropTypes.object, // 날짜 객체
+		createdAt: PropTypes.string, // 날짜 객체
 		Comments: PropTypes.arrayOf(PropTypes.object),
 		Images: PropTypes.arrayOf(PropTypes.object),
 	}).isRequired,

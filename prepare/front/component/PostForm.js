@@ -40,7 +40,7 @@ const PostForm = () => {
 						return (
 								// 이미지 등록을 했을 시, 이미지 경로가 저장되며, 반복문으로 표시해줌
 								<div key={v} style={{display: 'inline-block'}}>
-									<img src={'http://localhost:3065/' + v} style={{width: '200px'}} alt={v}/>
+									<img src={`http://localhost:3065/` + v} style={{width: '200px'}} alt={v}/>
 									<div>
 										<Button>제거</Button>
 									</div>
