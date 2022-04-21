@@ -1,6 +1,12 @@
 import produce from 'immer'
 
 export const initialState = {
+	followLoading: false, // 팔로우 시도중일땐 로딩중 띄울거임
+	followDone: false, // 팔로우 됨
+	followError: null, // 팔로우중일때 에러 없앰
+	unfollowLoading: false, // 언팔로우 시도중일땐 로딩중 띄울거임
+	unfollowDone: false, // 언팔로우 됨
+	unfollowError: null, // 팔로우중일때 에러 없앰
 	logInLoading: false, // 로그인 시도중일땐 로딩중 띄울거임
 	logInDone: false, // 로그인 됨
 	logInError: null, // 로딩중일때 에러 없앰
@@ -97,11 +103,47 @@ export const logoutRequestAction = () => {
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	switch (action.type) {
+		case FOLLOW_REQUEST:
+			console.log('reducer follow')
+			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
+			draft.followLoading = true
+			draft.followError = null // 로딩 중일때는 에러 없앰
+			draft.followDone = false
+			break;
+		case FOLLOW_SUCCESS:
+			draft.followLoading = false
+			draft.followDone = true
+			//draft.me = dummyUser(action.data)
+			draft.me.Followings.push({id: action.data})
+			break;
+		case FOLLOW_FAILURE:
+			console.error('followFail : ' + action.error)
+			draft.followLoading = false
+			draft.followError = action.error
+			break;
+		case UNFOLLOW_REQUEST:
+			console.log('reducer follow')
+			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
+			draft.unfollowLoading = true
+			draft.unfollowError = null // 로딩 중일때는 에러 없앰
+			draft.unfollowDone = false
+			break;
+		case UNFOLLOW_SUCCESS:
+			draft.unfollowLoading = false
+			draft.unfollowDone = true
+			//draft.me = dummyUser(action.data)
+			// 언팔로우 한 사람만 빠지게
+			draft.me.Followings = draft.me.Followings.filter((v) => v.id !== action.data)
+			break;
+		case UNFOLLOW_FAILURE:
+			console.error('unfollowFail : ' + action.error)
+			draft.unfollowLoading = false
+			draft.unfollowError = action.error
+			break;
 		case LOG_IN_REQUEST:
 			console.log('reducer login')
-			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.logInLoading = true
-			draft.logInError = null // 로딩 중일때는 에러 없앰
+			draft.logInError = null
 			draft.logInDone = false
 			break;
 		case LOG_IN_SUCCESS:
@@ -110,7 +152,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.me = dummyUser(action.data)
 			break;
 		case LOG_IN_FAILURE:
-			console.error('loginFail : ' + err)
+			console.error('loginFail : ' + action.error)
 			draft.logInLoading = false
 			draft.logInError = action.error
 			break;
@@ -125,7 +167,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.me = null
 			break;
 		case LOG_OUT_FAILURE:
-			console.error('logoutFail : ' + err)
+			console.error('logoutFail : ' + action.error)
 			draft.logOutLoading = false
 			draft.logOutError = action.error
 			break
@@ -139,7 +181,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.signUpDone = true
 			break
 		case SIGN_UP_FAILURE:
-			console.error('signUpFail : ' + err)
+			console.error('signUpFail : ' + action.error)
 			draft.signUpLoading = false
 			draft.signUpError = action.error
 			break
@@ -153,7 +195,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.changeNicknameDone = true
 			break;
 		case CHANGE_NICKNAME_FAILURE:
-			console.error('changeNickFail : ' + err)
+			console.error('changeNickFail : ' + action.error)
 			draft.changeNicknameLoading = false
 			draft.changeNicknameError = action.error
 			break;

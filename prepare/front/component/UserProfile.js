@@ -16,8 +16,8 @@ const UserProfile = () => {
 			<Card
 					actions={[ /*리액트에서 배열로 jsx 사용할땐 key 붙여줘야함*/
 						<div key="twit">짹짹<br/>{me.Posts.length}</div>,
-						<div key="following">팔로윙<br/>{me.Posts.length}</div>,
-						<div key="follower">팔로워<br/>{me.Posts.length}</div>,
+						<div key="following">팔로윙<br/>{me.Followings.length}</div>,
+						<div key="follower">팔로워<br/>{me.Followers.length}</div>,
 					]}
 			>
 				<Card.Meta avatar={<Avatar>{me.nickname[0]}</Avatar>} title={me.nickname}/>

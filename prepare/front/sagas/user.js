@@ -1,6 +1,8 @@
 import {all, delay, fork, put, takeLatest} from "redux-saga/effects";
 import axios from "axios";
 import {
+	FOLLOW_FAILURE,
+	FOLLOW_REQUEST, FOLLOW_SUCCESS,
 	LOG_IN_FAILURE,
 	LOG_IN_REQUEST,
 	LOG_IN_SUCCESS,
@@ -9,7 +11,7 @@ import {
 	LOG_OUT_SUCCESS,
 	SIGN_UP_FAILURE,
 	SIGN_UP_REQUEST,
-	SIGN_UP_SUCCESS,
+	SIGN_UP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS,
 } from "../reducers/user";
 
 
@@ -62,6 +64,46 @@ function* logOut() {
 	}
 }
 
+function followAPI(data) {
+	return axios.post('/api/follow', data)
+}
+
+function* follow(action) {
+	try {
+		yield delay(1000)
+		yield put({
+			type: FOLLOW_SUCCESS,
+			data: action.data
+		})
+	} catch (err) {
+		console.error('follow error : ' + err)
+		yield put({
+			type: FOLLOW_FAILURE,
+			data: err.response.data,
+		})
+	}
+}
+
+function unfollowAPI(data) {
+	return axios.post('/api/unfollow', data)
+}
+
+function* unfollow(action) {
+	try {
+		yield delay(1000)
+		yield put({
+			type: UNFOLLOW_SUCCESS,
+			data: action.data
+		})
+	} catch (err) {
+		console.error('unfollow error : ' + err)
+		yield put({
+			type: UNFOLLOW_FAILURE,
+			data: err.response.data,
+		})
+	}
+}
+
 function signUpAPI() {
 	return axios.post('/api/signup')
 }
@@ -82,6 +124,14 @@ function* signUp() {
 	}
 }
 
+function* watchFollow() {
+	yield takeLatest(FOLLOW_REQUEST, follow)
+}
+
+function* watchUnFollow() {
+	yield takeLatest(UNFOLLOW_REQUEST, unfollow)
+}
+
 function* watchLogIn() {	// 로그인 액션이 실행될때까지 기다리겠다는 뜻
 	yield takeLatest(LOG_IN_REQUEST, logIn) //LOG_IN_REQUEST 액션이 실행되면 logIn 함수 실행
 }
@@ -96,6 +146,8 @@ function* watchSignUp() {	// 회원가입 액션이 실행될때까지 기다리
 
 export default function* userSaga() {
 	yield all([
+		fork(watchFollow),
+		fork(watchUnFollow),
 		fork(watchLogIn),
 		fork(watchLogOut),
 		fork(watchSignUp),

@@ -13,7 +13,10 @@ import {
 	REMOVE_POST_REQUEST,
 	REMOVE_POST_SUCCESS,
 } from "../reducers/post";
-import {ADD_POST_TO_ME, REMOVE_POST_OF_ME} from "../reducers/user";
+import {
+	ADD_POST_TO_ME,
+	REMOVE_POST_OF_ME,
+} from "../reducers/user";
 import shortId from "shortid";
 
 
@@ -37,6 +40,7 @@ function* loadPosts(action) { // 1 액션에서
 		})
 	}
 }
+
 
 function addPostAPI(data) { // 3 전달되면
 	return axios.post('/api/post', data) // 4 데이터가 간다

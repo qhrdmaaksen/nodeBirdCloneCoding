@@ -100,7 +100,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.loadPostsDone = true
 			// action.data 에 dummy data 가 들어있을것이며, 기존데이터와 합쳐주는것
 			// concat 을 할땐 항상 앞에 대입을 해줘야한다 그래야 합쳐짐
-			draft.mainPosts = action.data.concat(draft.mainPosts)
+			draft.mainPosts = draft.mainPosts.concat(action.data)
 			// 게시물을 50 개까지만 가져오겠다
 			draft.hasMorePosts = draft.mainPosts.length < 50
 			break;
