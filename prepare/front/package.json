@@ -6,7 +6,7 @@
   "scripts": {
     "format": "prettier --check --ignore-path .gitignore .",
     "format:fix": "prettier --write --ignore-path .gitignore .",
-    "dev": "next"
+    "dev": "next -p 3060"
   },
   "author": "vitamin777",
   "license": "ISC",
