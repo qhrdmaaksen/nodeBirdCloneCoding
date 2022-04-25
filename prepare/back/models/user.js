@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => { // 모델의 기본 꼴
 			allowNull: false, // 필수
 		},
 	}, { // user model 에 대한 셋팅
-		charset: 'utf-8',
+		charset: 'utf8',
 		collate: 'utf8_general_ci', // 한글 저장
 	})
 	User.associate = (db) => { // 관계 설정

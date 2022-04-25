@@ -7,10 +7,17 @@ const db = {};
 // node 와 mysql 을 연결해줌, 드라이브에 설정 정보를 전해줌
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-const fs = require('fs');
-const path = require('path');
-const basename = path.basename(__filename);
+// 모델 불러오기
+/*모델들의 모양이 module.export 로 함수인 모양이있다
+함수를 require 해서 함수를 실행해줄것이며, 함수 내부가 실행되면서
+모델이 실제로 sequelize 에 등록이된다*/
+db.Comment = require('./comment')(sequelize, Sequelize)
+db.Hashtag = require('./hashtag')(sequelize, Sequelize)
+db.Image = require('./image')(sequelize, Sequelize)
+db.Post = require('./post')(sequelize, Sequelize)
+db.User = require('./user')(sequelize, Sequelize)
 
+// db 를 반복문 돌면서 db 에서 찾아냄, 모델들의 associate 를 실행해줌
 Object.keys(db).forEach(modelName => {
 	if (db[modelName].associate) {
 		db[modelName].associate(db);

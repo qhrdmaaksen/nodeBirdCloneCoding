@@ -1,3 +1,5 @@
+const DataTypes = require('sequelize')
+const { Model } = DataTypes
 module.exports = (sequelize, DataTypes) =>{ // 모델의 기본 꼴
 	/*define('Image' 모델 이름이 자동으로 소문자가되고, 복수가되서
 	users 로 MYSQL 에 테이블 생성, sequel 과 mysql 의 규칙*/
@@ -8,7 +10,7 @@ module.exports = (sequelize, DataTypes) =>{ // 모델의 기본 꼴
 			allowNull: false,
 		},
 	},{ // Image model 에 대한 셋팅
-		charset: 'utf-8', // 이모티콘은 mb4 도 넣어줘야함
+		charset: 'utf8', // 이모티콘은 mb4 도 넣어줘야함
 		collate: 'utf8_general_ci', // 한글,이모티콘 저장
 	})
 	Image.associate = (db) => {

@@ -1,7 +1,14 @@
 const express = require('express')
 const postRouter = require('./routes/post')
-
+const db = require('./models') // db 에 sequelize 넣어놓은 상태
 const app = express() // 호출 한번 해줘야함
+
+// promise
+db.sequelize.sync() // server 시작할때 db 연결도 같이한다
+		.then(()=> {
+			console.log('db 연결 성공')
+		})
+		.catch(console.error)
 
 app.get('/', (req, res) => {
 	res.send('hello express') // end === send
