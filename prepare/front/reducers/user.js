@@ -95,11 +95,9 @@ export const loginRequestAction = (data) => {
 // 				})
 // 	}
 // }
-export const logoutRequestAction = () => {
-	return {
+export const logoutRequestAction = () => ({
 		type: LOG_OUT_REQUEST,
-	}
-}
+})
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	switch (action.type) {
@@ -149,7 +147,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 		case LOG_IN_SUCCESS:
 			draft.logInLoading = false
 			draft.logInDone = true
-			draft.me = dummyUser(action.data)
+			//draft.me = dummyUser(action.data) front
+			draft.me = action.data // back
 			break;
 		case LOG_IN_FAILURE:
 			console.error('loginFail : ' + action.error)

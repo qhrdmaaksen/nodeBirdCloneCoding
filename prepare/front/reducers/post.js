@@ -67,6 +67,7 @@ export const addComment = (data) => ({
 	data,
 })
 
+/* front dummy
 const dummyPost = (data) => ({
 	id: data.id,
 	content: data.content,
@@ -77,7 +78,9 @@ const dummyPost = (data) => ({
 	Images: [],
 	Comments: [],
 })
+*/
 
+/* front dummy
 const dummyComment = (data) => ({
 	id: shortId.generate(),
 	content: data,
@@ -85,7 +88,7 @@ const dummyComment = (data) => ({
 		id: 1,
 		nickname: '비타민',
 	}
-})
+})*/
 // 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	// immer 사용시 state 를 draft 로 교체해주며, switch 문인걸 인식하고 break 를 까먹지말자
@@ -114,7 +117,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.addPostError = null;
 			break;
 		case ADD_POST_SUCCESS:
-			draft.mainPosts.unshift(dummyPost(action.data))
+			// draft.mainPosts.unshift(dummyPost(action.data)) // front dummy
+			draft.mainPosts.unshift(action.data) // back 실제 데이터
 			draft.addPostLoading = false
 			draft.addPostDone = true
 			break;
@@ -143,8 +147,10 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			break;
 		case ADD_COMMENT_SUCCESS: {
 			//action.data.content, postId, userId
-			const post = draft.mainPosts.find((v) => v.id === action.data.postId) // 게시글 리스트중에 post 찾기
-			post.Comments.unshift(dummyComment(action.data.content)) // 찾은 post 에 맨 앞에 가짜 댓글 하나 넣어줌
+			//const post = draft.mainPosts.find((v) => v.id === action.data.postId) // 게시글 리스트중에 post 찾기 front
+			const post = draft.mainPosts.find((v) => v.id === action.data.PostId) // 게시글 리스트중에 post 찾기 bak
+			//post.Comments.unshift(dummyComment(action.data.content)) // 찾은 post 에 맨 앞에 가짜 댓글 하나 넣어줌 FRONT
+			post.Comments.unshift(action.data.content) // 찾은 post 에 실제 데이터 back
 			draft.addCommentLoading = false
 			draft.addCommentDone = true
 			break;

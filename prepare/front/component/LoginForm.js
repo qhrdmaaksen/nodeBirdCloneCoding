@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useEffect} from 'react'
 import {Form, Input, Button} from 'antd'
 import Link from 'next/link'
 import styled from 'styled-components'
@@ -17,9 +17,16 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
 	const dispatch = useDispatch()
-	const {logInLoading} = useSelector((state) => state.user)
+	const {logInLoading, logInError} = useSelector((state) => state.user)
 	const [email, onChangeEmail] = useInput('')
 	const [password, onChangePassword] = useInput('')
+
+	// 로그인 에러
+	useEffect(()=>{
+		if (logInError) {
+			alert(logInError)
+		}
+	},[logInError])
 
 	// const style = useMemo(()=>({ // styled component 를 사용원치 않을때 useMemo 사용
 	//   marginTop: 10

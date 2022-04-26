@@ -16,7 +16,13 @@ import {
 
 
 function logInAPI(data) { // gererator 아님
-	return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄
+	//return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄 // front
+
+	// 실제 서버에 로그인 요청을 보냄 // back
+	//return axios.post('http://localhost:3065/user/login', data)
+
+	// localhost 중복 없애기
+	return axios.post('/user/login', data)
 }
 
 // 테스트 코드
@@ -27,12 +33,12 @@ function logInAPI(data) { // gererator 아님
 function* logIn(action) { // login action request 가 action 에 전달
 	try { // 요청 실패 대비
 		console.log('saga logIn')
-		yield delay(1000)
-		//const result = yield call(logInAPI, action.data) // 서버에서 받은 결과 값을 받음
+		//yield delay(1000) // front
+		const result = yield call(logInAPI, action.data) // 서버에서 받은 결과 값을 받음
 		yield put({
 			type: LOG_IN_SUCCESS,
-			data: action.data,
-			//data: result.data // (성공 결과 담김)
+			//data: action.data, // front
+			data: result.data // (성공 결과 담김) back
 		})
 	} catch (err) {
 		console.error('logIn' + err)
@@ -44,19 +50,19 @@ function* logIn(action) { // login action request 가 action 에 전달
 }
 
 function logOutAPI() {
-	return axios.post('/api/logout')
+	// return axios.post('/api/logout') front
+	return axios.post('/user/logout')
 }
 
 function* logOut() {
 	try { // 요청 실패 대비
-		yield delay(1000)
-		//const result = yield call(logOutAPI) // 서버에서 받은 결과 값을 받음
+		//yield delay(1000) front
+		yield call(logOutAPI) // 서버에서 받은 결과 값을 받음 back
 		yield put({
 			type: LOG_OUT_SUCCESS,
-			//data: result.data // (성공 결과 담김)
 		})
 	} catch (err) {
-		console.error('logOut : ' + err)
+		console.error('front logOut : ' + err)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_OUT_FAILURE,
 			error: err.response.data // (실패 결과 담김)
@@ -107,7 +113,8 @@ function* unfollow(action) {
 function signUpAPI(data) {
 	// back end server addr
 	// data 는 email, nickname, password object
-	return axios.post('http://localhost:3065/user', data)
+	//return axios.post('/api/signup', data) // front
+	return axios.post('/user', data) // back
 }
 
 function* signUp(action) {
@@ -117,10 +124,10 @@ function* signUp(action) {
 		console.log('sign up result : ' + result)
 		yield put({
 			type: SIGN_UP_SUCCESS,
-			data: result.data
+			//data: result.data
 		})
 	} catch (err) {
-		console.error('signUp : ' + err)
+		console.error('signUp error : ' + err)
 		yield put({
 			type: SIGN_UP_FAILURE,
 			error: err.response.data

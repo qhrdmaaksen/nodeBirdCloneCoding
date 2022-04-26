@@ -1,4 +1,4 @@
-import {all, delay, fork, put, takeLatest, throttle} from "redux-saga/effects";
+import {all, call, delay, fork, put, takeLatest, throttle} from "redux-saga/effects";
 import axios from "axios";
 import {
 	ADD_COMMENT_FAILURE,
@@ -43,24 +43,28 @@ function* loadPosts(action) { // 1 액션에서
 
 
 function addPostAPI(data) { // 3 전달되면
-	return axios.post('/api/post', data) // 4 데이터가 간다
+	//return axios.post('/api/post', data) // 4 데이터가 간다 front
+	// data content 가 req.body.content 로 백엔드에 변환
+	return axios.post('/post', {content: data}) // 4 데이터가 간다
 }
 
 function* addPost(action) { // 1 액션에서
 	try {
-		//const result = yield call(addPostAPI, action.data) // 2 데이터를 꺼내서
-		yield delay(1000)
-		const id = shortId.generate()
+		const result = yield call(addPostAPI, action.data) // 2 데이터를 꺼내서
+		//yield delay(1000) front
+		//const id = shortId.generate() // front 의 더미 아디
 		yield put({
 			type: ADD_POST_SUCCESS,
-			data: {
+			/*data: { // front dummy
 				id,
 				content: action.data,
-			}
+			}*/
+			data: result.data, // back, 실제로 게시글이 들어있음
 		})
 		yield put({
 			type: ADD_POST_TO_ME,
-			data: id,
+			// data: id, // front dummy
+			data: result.data.id // back
 		})
 	} catch (err) {
 		console.error('addPost : ' + err)
@@ -97,17 +101,19 @@ function* removePost(action) { // 1 액션에서
 }
 
 function addCommentAPI(data) { // 3 전달되면
-	return axios.post(`/api/post/${data.postId}/comment`, data) // 4 데이터가 간다
+	//주소는 백엔드와 프론트의 약속일뿐 정해진건없다
+	//return axios.post(`/api/post/${data.postId}/comment`, data) // 4 데이터가 간다 // front
+	return axios.post(`/post/${data.postId}/comment`, data) // 4 데이터가 간다 // POST /post/1/comment
 }
 
 function* addComment(action) { // 1 액션에서
 	try {
-		//const result = yield call(addCommentAPI, action.data) // 2 데이터를 꺼내서
-		yield delay(1000)
+		const result = yield call(addCommentAPI, action.data) // 2 데이터를 꺼내서 //back
+		//yield delay(1000) front
 		yield put({
 			type: ADD_COMMENT_SUCCESS,
-			data: action.data
-			//data: result.data
+			//data: action.data // front
+			data: result.data
 		})
 	} catch (err) {
 		console.error('addComment : ' + err)
