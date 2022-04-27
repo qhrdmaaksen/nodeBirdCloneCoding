@@ -1,8 +1,10 @@
 const express = require('express')
 const postRouter = require('./routes/post')
+const postsRouter = require('./routes/posts')
 const userRouter = require('./routes/user')
 const cors = require('cors')
 const dotenv = require('dotenv')
+const morgan = require('morgan')
 const passport = require('passport')
 const db = require('./models') // db 에 sequelize 넣어놓은 상태
 const passportConfig = require('./passport') // 호출 한번해주면됨
@@ -23,8 +25,9 @@ passportConfig()
 // req.body 사용하려고 설정
 // front 에서 받은 data 를 req.body 에 해석해서 넣어주는 역할을 함
 // use 안에 들어가는 것을 middleware 라고 함
+app.use(morgan('dev')) // morgan 라이브러리
 app.use(cors({ // 보안정책
-	origin: true, // * 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자, access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생
+	origin: 'http://localhost:3060', // * 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자, access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생
 	credentials: true, // true 로 해주면 쿠키전달됨
 }))
 // middlewares
@@ -46,16 +49,15 @@ app.use(passport.session())
 app.get('/', (req, res) => {
 	res.send('hello express') // end === send
 })
-app.get('/', (req, res) => {
-	res.send('hello api') // end === send
-})
-app.get('/posts', (req, res) => { // router 들
+// API 는 다른 서비스가 내 서비스의 기능을 실행할 수 있게 열어둔 창구
+app.use('/posts', postsRouter)
+/*app.get('/posts', (req, res) => { // router 들
 	res.json([ // data 는 보통 json 으로 표현,api 들은 json 으로 응답
 		{id: 1, content: 'hello01'},
 		{id: 2, content: 'hello02'},
 		{id: 3, content: 'hello03'},
 	])
-})
+})*/
 app.use('/post', postRouter) // post 가 prefix 로 붙는다
 app.use('/user', userRouter) // user 가 prefix 로 붙는다
 

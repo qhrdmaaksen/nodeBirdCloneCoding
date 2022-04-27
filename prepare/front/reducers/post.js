@@ -1,9 +1,9 @@
-import shortId from 'shortid'
+//import shortId from 'shortid' front
 import produce from 'immer'
-import faker from 'faker'
+//import faker from 'faker' front
 
 export const initialState = {
-	mainPosts: [	],
+	mainPosts: [],
 	imagePaths: [], // 이미지 경로들이 저장됨
 	hasMorePosts: true, // 더 많은 게시물 가져오기
 	loadPostsLoading: false, // 화면 로드중 로딩
@@ -19,8 +19,8 @@ export const initialState = {
 	addCommentDone: false, // 게시물 추가가 완료되었을때 true 변환
 	addCommentError: null,
 }
-// 이부분을 사용해서 무한 스크롤링을 만들것
-export const generateDummyPost = (number) => Array(number).fill().map(() => ({
+// 이부분을 사용해서 무한 스크롤링을 만들것 front
+/*export const generateDummyPost = (number) => Array(number).fill().map(() => ({
 	id: shortId.generate(),
 	User: {
 		id: shortId.generate(),
@@ -37,7 +37,7 @@ export const generateDummyPost = (number) => Array(number).fill().map(() => ({
 		},
 		content: faker.lorem.sentence(),
 	}],
-}))
+}))*/
 
 //게시글 작성하는 액션
 export const  LOAD_POSTS_REQUEST = ' LOAD_POSTS_REQUEST'; // 화면을 로딩하면 바로 LOAD_POSTS_REQUEST 를 호출해줄것
@@ -103,7 +103,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.loadPostsDone = true
 			// action.data 에 dummy data 가 들어있을것이며, 기존데이터와 합쳐주는것
 			// concat 을 할땐 항상 앞에 대입을 해줘야한다 그래야 합쳐짐
-			draft.mainPosts = draft.mainPosts.concat(action.data)
+			draft.mainPosts = action.data.concat(draft.mainPosts)
 			// 게시물을 50 개까지만 가져오겠다
 			draft.hasMorePosts = draft.mainPosts.length < 50
 			break;

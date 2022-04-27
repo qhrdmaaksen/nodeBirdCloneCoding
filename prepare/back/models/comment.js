@@ -10,9 +10,12 @@ module.exports = (sequelize, DataTypes) =>{ // 모델의 기본 꼴
 			type: DataTypes.TEXT,
 			allowNull: false,
 		},
+		// UserId: 1
+		// PostId: 3
 	},{ // Comment model 에 대한 셋팅
 		charset: 'utf8mb4', // 이모티콘은 mb4 도 넣어줘야함
 		collate: 'utf8mb4_general_ci', // 한글,이모티콘 저장
+		sequelize,
 	})
 	Comment.associate = (db) => {
 		db.Comment.belongsTo(db.User)

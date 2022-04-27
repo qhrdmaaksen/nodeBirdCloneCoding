@@ -24,7 +24,7 @@ module.exports = () => {
 			// 사용자의 암호가 틀리다면
 			return done(null, false, {reason: '비밀번호가 틀렸습니다!'})
 		} catch (error) {
-			console.error('LocalStrategy error : ' + error)
+			console.error('LocalStrategy error : ' , error)
 			return done(error)
 		}
 	}))

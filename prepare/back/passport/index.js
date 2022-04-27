@@ -13,7 +13,7 @@ module.exports = () => { // app.js 에서 실행
 			const user = await User.findOne({where: {id}})
 			done(null, user) // req.user
 		} catch (error) {
-			console.error('passport.deserializeUser error : ' + error)
+			console.error('passport.deserializeUser error : ' , error)
 			done(error)
 		}
 	})

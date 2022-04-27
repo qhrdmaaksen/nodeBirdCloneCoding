@@ -108,7 +108,7 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {//await 을 사용하
 		res.status(201).send('login ok')
 
 	} catch (error) {
-		console.error('await User.create error : ' + error)
+		console.error('await User.create error : ' , error)
 		next(error) // status 500
 	}
 })

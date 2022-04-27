@@ -32,16 +32,17 @@ function logInAPI(data) { // gererator 아님
 /////////////////
 function* logIn(action) { // login action request 가 action 에 전달
 	try { // 요청 실패 대비
-		console.log('saga logIn')
 		//yield delay(1000) // front
 		const result = yield call(logInAPI, action.data) // 서버에서 받은 결과 값을 받음
+		console.log('saga logIn 실행중::', action.data)
 		yield put({
 			type: LOG_IN_SUCCESS,
 			//data: action.data, // front
 			data: result.data // (성공 결과 담김) back
 		})
+		console.log('saga logIn 완료 ::', result)
 	} catch (error) {
-		console.error('logIn' + error)
+		console.error('logIn' , error)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_IN_FAILURE,
 			error: error.response.data // (실패 결과 담김)
@@ -58,11 +59,12 @@ function* logOut() {
 	try { // 요청 실패 대비
 		//yield delay(1000) front
 		yield call(logOutAPI) // 서버에서 받은 결과 값을 받음 back
+		console.log('sagas:: logout 완료')
 		yield put({
 			type: LOG_OUT_SUCCESS,
 		})
 	} catch (error) {
-		console.error('front logOut : ' + error)
+		console.error('front logOut : ' , error)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_OUT_FAILURE,
 			error: error.response.data // (실패 결과 담김)
@@ -77,12 +79,14 @@ function loadMyInfoAPI() {
 function* loadMyInfo(action) {
 	try {
 		const result = yield call(loadMyInfoAPI, action.data)
+		console.log('loadMyInfo 실행중::', action.data)
 		yield put({
 			type: LOAD_MY_INFO_SUCCESS,
 			data: result.data
 		})
+		console.log('loadMyInfo 완료', result)
 	} catch (error) {
-		console.error('loadMyInfo error : ' + error)
+		console.error('loadMyInfo error : ' , error)
 		yield put({
 			type: LOAD_MY_INFO_FAILURE,
 			error: error.response.data
@@ -102,7 +106,7 @@ function* follow(action) {
 			data: action.data
 		})
 	} catch (error) {
-		console.error('follow error : ' + error)
+		console.error('follow error : ' , error)
 		yield put({
 			type: FOLLOW_FAILURE,
 			data: error.response.data,
@@ -122,7 +126,7 @@ function* unfollow(action) {
 			data: action.data
 		})
 	} catch (error) {
-		console.error('unfollow error : ' + error)
+		console.error('unfollow error : ' , error)
 		yield put({
 			type: UNFOLLOW_FAILURE,
 			error: error.response.data,
@@ -141,13 +145,14 @@ function* signUp(action) {
 	try {
 		//yield delay(1000)
 		const result = yield call(signUpAPI, action.data)
-		console.log('sign up result : ' + result)
+		console.log('sign up result 실행중 :: ', action.data)
 		yield put({
 			type: SIGN_UP_SUCCESS,
 			//data: result.data
 		})
+		console.log('sign up 완료 :: ', result)
 	} catch (error) {
-		console.error('signUp error : ' + error)
+		console.error('signUp error : ' , error)
 		yield put({
 			type: SIGN_UP_FAILURE,
 			error: error.response.data

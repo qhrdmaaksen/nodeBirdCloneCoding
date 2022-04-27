@@ -6,7 +6,9 @@ import {
 	ADD_COMMENT_SUCCESS,
 	ADD_POST_FAILURE,
 	ADD_POST_REQUEST,
-	ADD_POST_SUCCESS, generateDummyPost, LOAD_POSTS_FAILURE,
+	ADD_POST_SUCCESS,
+	//generateDummyPost, front
+	LOAD_POSTS_FAILURE,
 	LOAD_POSTS_REQUEST,
 	LOAD_POSTS_SUCCESS,
 	REMOVE_POST_FAILURE,
@@ -17,23 +19,28 @@ import {
 	ADD_POST_TO_ME,
 	REMOVE_POST_OF_ME,
 } from "../reducers/user";
-import shortId from "shortid";
+
+//import shortId from "shortid"; front
 
 
 function loadPostsAPI(data) { // 3 전달되면
-	return axios.get('/api/posts', data) // 4 데이터가 간다
+	//return axios.get('/api/posts', data) // 4 데이터가 간다 front
+	return axios.get('/posts', data) // 4 데이터가 간다
 }
 
 function* loadPosts(action) { // 1 액션에서
 	try {
-		//const result = yield call(loadPostsAPI, action.data) // 2 데이터를 꺼내서
-		yield delay(1000)
+		console.log('Sagas:: loadPosts 실행중', action.data)
+		const result = yield call(loadPostsAPI, action.data) // 2 데이터를 꺼내서
+		//yield delay(1000) front
+		console.log('loadPosts 완료:: ', result)
 		yield put({
 			type: LOAD_POSTS_SUCCESS,
-			data: generateDummyPost(10), // data 10 개
+			// data: generateDummyPost(10), // data 10 개 front
+			data: result.data
 		})
 	} catch (error) {
-		console.error('loadPosts : ' + error)
+		console.error('loadPosts : ', error)
 		yield put({
 			type: LOAD_POSTS_FAILURE,
 			error: error.response.data
@@ -53,6 +60,7 @@ function* addPost(action) { // 1 액션에서
 		const result = yield call(addPostAPI, action.data) // 2 데이터를 꺼내서
 		//yield delay(1000) front
 		//const id = shortId.generate() // front 의 더미 아디
+		console.log('addPost 실행중::', result)
 		yield put({
 			type: ADD_POST_SUCCESS,
 			/*data: { // front dummy
@@ -61,13 +69,14 @@ function* addPost(action) { // 1 액션에서
 			}*/
 			data: result.data, // back, 실제로 게시글이 들어있음
 		})
+		console.log('addPost 완료::', result)
 		yield put({
 			type: ADD_POST_TO_ME,
 			// data: id, // front dummy
 			data: result.data.id // back
 		})
 	} catch (error) {
-		console.error('addPost : ' + error)
+		console.error('addPost error:: ', error)
 		yield put({
 			type: ADD_POST_FAILURE,
 			error: error.response.data
@@ -92,7 +101,7 @@ function* removePost(action) { // 1 액션에서
 			data: action.data,
 		})
 	} catch (error) {
-		console.error('removePost : ' + error)
+		console.error('removePost : ', error)
 		yield put({
 			type: REMOVE_POST_FAILURE,
 			error: error.response.data
@@ -110,13 +119,15 @@ function* addComment(action) { // 1 액션에서
 	try {
 		const result = yield call(addCommentAPI, action.data) // 2 데이터를 꺼내서 //back
 		//yield delay(1000) front
+		console.log('addComment 실행중 ::', action.data)
 		yield put({
 			type: ADD_COMMENT_SUCCESS,
 			//data: action.data // front
-			data: result.data
+			data: result.data,
 		})
+		console.log('addComment 완료::', result)
 	} catch (error) {
-		console.error('addComment : ' + error)
+		console.error('addComment error:: ', error)
 		yield put({
 			type: ADD_COMMENT_FAILURE,
 			error: error.response.data
