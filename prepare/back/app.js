@@ -24,8 +24,8 @@ passportConfig()
 // front 에서 받은 data 를 req.body 에 해석해서 넣어주는 역할을 함
 // use 안에 들어가는 것을 middleware 라고 함
 app.use(cors({ // 보안정책
-	origin: true, // * 대신 보낸 곳의 주소가 자동으로 들어가 편리하다
-	credentials: false, //
+	origin: true, // * 대신 보낸 곳의 주소가 자동으로 들어가 편리하다, access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생
+	credentials: true, // true 로 해주면 쿠키전달됨
 }))
 // middlewares
 app.use(express.json()) // use 는 app 에 express server 에다가 뭔가를 장착한다는 뜻

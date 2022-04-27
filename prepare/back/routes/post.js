@@ -1,6 +1,6 @@
 const express = require('express');
-const {Post} = require('../models')
-const {isLoggedIn} = require('middlewares')
+const {Post, Image, Comment, User} = require('../models')
+const {isLoggedIn} = require('./middlewares')
 const router = express.Router()
 
 router.post('/', (req, res) => { // POST  /post
@@ -31,9 +31,19 @@ router.post('/:postId/comment', isLoggedIn,async (req, res, next) => { // POST  
 			return res.status(403).send('존재하지않는 게시글입니다.')
 		}
 		const comment = await Comment.create({
-			content: req.body.content,
+			content: req.body.content, // 게시글 내용
 			PostId: req.params.postId, // 동적으로 바뀌는 postId 를 설정
 			UserId: req.user.id, // 게시글을 누가썼는지
+		})
+		const fullPost = await Post.findOne({ // 게시글의 모든 정보
+			where: {id:post.id},
+			include:[{
+				model: Image, // 게시글에 달린 이미지
+			}, {
+				model: Comment, // 게시글에 달린 댓글
+			}, {
+				model: User, // 게시글 작성자
+			}]
 		})
 		res.status(201).json(comment) // front 에 응답
 	} catch (error) {
