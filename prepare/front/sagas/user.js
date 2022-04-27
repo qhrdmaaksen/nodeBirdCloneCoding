@@ -2,7 +2,7 @@ import {all, call, delay, fork, put, takeLatest} from "redux-saga/effects";
 import axios from "axios";
 import {
 	FOLLOW_FAILURE,
-	FOLLOW_REQUEST, FOLLOW_SUCCESS,
+	FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_MY_INFO_FAILURE, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS,
 	LOG_IN_FAILURE,
 	LOG_IN_REQUEST,
 	LOG_IN_SUCCESS,
@@ -16,7 +16,7 @@ import {
 
 
 function logInAPI(data) { // gererator 아님
-	//return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄 // front
+													//return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄 // front
 
 	// 실제 서버에 로그인 요청을 보냄 // back
 	//return axios.post('http://localhost:3065/user/login', data)
@@ -40,11 +40,11 @@ function* logIn(action) { // login action request 가 action 에 전달
 			//data: action.data, // front
 			data: result.data // (성공 결과 담김) back
 		})
-	} catch (err) {
-		console.error('logIn' + err)
+	} catch (error) {
+		console.error('logIn' + error)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_IN_FAILURE,
-			error: err.response.data // (실패 결과 담김)
+			error: error.response.data // (실패 결과 담김)
 		})
 	}
 }
@@ -61,11 +61,31 @@ function* logOut() {
 		yield put({
 			type: LOG_OUT_SUCCESS,
 		})
-	} catch (err) {
-		console.error('front logOut : ' + err)
+	} catch (error) {
+		console.error('front logOut : ' + error)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_OUT_FAILURE,
-			error: err.response.data // (실패 결과 담김)
+			error: error.response.data // (실패 결과 담김)
+		})
+	}
+}
+
+function loadMyInfoAPI() {
+	return axios.get('/user')
+}
+
+function* loadMyInfo(action) {
+	try {
+		const result = yield call(loadMyInfoAPI, action.data)
+		yield put({
+			type: LOAD_MY_INFO_SUCCESS,
+			data: result.data
+		})
+	} catch (error) {
+		console.error('loadMyInfo error : ' + error)
+		yield put({
+			type: LOAD_MY_INFO_FAILURE,
+			error: error.response.data
 		})
 	}
 }
@@ -81,11 +101,11 @@ function* follow(action) {
 			type: FOLLOW_SUCCESS,
 			data: action.data
 		})
-	} catch (err) {
-		console.error('follow error : ' + err)
+	} catch (error) {
+		console.error('follow error : ' + error)
 		yield put({
 			type: FOLLOW_FAILURE,
-			data: err.response.data,
+			data: error.response.data,
 		})
 	}
 }
@@ -101,11 +121,11 @@ function* unfollow(action) {
 			type: UNFOLLOW_SUCCESS,
 			data: action.data
 		})
-	} catch (err) {
-		console.error('unfollow error : ' + err)
+	} catch (error) {
+		console.error('unfollow error : ' + error)
 		yield put({
 			type: UNFOLLOW_FAILURE,
-			data: err.response.data,
+			error: error.response.data,
 		})
 	}
 }
@@ -126,13 +146,17 @@ function* signUp(action) {
 			type: SIGN_UP_SUCCESS,
 			//data: result.data
 		})
-	} catch (err) {
-		console.error('signUp error : ' + err)
+	} catch (error) {
+		console.error('signUp error : ' + error)
 		yield put({
 			type: SIGN_UP_FAILURE,
-			error: err.response.data
+			error: error.response.data
 		})
 	}
+}
+
+function* watchLoadMyInfo() {
+	yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo)
 }
 
 function* watchFollow() {
@@ -157,6 +181,7 @@ function* watchSignUp() {	// 회원가입 액션이 실행될때까지 기다리
 
 export default function* userSaga() {
 	yield all([
+		fork(watchLoadMyInfo),
 		fork(watchFollow),
 		fork(watchUnFollow),
 		fork(watchLogIn),

@@ -32,11 +32,11 @@ function* loadPosts(action) { // 1 액션에서
 			type: LOAD_POSTS_SUCCESS,
 			data: generateDummyPost(10), // data 10 개
 		})
-	} catch (err) {
-		console.error('loadPosts : ' + err)
+	} catch (error) {
+		console.error('loadPosts : ' + error)
 		yield put({
 			type: LOAD_POSTS_FAILURE,
-			data: err.response.data
+			error: error.response.data
 		})
 	}
 }
@@ -66,11 +66,11 @@ function* addPost(action) { // 1 액션에서
 			// data: id, // front dummy
 			data: result.data.id // back
 		})
-	} catch (err) {
-		console.error('addPost : ' + err)
+	} catch (error) {
+		console.error('addPost : ' + error)
 		yield put({
 			type: ADD_POST_FAILURE,
-			error: err.response.data
+			error: error.response.data
 		})
 	}
 }
@@ -91,11 +91,11 @@ function* removePost(action) { // 1 액션에서
 			type: REMOVE_POST_OF_ME,
 			data: action.data,
 		})
-	} catch (err) {
-		console.error('removePost : ' + err)
+	} catch (error) {
+		console.error('removePost : ' + error)
 		yield put({
 			type: REMOVE_POST_FAILURE,
-			error: err.response.data
+			error: error.response.data
 		})
 	}
 }
@@ -115,11 +115,11 @@ function* addComment(action) { // 1 액션에서
 			//data: action.data // front
 			data: result.data
 		})
-	} catch (err) {
-		console.error('addComment : ' + err)
+	} catch (error) {
+		console.error('addComment : ' + error)
 		yield put({
 			type: ADD_COMMENT_FAILURE,
-			error: err.response.data
+			error: error.response.data
 		})
 	}
 }

@@ -5,6 +5,38 @@ const passport = require('passport')
 const {isLoggedIn, isNotLoggedIn} = require('./middlewares')
 const router = express.Router()
 
+router.get('/', async (req, res, next) => { // GET /user
+	try { // 사용자 불러오기
+		if (req.user) { // 사용자가 있다면
+			const fullUserWithoutPassword = await User.findOne({ // 모든 정보를 다 가지고있는 password 제외
+				where: {id: req.user.id},
+				//attributes: ['id', 'nickname', 'email'], // 내가 원하는 정보만 가져올수있다
+				attributes: {
+					exclude: ['password'], // 비밀번호 정보는 들어오지 못하게한다
+				},
+				include: [{ // models 의 user 에 내가쓴 게시글 팔로우 팔로윙 을 가져옴
+					model: Post,
+					attributes: ['id'],
+				}, {
+					model: User, // as 를 사용해줬다면 똑같이 as 작성해주면됨
+					as: 'Followings',
+					attributes: ['id'],
+				}, {
+					model: User,
+					as: 'Followers',
+					attributes: ['id'],
+				}]
+			})
+			res.status(200).json(fullUserWithoutPassword)
+		} else {
+			res.status(200).json(null)
+		}
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
 /*router.post('/login', (req, res, next) => { // POST /user/login
 })*/
 // 전략 실행 // POST /user/login // 미들웨어 확장
@@ -30,12 +62,15 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
 				},
 				include: [{ // models 의 user 에 내가쓴 게시글 팔로우 팔로윙 을 가져옴
 					model: Post,
+					attributes: ['id'],
 				}, {
 					model: User, // as 를 사용해줬다면 똑같이 as 작성해주면됨
 					as: 'Followings',
+					attributes: ['id'],
 				}, {
 					model: User,
 					as: 'Followers',
+					attributes: ['id'],
 				}]
 			})
 			return res.status(200).json(fullUserWithoutPassword) // 사용자 정보를 front 로 넘겨줌

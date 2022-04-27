@@ -4,6 +4,7 @@ import AppLayout from '../component/AppLayout'
 import PostForm from '../component/PostForm'
 import PostCard from "../component/PostCard";
 import {LOAD_POSTS_REQUEST} from '../reducers/post'
+import {LOAD_MY_INFO_REQUEST} from '../reducers/user'
 
 const Home = () => {
 	const dispatch = useDispatch()
@@ -11,6 +12,9 @@ const Home = () => {
 	const {mainPosts, hasMorePosts, loadPostsLoading} = useSelector((state) => state.post)
 
 	useEffect(() => { // 컴포넌트 디드마운트와 같은 효과 가능 , 뒤에 빈배열만 넣는다면
+		dispatch({ // 매번 로그인 상태를 복구해주기 위해서 만듬
+			type: LOAD_MY_INFO_REQUEST,
+		})
 		dispatch({
 			type: LOAD_POSTS_REQUEST,
 		})

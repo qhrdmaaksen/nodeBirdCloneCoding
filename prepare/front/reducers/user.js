@@ -1,6 +1,9 @@
 import produce from 'immer'
 
 export const initialState = {
+	loadMyInfoLoading: false, // 유저 정보 보기 시도중일땐 로딩중 띄울거임
+	loadMyInfoDone: false, // 유저 정보 보기 됨
+	loadMyInfoError: null, // 유저 정보 보기중일때 에러 없앰
 	followLoading: false, // 팔로우 시도중일땐 로딩중 띄울거임
 	followDone: false, // 팔로우 됨
 	followError: null, // 팔로우중일때 에러 없앰
@@ -33,13 +36,17 @@ export const initialState = {
 // 				.then((res) => {
 // 					dispatch(loginSuccessAction(res.data))
 // 				})
-// 				.catch((err) => {
-// 					dispatch(loginFailureAction(err))
+// 				.catch((error) => {
+// 					dispatch(loginFailureAction(error))
 // 				})
 // 	}
 // }
 
 // actions
+export const LOAD_MY_INFO_REQUEST = 'LOAD_MY_INFO_REQUEST'
+export const LOAD_MY_INFO_SUCCESS = 'LOAD_MY_INFO_SUCCESS'
+export const LOAD_MY_INFO_FAILURE = 'LOAD_MY_INFO_FAILURE'
+
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST'
 export const LOG_IN_SUCCESS = 'LOG_IN_SUCCESS'
 export const LOG_IN_FAILURE = 'LOG_IN_FAILURE'
@@ -101,6 +108,24 @@ export const logoutRequestAction = () => ({
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	switch (action.type) {
+		case LOAD_MY_INFO_REQUEST:
+			console.log('reducer myInfo execute')
+			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
+			draft.loadMyInfoLoading = true
+			draft.loadMyInfoError = null // 로딩 중일때는 에러 없앰
+			draft.loadMyInfoDone = false
+			break;
+		case LOAD_MY_INFO_SUCCESS:
+			draft.loadMyInfoLoading = false
+			draft.me = action.data // back 사용자 정보가 들어있음
+			draft.loadMyInfoDone = true
+			//draft.me = dummyUser(action.data)
+			break;
+		case LOAD_MY_INFO_FAILURE:
+			console.error('loadMyInfoFail : ' + action.error)
+			draft.loadMyInfoLoading = false
+			draft.loadMyInfoError = action.error
+			break;
 		case FOLLOW_REQUEST:
 			console.log('reducer follow')
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
