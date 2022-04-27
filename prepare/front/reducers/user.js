@@ -75,6 +75,7 @@ export const UNFOLLOW_FAILURE = 'UNFOLLOW_FAILURE'
 export const ADD_POST_TO_ME = 'ADD_POST_TO_ME'
 export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'
 
+/* front
 const dummyUser = (data) => ({
 	...data,
 	nickname: '비타민',
@@ -82,7 +83,7 @@ const dummyUser = (data) => ({
 	Posts: [{id: 1}],
 	Followings: [{nickname: '외노'}, {nickname: '음메'}, {nickname: '썽'}, {nickname: '오댕'}, {nickname: '만뽀'}],
 	Followers: [{nickname: '까매'}, {nickname: '만두'}, {nickname: '보챙'}, {nickname: '뒷가'}, {nickname: '야덩'}],
-})
+})*/
 
 export const loginRequestAction = (data) => {
 	return {

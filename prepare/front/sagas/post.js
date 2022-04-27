@@ -6,14 +6,14 @@ import {
 	ADD_COMMENT_SUCCESS,
 	ADD_POST_FAILURE,
 	ADD_POST_REQUEST,
-	ADD_POST_SUCCESS,
+	ADD_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS,
 	//generateDummyPost, front
 	LOAD_POSTS_FAILURE,
 	LOAD_POSTS_REQUEST,
 	LOAD_POSTS_SUCCESS,
 	REMOVE_POST_FAILURE,
 	REMOVE_POST_REQUEST,
-	REMOVE_POST_SUCCESS,
+	REMOVE_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS,
 } from "../reducers/post";
 import {
 	ADD_POST_TO_ME,
@@ -22,10 +22,10 @@ import {
 
 //import shortId from "shortid"; front
 
-
+// restAPI
 function loadPostsAPI(data) { // 3 전달되면
 	//return axios.get('/api/posts', data) // 4 데이터가 간다 front
-	return axios.get('/posts', data) // 4 데이터가 간다
+	return axios.get('/posts', data) // 4 데이터가 간다 ,
 }
 
 function* loadPosts(action) { // 1 액션에서
@@ -39,15 +39,58 @@ function* loadPosts(action) { // 1 액션에서
 			// data: generateDummyPost(10), // data 10 개 front
 			data: result.data
 		})
-	} catch (error) {
-		console.error('loadPosts : ', error)
+	} catch (err) {
+		console.error('loadPosts : ', err)
 		yield put({
 			type: LOAD_POSTS_FAILURE,
-			error: error.response.data
+			error: err.response.data
 		})
 	}
 }
 
+function likePostAPI(data) { // 3 전달되면
+	return axios.patch(`/post/${data}/like`) // 4 데이터가 간다, like & unlike 는 patch ( 게시글에 일부분 수정이기때문 )
+}
+
+function* likePost(action) { // 1 액션에서
+	try {
+		const result = yield call(likePostAPI, action.data) // 2 데이터를 꺼내서
+		console.log('likePost 실행중::', result)
+		yield put({
+			type: LIKE_POST_SUCCESS,
+			data: result.data, // back, postId, userId 들어있음
+		})
+		console.log('likePost 완료::', result)
+	} catch (err) {
+		console.error('likePost error:: ', err)
+		yield put({
+			type: LIKE_POST_FAILURE,
+			error: err.response.data
+		})
+	}
+}
+
+function unlikePostAPI(data) { // 3 전달되면
+	return axios.delete(`/post/${data}/like`) // 4 데이터가 간다
+}
+
+function* unlikePost(action) { // 1 액션에서
+	try {
+		const result = yield call(unlikePostAPI, action.data) // 2 데이터를 꺼내서
+		console.log('unlikePost 실행중::', result)
+		yield put({
+			type: UNLIKE_POST_SUCCESS,
+			data: result.data, // back, postId,userId 들어있음
+		})
+		console.log('UNLIKEPost 완료::', result)
+	} catch (err) {
+		console.error('UNLIKEPost error:: ', err)
+		yield put({
+			type: UNLIKE_POST_FAILURE,
+			error: err.response.data
+		})
+	}
+}
 
 function addPostAPI(data) { // 3 전달되면
 	//return axios.post('/api/post', data) // 4 데이터가 간다 front
@@ -75,11 +118,11 @@ function* addPost(action) { // 1 액션에서
 			// data: id, // front dummy
 			data: result.data.id // back
 		})
-	} catch (error) {
-		console.error('addPost error:: ', error)
+	} catch (err) {
+		console.error('addPost error:: ', err)
 		yield put({
 			type: ADD_POST_FAILURE,
-			error: error.response.data
+			error: err.response.data
 		})
 	}
 }
@@ -100,11 +143,11 @@ function* removePost(action) { // 1 액션에서
 			type: REMOVE_POST_OF_ME,
 			data: action.data,
 		})
-	} catch (error) {
-		console.error('removePost : ', error)
+	} catch (err) {
+		console.error('removePost : ', err)
 		yield put({
 			type: REMOVE_POST_FAILURE,
-			error: error.response.data
+			error: err.response.data
 		})
 	}
 }
@@ -126,13 +169,21 @@ function* addComment(action) { // 1 액션에서
 			data: result.data,
 		})
 		console.log('addComment 완료::', result)
-	} catch (error) {
-		console.error('addComment error:: ', error)
+	} catch (err) {
+		console.error('addComment error:: ', err)
 		yield put({
 			type: ADD_COMMENT_FAILURE,
-			error: error.response.data
+			error: err.response.data
 		})
 	}
+}
+
+function* watchLikePost() {
+	yield takeLatest(LIKE_POST_REQUEST, likePost)
+}
+
+function* watchUnlikePost() {
+	yield takeLatest(UNLIKE_POST_REQUEST, unlikePost)
 }
 
 function* watchLoadPosts() {
@@ -153,6 +204,8 @@ function* watchAddComment() {
 
 export default function* postSaga() {
 	yield all([
+		fork(watchLikePost),
+		fork(watchUnlikePost),
 		fork(watchLoadPosts),
 		fork(watchAddPost),
 		fork(watchRemovePost),

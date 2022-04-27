@@ -17,11 +17,20 @@ router.post('/', isLoggedIn, async (req, res, next) => { // POST  /post
 		const fullPost = await Post.findOne({ // 게시글의 모든 정보
 			where: {id: post.id},
 			include: [{
-				model: Image, // 게시글에 달린 이미지
+				model: Image, // 게시글 이미지
 			}, {
 				model: Comment, // 게시글에 달린 댓글
+				include: [{
+					model: User, // 댓글 작성자
+					attributes: ['id', 'nickname'],
+				}],
 			}, {
 				model: User, // 게시글 작성자
+				attributes: ['id', 'nickname'],
+			},{
+				model: User, // 좋아요 누른 사람
+				as: 'Likers',
+				attributes: ['id'],
 			}]
 		})
 		res.status(201).json(fullPost) // front 에 응답
@@ -35,21 +44,22 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => { // POST 
 	try {
 		// 존재하지않는 게시글에 댓글을 달 수도있기에 검증 로직
 		const post = await Post.findOne({
-			where: {id: req.params.postId}
+			where: {id: req.params.postId},
 		})
 		if (!post) {
 			return res.status(403).send('존재하지않는 게시글입니다.')
 		}
 		const comment = await Comment.create({
 			content: req.body.content, // 게시글 내용
-			PostId: req.params.postId, // 동적으로 바뀌는 postId 를 설정
+			// postId 는 string 으로 들어오기때문에 parseInt 로 캐스팅
+			PostId: parseInt(req.params.postId, 10), // 동적으로 바뀌는 postId 를 설정
 			UserId: req.user.id, // 게시글을 누가썼는지
 		})
 		const fullComment = await Comment.findOne({
-			where: { id: comment.id },
+			where: {id: comment.id}, // 댓글 작성자
 			include: [{
 				model: User,
-				attributes: ['id', 'nickname'],
+				attributes: ['id', 'nickname'], // 비밀번호 빼고 주기
 			}],
 		})
 		res.status(201).json(fullComment);// front 에 응답
@@ -58,7 +68,40 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => { // POST 
 		next(error)
 	}
 })
-router.delete('/:postId', isLoggedIn, async(req, res, next) => { // DELETE /post
+
+router.patch('/:postId/like', isLoggedIn,async (req, res, next) => { // PATCH /post/1/like
+	try {
+		const post = await Post.findOne({
+			where: {id: req.params.postId}
+		})
+		if (!post) {
+			return res.status(403).send('게시글이 존재하지 않습니다!')
+		}
+		await post.addLikers(req.user.id)
+		res.json({PostId: post.id, UserId: req.user.id})
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.delete('/:postId/like', isLoggedIn,async (req, res, next) => { // DELETE /post/1/like
+	try {
+		const post = await Post.findOne({
+			where: {id: req.params.postId}
+		})
+		if (!post) {
+			return res.status(403).send('게시글이 존재하지 않습니다!')
+		}
+		await post.removeLikers(req.user.id)
+		res.json({PostId: post.id, UserId: req.user.id})
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.delete('/:postId', isLoggedIn, async (req, res, next) => { // DELETE /post/10
 	try {
 		await Post.destroy({
 			where: {
@@ -66,7 +109,8 @@ router.delete('/:postId', isLoggedIn, async(req, res, next) => { // DELETE /post
 				UserId: req.user.id,
 			},
 		});
-		res.status(200).json({ PostId: parseInt(req.params.postId, 10) });
+		await post.removeLikers(req.user.id)
+		res.status(200).json({PostId: parseInt(req.params.postId, 10)});
 	} catch (error) {
 		console.error(error);
 		next(error);

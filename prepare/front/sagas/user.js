@@ -15,7 +15,7 @@ import {
 } from "../reducers/user";
 
 
-function logInAPI(data) { // gererator 아님
+function logInAPI(data) { // generator 아님
 													//return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄 // front
 
 	// 실제 서버에 로그인 요청을 보냄 // back
@@ -41,11 +41,11 @@ function* logIn(action) { // login action request 가 action 에 전달
 			data: result.data // (성공 결과 담김) back
 		})
 		console.log('saga logIn 완료 ::', result)
-	} catch (error) {
-		console.error('logIn' , error)
+	} catch (err) {
+		console.error('logIn' , err)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_IN_FAILURE,
-			error: error.response.data // (실패 결과 담김)
+			error: err.response.data // (실패 결과 담김)
 		})
 	}
 }
@@ -63,11 +63,11 @@ function* logOut() {
 		yield put({
 			type: LOG_OUT_SUCCESS,
 		})
-	} catch (error) {
-		console.error('front logOut : ' , error)
+	} catch (err) {
+		console.error('front logOut : ' , err)
 		yield put({ // put 은 dispatch 라고 생각하자
 			type: LOG_OUT_FAILURE,
-			error: error.response.data // (실패 결과 담김)
+			error: err.response.data // (실패 결과 담김)
 		})
 	}
 }
@@ -85,11 +85,11 @@ function* loadMyInfo(action) {
 			data: result.data
 		})
 		console.log('loadMyInfo 완료', result)
-	} catch (error) {
-		console.error('loadMyInfo error : ' , error)
+	} catch (err) {
+		console.error('loadMyInfo error : ' , err)
 		yield put({
 			type: LOAD_MY_INFO_FAILURE,
-			error: error.response.data
+			error: err.response.data
 		})
 	}
 }
@@ -105,11 +105,11 @@ function* follow(action) {
 			type: FOLLOW_SUCCESS,
 			data: action.data
 		})
-	} catch (error) {
-		console.error('follow error : ' , error)
+	} catch (err) {
+		console.error('follow error : ' , err)
 		yield put({
 			type: FOLLOW_FAILURE,
-			data: error.response.data,
+			error: err.response.data,
 		})
 	}
 }
@@ -125,11 +125,11 @@ function* unfollow(action) {
 			type: UNFOLLOW_SUCCESS,
 			data: action.data
 		})
-	} catch (error) {
-		console.error('unfollow error : ' , error)
+	} catch (err) {
+		console.error('unfollow error : ' , err)
 		yield put({
 			type: UNFOLLOW_FAILURE,
-			error: error.response.data,
+			error: err.response.data,
 		})
 	}
 }
@@ -151,11 +151,11 @@ function* signUp(action) {
 			//data: result.data
 		})
 		console.log('sign up 완료 :: ', result)
-	} catch (error) {
-		console.error('signUp error : ' , error)
+	} catch (err) {
+		console.error('signUp error : ' , err)
 		yield put({
 			type: SIGN_UP_FAILURE,
-			error: error.response.data
+			error: err.response.data
 		})
 	}
 }

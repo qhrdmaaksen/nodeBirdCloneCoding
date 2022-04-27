@@ -6,6 +6,12 @@ export const initialState = {
 	mainPosts: [],
 	imagePaths: [], // 이미지 경로들이 저장됨
 	hasMorePosts: true, // 더 많은 게시물 가져오기
+	likePostLoading: false, // 라이크 로드중 로딩
+	likePostDone: false, // 라이크 완료했을때 true 변환
+	likePostError: null,
+	unlikePostLoading: false,
+	unlikePostDone: false,
+	unlikePostError: null,
 	loadPostsLoading: false, // 화면 로드중 로딩
 	loadPostsDone: false, // 화면 로드 완료되었을때 true 변환
 	loadPostsError: null,
@@ -39,7 +45,7 @@ export const initialState = {
 	}],
 }))*/
 
-//게시글 작성하는 액션
+//게시글 액션
 export const  LOAD_POSTS_REQUEST = ' LOAD_POSTS_REQUEST'; // 화면을 로딩하면 바로 LOAD_POSTS_REQUEST 를 호출해줄것
 export const  LOAD_POSTS_SUCCESS = ' LOAD_POSTS_SUCCESS';
 export const  LOAD_POSTS_FAILURE = ' LOAD_POSTS_FAILURE';
@@ -47,6 +53,14 @@ export const  LOAD_POSTS_FAILURE = ' LOAD_POSTS_FAILURE';
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST'; // 변수로 따로 만들어줘야 중간에 오타가나는 일을 막을 수 있다
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
+
+export const LIKE_POST_REQUEST = 'LIKE_POST_REQUEST';
+export const LIKE_POST_SUCCESS = 'LIKE_POST_SUCCESS';
+export const LIKE_POST_FAILURE = 'LIKE_POST_FAILURE';
+
+export const UNLIKE_POST_REQUEST = 'UNLIKE_POST_REQUEST';
+export const UNLIKE_POST_SUCCESS = 'UNLIKE_POST_SUCCESS';
+export const UNLIKE_POST_FAILURE = 'UNLIKE_POST_FAILURE';
 
 export const REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
 export const REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
@@ -93,6 +107,40 @@ const dummyComment = (data) => ({
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	// immer 사용시 state 를 draft 로 교체해주며, switch 문인걸 인식하고 break 를 까먹지말자
 	switch (action.type) {
+		case LIKE_POST_REQUEST:
+			draft.likePostLoading = true;
+			draft.likePostDone = false;
+			draft.likePostError = null;
+			break;
+		case LIKE_POST_SUCCESS: {
+			// mainPosts 에서 id 가 액션데이터포스트아이디를 찾아서
+			const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+			// 게시글 좋아요 누른 사람들에게 사용자 아이디를 넣어준다
+			post.Likers.push({ id: action.data.UserId });
+			draft.likePostLoading = false;
+			draft.likePostDone = true;
+			break;
+		}
+		case LIKE_POST_FAILURE:
+			draft.likePostLoading = false;
+			draft.likePostError = action.error;
+			break;
+		case UNLIKE_POST_REQUEST:
+			draft.unlikePostLoading = true;
+			draft.unlikePostDone = false;
+			draft.unlikePostError = null;
+			break;
+		case UNLIKE_POST_SUCCESS: {
+			const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+			post.Likers = post.Likers.filter((v) => v.id !== action.data.UserId);
+			draft.unlikePostLoading = false;
+			draft.unlikePostDone = true;
+			break;
+		}
+		case UNLIKE_POST_FAILURE:
+			draft.unlikePostLoading = false;
+			draft.unlikePostError = action.error;
+			break;
 		case LOAD_POSTS_REQUEST:
 			draft.loadPostsLoading = true;
 			draft.loadPostsDone = false;
