@@ -136,8 +136,8 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
 
 router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => { // PATCH /user/1/follow
 	try {
-		const user = await User.findOne({where: {id:req.params.userId}}) // user 가 있는지 확인
-		if (!user){
+		const user = await User.findOne({where: {id: req.params.userId}}) // user 가 있는지 확인
+		if (!user) {
 			res.status(403).send(':::없는 사람을 팔로우 하려고 하십니다')
 		}
 		await user.addFollowers(req.user.id)
@@ -150,11 +150,53 @@ router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => { // PATCH
 
 router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => { // DELETE /user/follow
 	try {
-		const user = await User.findOne({where: {id:req.params.userId}}) // user 가 있는지 확인
-		if (!user){
+		const user = await User.findOne({where: {id: req.params.userId}}) // user 가 있는지 확인
+		if (!user) {
 			res.status(403).send(':::없는 사람을 언팔로우 하려고 하십니다')
 		}
 		await user.removeFollowers(req.user.id) // 그 사람있는지 검사해서 그 사람의 팔로워(나를)제거
+		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.get('/followers', isLoggedIn, async (req, res, next) => { // GET /user/followers
+	try {
+		const user = await User.findOne({where: {id: req.user.id}}) // 나를 찾는다
+		if (!user) {
+			res.status(403).send(':::없는 사람을 찾으려고 하십니다')
+		}
+		const followers = await user.getFollowers() // 내 팔로워즈 겟 팔로워즈
+		res.status(200).json(followers) // 팔로워즈 응답
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.get('/followings', isLoggedIn, async (req, res, next) => { // GET /user/followings
+	try {
+		const user = await User.findOne({where: {id: req.user.id}}) // 나를 찾는다
+		if (!user) {
+			res.status(403).send(':::없는 사람을 찾으려고 하십니다')
+		}
+		const followings = await user.getFollowings() // 내 팔로윙즈 겟 팔로윙즈
+		res.status(200).json(followings) // 팔로윙즈 응답
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { // DELETE /user/follower/2
+	try {
+		const user = await User.findOne({where: {id: req.params.userId}}) // 대상을 찾고
+		if (!user) {
+			res.status(403).send(':::없는 사람을 차단하려고 하십니다')
+		}
+		await user.removeFollowings(req.user.id) // 내 아이디에서 유저 삭제
 		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
 	} catch (error) {
 		console.error(error)

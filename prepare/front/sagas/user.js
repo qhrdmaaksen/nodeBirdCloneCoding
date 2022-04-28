@@ -2,18 +2,27 @@ import {all, call, delay, fork, put, takeLatest} from "redux-saga/effects";
 import axios from "axios";
 import {
 	CHANGE_NICKNAME_FAILURE,
-	CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS,
+	CHANGE_NICKNAME_REQUEST,
+	CHANGE_NICKNAME_SUCCESS,
 	FOLLOW_FAILURE,
-	FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_MY_INFO_FAILURE, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS,
+	FOLLOW_REQUEST,
+	FOLLOW_SUCCESS, LOAD_FOLLOWERS_FAILURE, LOAD_FOLLOWERS_REQUEST,
+	LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS,
+	LOAD_MY_INFO_FAILURE,
+	LOAD_MY_INFO_REQUEST,
+	LOAD_MY_INFO_SUCCESS,
 	LOG_IN_FAILURE,
 	LOG_IN_REQUEST,
 	LOG_IN_SUCCESS,
 	LOG_OUT_FAILURE,
 	LOG_OUT_REQUEST,
-	LOG_OUT_SUCCESS,
+	LOG_OUT_SUCCESS, REMOVE_FOLLOWER_FAILURE, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS,
 	SIGN_UP_FAILURE,
 	SIGN_UP_REQUEST,
-	SIGN_UP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS,
+	SIGN_UP_SUCCESS,
+	UNFOLLOW_FAILURE,
+	UNFOLLOW_REQUEST,
+	UNFOLLOW_SUCCESS,
 } from "../reducers/user";
 
 
@@ -200,6 +209,84 @@ function* signUp(action) {
 	}
 }
 
+function loadFollowersAPI(data) {
+	return axios.get('/user/followers', data)
+}
+
+function* loadFollowers(action) {
+	try {
+		const result = yield call(loadFollowersAPI, action.data)
+		console.log('saga followers:: 요청', action.data)
+		yield put({
+			type: LOAD_FOLLOWERS_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga followers:: 성공', result)
+	} catch (err) {
+		console.error('saga followers::', err)
+		yield put({
+			type: LOAD_FOLLOWERS_FAILURE,
+			error: err.response.data,
+		})
+	}
+}
+
+function loadFollowingsAPI(data) {
+	return axios.get('/user/followings', data)
+}
+
+function* loadFollowings(action) {
+	try {
+		const result = yield call(loadFollowingsAPI, action.data)
+		console.log('saga followings 요청::', action.data)
+		yield put({
+			type: LOAD_FOLLOWINGS_SUCCESS,
+			data: result.data
+		})
+		console.log('saga followings 성공::', result)
+	} catch (err) {
+		console.error('saga followings 실패::', err)
+		yield put({
+			type: LOAD_FOLLOWINGS_FAILURE,
+			error: err.response.data
+		})
+	}
+}
+
+function removeFollowerAPI(data) {
+	return axios.delete(`/user/follower/${data}`) // 몇번째의 팔로워를 제거한다
+}
+
+function* removeFollower(action) {
+	try {
+		const result = yield call(removeFollowerAPI, action.data)
+		console.log('saga removeFollower 요청:: ', action.data)
+		yield put({
+			type: REMOVE_FOLLOWER_SUCCESS,
+			data: result.data
+		})
+		console.log('saga removeFollower 성공:: ', result)
+	} catch (err) {
+		console.error('saga removeFollower 실패:: ', err)
+		yield put({
+			type: REMOVE_FOLLOWER_FAILURE,
+			error: err.response.data
+		})
+	}
+}
+
+function* watchRemoveFollower() {
+	yield takeLatest(REMOVE_FOLLOWER_REQUEST, removeFollower)
+}
+
+function* watchLoadFollowers() {
+	yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers)
+}
+
+function* watchLoadFollowings() {
+	yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollowings)
+}
+
 function* watchChangeNickname() {
 	yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname)
 }
@@ -230,6 +317,9 @@ function* watchSignUp() {	// 회원가입 액션이 실행될때까지 기다리
 
 export default function* userSaga() {
 	yield all([
+		fork(watchRemoveFollower),
+		fork(watchLoadFollowers),
+		fork(watchLoadFollowings),
 		fork(watchChangeNickname),
 		fork(watchLoadMyInfo),
 		fork(watchFollow),

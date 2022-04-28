@@ -4,12 +4,21 @@ export const initialState = {
 	loadMyInfoLoading: false, // 유저 정보 보기 시도중일땐 로딩중 띄울거임
 	loadMyInfoDone: false, // 유저 정보 보기 됨
 	loadMyInfoError: null, // 유저 정보 보기중일때 에러 없앰
+	removeFollowerLoading: false, // 팔로워 유저 삭제 시도중일땐 로딩중 띄울거임
+	removeFollowerDone: false, // 팔로워 유저 삭제 됨
+	removeFollowerError: null, // 팔로워 유저 삭제 중일때 에러 없앰
 	followLoading: false, // 팔로우 시도중일땐 로딩중 띄울거임
 	followDone: false, // 팔로우 됨
 	followError: null, // 팔로우중일때 에러 없앰
 	unfollowLoading: false, // 언팔로우 시도중일땐 로딩중 띄울거임
 	unfollowDone: false, // 언팔로우 됨
-	unfollowError: null, // 팔로우중일때 에러 없앰
+	unfollowError: null, // 언팔로우중일때 에러 없앰
+	loadFollowersLoading: false, // 팔로워 시도중일땐 로딩중 띄울거임
+	loadFollowersDone: false, // 팔로워 됨
+	loadFollowersError: null, // 팔로워일때 에러 없앰
+	loadFollowingsLoading: false, // 팔로윙 시도중일땐 로딩중 띄울거임
+	loadFollowingsDone: false, // 팔로윙 됨
+	loadFollowingsError: null, // 팔로윙 중일때 에러 없앰
 	logInLoading: false, // 로그인 시도중일땐 로딩중 띄울거임
 	logInDone: false, // 로그인 됨
 	logInError: null, // 로딩중일때 에러 없앰
@@ -47,6 +56,10 @@ export const LOAD_MY_INFO_REQUEST = 'LOAD_MY_INFO_REQUEST'
 export const LOAD_MY_INFO_SUCCESS = 'LOAD_MY_INFO_SUCCESS'
 export const LOAD_MY_INFO_FAILURE = 'LOAD_MY_INFO_FAILURE'
 
+export const REMOVE_FOLLOWER_REQUEST = 'REMOVE_FOLLOWER_REQUEST'
+export const REMOVE_FOLLOWER_SUCCESS = 'REMOVE_FOLLOWER_SUCCESS'
+export const REMOVE_FOLLOWER_FAILURE = 'REMOVE_FOLLOWER_FAILURE'
+
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST'
 export const LOG_IN_SUCCESS = 'LOG_IN_SUCCESS'
 export const LOG_IN_FAILURE = 'LOG_IN_FAILURE'
@@ -70,6 +83,14 @@ export const FOLLOW_FAILURE = 'FOLLOW_FAILURE'
 export const UNFOLLOW_REQUEST = 'UNFOLLOW_REQUEST'
 export const UNFOLLOW_SUCCESS = 'UNFOLLOW_SUCCESS'
 export const UNFOLLOW_FAILURE = 'UNFOLLOW_FAILURE'
+
+export const LOAD_FOLLOWERS_REQUEST = 'LOAD_FOLLOWERS_REQUEST'
+export const LOAD_FOLLOWERS_SUCCESS = 'LOAD_FOLLOWERS_SUCCESS'
+export const LOAD_FOLLOWERS_FAILURE = 'LOAD_FOLLOWERS_FAILURE'
+
+export const LOAD_FOLLOWINGS_REQUEST = 'LOAD_FOLLOWINGS_REQUEST'
+export const LOAD_FOLLOWINGS_SUCCESS = 'LOAD_FOLLOWINGS_SUCCESS'
+export const LOAD_FOLLOWINGS_FAILURE = 'LOAD_FOLLOWINGS_FAILURE'
 
 // 유저 리듀서의 상태를 바꿀수있는 액션 생성
 export const ADD_POST_TO_ME = 'ADD_POST_TO_ME'
@@ -112,22 +133,39 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 		case LOAD_MY_INFO_REQUEST:
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.loadMyInfoLoading = true
-			draft.loadMyInfoError = null // 로딩 중일때는 에러 없앰
 			draft.loadMyInfoDone = false
+			draft.loadMyInfoError = null // 로딩 중일때는 에러 없앰
 			console.log('reducer myInfo 요청')
 			break;
 		case LOAD_MY_INFO_SUCCESS:
-			draft.loadMyInfoLoading = false
 			draft.me = action.data // back 사용자 정보가 들어있음
+			draft.loadMyInfoLoading = false
 			draft.loadMyInfoDone = true
 			//draft.me = dummyUser(action.data)
 			console.log('reducer myInfo 성공')
 			break;
 		case LOAD_MY_INFO_FAILURE:
-			console.error('loadMyInfoFail :: ' + action.error)
+			console.error('loadMyInfoFail 실패:: ' + action.error)
 			draft.loadMyInfoLoading = false
 			draft.loadMyInfoError = action.error
 			break;
+		case REMOVE_FOLLOWER_REQUEST:
+			draft.removeFollowerLoading =true
+			draft.removeFollowerDone=false
+			draft.removeFollowerError=null
+			console.log('reducer removeFollower 요청')
+			break;
+		case REMOVE_FOLLOWER_SUCCESS:
+			// 나의 팔로워 제거
+			draft.me.Followers = draft.me.Followers.filter((v)=>v.id !== action.data.UserId)
+			draft.removeFollowerLoading=false
+			draft.removeFollowerDone=true
+			console.log('reducer removeFollower 성공')
+			break
+		case REMOVE_FOLLOWER_FAILURE:
+			console.error('removeFollowerFail 실패:: ' + action.error)
+			draft.removeFollowerLoading=false
+			draft.removeFollowerError=action.error
 		case FOLLOW_REQUEST:
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.followLoading = true
@@ -233,6 +271,40 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.changeNicknameLoading = false
 			draft.changeNicknameError = action.error
 			console.error('reducer CHANGE_NICKNAME 실패', action.error)
+			break;
+		case LOAD_FOLLOWERS_REQUEST:
+			draft.loadFollowersLoading = true
+			draft.loadFollowersDone = false
+			draft.loadFollowersError = null
+			console.log('reducer LOAD_FOLLOWERS_REQUEST 요청')
+			break
+		case LOAD_FOLLOWERS_SUCCESS:
+			draft.loadFollowersLoading = false
+			draft.loadFollowersDone = true
+			draft.me.Followers = action.data
+			console.log('reducer LOAD_FOLLOWERS_SUCCESS 성공')
+			break;
+		case LOAD_FOLLOWERS_FAILURE:
+			draft.loadFollowersLoading = false
+			draft.loadFollowersError = action.error
+			console.error('reducer LOAD_FOLLOWERS 실패', action.error)
+			break;
+		case LOAD_FOLLOWINGS_REQUEST:
+			draft.loadFollowingsLoading = true
+			draft.loadFollowingsDone = false
+			draft.loadFollowingsError = null
+			console.log('reducer LOAD_FOLLOWINGS_REQUEST 요청')
+			break
+		case LOAD_FOLLOWINGS_SUCCESS:
+			draft.loadFollowingsLoading = false
+			draft.loadFollowingsDone = true
+			draft.me.Followings = action.data
+			console.log('reducer LOAD_FOLLOWINGS_SUCCESS 성공')
+			break;
+		case LOAD_FOLLOWINGS_FAILURE:
+			draft.loadFollowingsLoading = false
+			draft.loadFollowingsError = action.error
+			console.error('reducer LOAD_FOLLOWINGS 실패', action.error)
 			break;
 		case ADD_POST_TO_ME: // 게시글을 쓰면 게시글 아이디가 여기로 들어와서 하나가 추가된다
 			draft.me.Posts.unshift({id: action.data})

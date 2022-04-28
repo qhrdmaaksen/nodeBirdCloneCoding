@@ -3,15 +3,26 @@ import Head from 'next/head'
 import AppLayout from '../component/AppLayout'
 import NicknameEditForm from '../component/NicknameEditForm'
 import FollowList from '../component/FollowList'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import Router from "next/router";
+import {LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST} from '../reducers/user'
 //import FollowerList from '../component/FollowerList'
 
 
 const Profile = () => {
-	// const followingList = [{nickname: '비타민'}, {nickname: '엠알민'}, {nickname: '올마스터'}]
+	const dispatch = useDispatch()
+	// const followingList = [{nickname: '비타민'}, {nickname: '엠알민'}, {nickname: '올마스터'}] front early
 	// const followerList = [{nickname: '비타민'}, {nickname: '엠알민'}, {nickname: '올마스터'}]
 	const {me} = useSelector((state) => state.user)
+
+	useEffect(() => { // 프로필 페이지 갈때 바로 불러오기
+		dispatch({
+			type: LOAD_FOLLOWERS_REQUEST,
+		})
+		dispatch({
+			type: LOAD_FOLLOWINGS_REQUEST,
+		})
+	}, [])
 
 	useEffect(() => {
 		if (!(me && me.id)) { // 프로필 페이지에서 로그아웃했을 경우 main 화면으로
