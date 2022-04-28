@@ -180,7 +180,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.removePostError = null
 			break;
 		case REMOVE_POST_SUCCESS:
-			draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data) // 지울땐 보통 filter 가 편하다
+			draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data.PostId) // 지울땐 보통 filter 가 편하다
 			draft.PostLoading = false
 			draft.PostDone = true
 			break;

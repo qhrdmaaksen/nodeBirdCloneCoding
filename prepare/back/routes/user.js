@@ -108,7 +108,7 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {//await 을 사용하
 		res.status(201).send('login ok')
 
 	} catch (error) {
-		console.error('await User.create error : ' , error)
+		console.error('await User.create error : ', error)
 		next(error) // status 500
 	}
 })
@@ -118,6 +118,48 @@ router.post('/logout', isLoggedIn, (req, res) => {
 	req.logout()
 	req.session.destroy() // session 에 저장된 쿠키와 내 아이디 없앰
 	res.send('logout ok')
+})
+
+router.patch('/nickname', isLoggedIn, async (req, res, next) => {
+	try {
+		await User.update({
+			nickname: req.body.nickname, // 프론트에서 제공한 닉네임으로, 닉네임을 수정
+		}, {
+			where: {id: req.user.id} // 내 아이디에 닉네임을 프론트에서 받은 닉네임으로 수정
+		})
+		res.status(200).json({nickname: req.body.nickname})
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => { // PATCH /user/1/follow
+	try {
+		const user = await User.findOne({where: {id:req.params.userId}}) // user 가 있는지 확인
+		if (!user){
+			res.status(403).send(':::없는 사람을 팔로우 하려고 하십니다')
+		}
+		await user.addFollowers(req.user.id)
+		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => { // DELETE /user/follow
+	try {
+		const user = await User.findOne({where: {id:req.params.userId}}) // user 가 있는지 확인
+		if (!user){
+			res.status(403).send(':::없는 사람을 언팔로우 하려고 하십니다')
+		}
+		await user.removeFollowers(req.user.id) // 그 사람있는지 검사해서 그 사람의 팔로워(나를)제거
+		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
 })
 
 module.exports = router

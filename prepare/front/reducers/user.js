@@ -104,128 +104,139 @@ export const loginRequestAction = (data) => {
 // 	}
 // }
 export const logoutRequestAction = () => ({
-		type: LOG_OUT_REQUEST,
+	type: LOG_OUT_REQUEST,
 })
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	switch (action.type) {
 		case LOAD_MY_INFO_REQUEST:
-			console.log('reducer myInfo execute')
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.loadMyInfoLoading = true
 			draft.loadMyInfoError = null // 로딩 중일때는 에러 없앰
 			draft.loadMyInfoDone = false
+			console.log('reducer myInfo 요청')
 			break;
 		case LOAD_MY_INFO_SUCCESS:
 			draft.loadMyInfoLoading = false
 			draft.me = action.data // back 사용자 정보가 들어있음
 			draft.loadMyInfoDone = true
 			//draft.me = dummyUser(action.data)
+			console.log('reducer myInfo 성공')
 			break;
 		case LOAD_MY_INFO_FAILURE:
-			console.error('loadMyInfoFail : ' + action.error)
+			console.error('loadMyInfoFail :: ' + action.error)
 			draft.loadMyInfoLoading = false
 			draft.loadMyInfoError = action.error
 			break;
 		case FOLLOW_REQUEST:
-			console.log('reducer follow')
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.followLoading = true
 			draft.followError = null // 로딩 중일때는 에러 없앰
 			draft.followDone = false
+			console.log('reducer FOLLOW_REQUEST 요청')
 			break;
 		case FOLLOW_SUCCESS:
 			draft.followLoading = false
 			draft.followDone = true
 			//draft.me = dummyUser(action.data)
-			draft.me.Followings.push({id: action.data})
+			draft.me.Followings.push({id: action.data.UserId})
+			console.log('reducer FOLLOW_SUCCESS 성공')
 			break;
 		case FOLLOW_FAILURE:
-			console.error('followFail : ' + action.error)
 			draft.followLoading = false
 			draft.followError = action.error
+			console.error('reducer FOLLOW_FAILURE 실패::', action.error)
 			break;
 		case UNFOLLOW_REQUEST:
-			console.log('reducer follow')
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.unfollowLoading = true
 			draft.unfollowError = null // 로딩 중일때는 에러 없앰
 			draft.unfollowDone = false
+			console.log('reducer unfollow 요청')
 			break;
 		case UNFOLLOW_SUCCESS:
 			draft.unfollowLoading = false
 			draft.unfollowDone = true
 			//draft.me = dummyUser(action.data)
 			// 언팔로우 한 사람만 빠지게
-			draft.me.Followings = draft.me.Followings.filter((v) => v.id !== action.data)
+			draft.me.Followings = draft.me.Followings.filter((v) => v.id !== action.data.UserId)
+			console.log('reducer unfollow 성공')
 			break;
 		case UNFOLLOW_FAILURE:
-			console.error('unfollowFail : ' + action.error)
 			draft.unfollowLoading = false
 			draft.unfollowError = action.error
+			console.error('reducer unfollow 실패::', action.error)
 			break;
 		case LOG_IN_REQUEST:
-			console.log('reducer login')
 			draft.logInLoading = true
 			draft.logInError = null
 			draft.logInDone = false
+			console.log('reducer login 요청')
 			break;
 		case LOG_IN_SUCCESS:
 			draft.logInLoading = false
 			draft.logInDone = true
 			//draft.me = dummyUser(action.data) front
 			draft.me = action.data // back
+			console.log('reducer login 성공')
 			break;
 		case LOG_IN_FAILURE:
-			console.error('loginFail : ' + action.error)
 			draft.logInLoading = false
 			draft.logInError = action.error
+			console.error('reducer login 실패:: ', action.error)
 			break;
 		case LOG_OUT_REQUEST:
 			draft.logOutLoading = true
 			draft.logOutDone = false
 			draft.logOutError = null
+			console.log('reducer logout 요청')
 			break;
 		case LOG_OUT_SUCCESS:
 			draft.logOutLoading = false
 			draft.logOutDone = true
 			draft.me = null
+			console.log('reducer logout 성공')
 			break;
 		case LOG_OUT_FAILURE:
-			console.error('logoutFail : ' + action.error)
 			draft.logOutLoading = false
 			draft.logOutError = action.error
+			console.error('reducer logout 실패', action.error)
 			break
 		case SIGN_UP_REQUEST:
 			draft.signUpLoading = true
 			draft.signUpDone = false
 			draft.signUpError = null
+			console.log('reducer signup 요청')
 			break;
 		case SIGN_UP_SUCCESS:
 			draft.signUpLoading = false
 			draft.signUpDone = true
+			console.log('reducer signUp 성공')
 			break
 		case SIGN_UP_FAILURE:
-			console.error('signUpFail : ' + action.error)
 			draft.signUpLoading = false
 			draft.signUpError = action.error
+			console.error('reducer signUp 실패', action.error)
 			break
 		case CHANGE_NICKNAME_REQUEST:
 			draft.changeNicknameLoading = true
 			draft.changeNicknameDone = false
 			draft.changeNicknameError = null
+			console.log('reducer CHANGE_NICKNAME_REQUEST 요청')
 			break
 		case CHANGE_NICKNAME_SUCCESS:
 			draft.changeNicknameLoading = false
 			draft.changeNicknameDone = true
+			console.log('reducer CHANGE_NICKNAME_SUCCESS 성공')
 			break;
 		case CHANGE_NICKNAME_FAILURE:
-			console.error('changeNickFail : ' + action.error)
 			draft.changeNicknameLoading = false
 			draft.changeNicknameError = action.error
+			console.error('reducer CHANGE_NICKNAME 실패', action.error)
 			break;
 		case ADD_POST_TO_ME: // 게시글을 쓰면 게시글 아이디가 여기로 들어와서 하나가 추가된다
 			draft.me.Posts.unshift({id: action.data})
+			console.log('ADD_POST_TO_ME 성공')
 			break
 			// return {
 			// 	...state,
@@ -236,6 +247,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			// }
 		case REMOVE_POST_OF_ME:
 			draft.me.Posts = draft.me.Posts.filter((v) => v.id !== action.data)
+			console.log('REMOVE_POST_OF_ME')
 			break;
 			// return { // 불변성을 지키며 게시글을 지워야한다.
 			// 	...state,

@@ -40,7 +40,7 @@ function* loadPosts(action) { // 1 액션에서
 			data: result.data
 		})
 	} catch (err) {
-		console.error('loadPosts : ', err)
+		console.error('loadPosts error: ', err)
 		yield put({
 			type: LOAD_POSTS_FAILURE,
 			error: err.response.data
@@ -128,23 +128,27 @@ function* addPost(action) { // 1 액션에서
 }
 
 function removePostAPI(data) { // 3 전달되면
-	return axios.post('/api/post', data) // 4 데이터가 간다
+	//return axios.post('/api/post', data) // 4 데이터가 간다 front
+	return axios.delete(`/post/${data}`) // 4 데이터가 간다 back //delete 의 data 는 post.id (PostCard.js)에서 확인 가능
 }
 
 function* removePost(action) { // 1 액션에서
 	try { // 포스트 리듀서상태와 유저리듀서상태와 동시에 한방에 바꿀수 없기때문에 액션을 두번으로 바꿔준다,
-		//const result = yield call(removePostAPI, action.data) // 2 데이터를 꺼내서
-		yield delay(1000)
+		const result = yield call(removePostAPI, action.data) // 2 데이터를 꺼내서
+		//yield delay(1000) front
+		console.log('removePost 실행:: ', action.data)
 		yield put({
 			type: REMOVE_POST_SUCCESS,
-			data: action.data, // 어떤 게시물을 지웠는지 id 가있을것
+			data: result.data, // 어떤 게시물을 지웠는지 id 가있을것,
 		})
+		console.log('removePost 완료:: ', result)
 		yield put({
 			type: REMOVE_POST_OF_ME,
-			data: action.data,
+			//data: action.data, front
+			data: action.data,  // action 이 들어왔을때 데이터
 		})
 	} catch (err) {
-		console.error('removePost : ', err)
+		console.error('removePost error: ', err)
 		yield put({
 			type: REMOVE_POST_FAILURE,
 			error: err.response.data

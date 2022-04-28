@@ -105,11 +105,10 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => { // DELETE /pos
 	try {
 		await Post.destroy({
 			where: {
-				id: req.params.postId,
-				UserId: req.user.id,
+				id: req.params.postId, // 게시글 아이디가
+				UserId: req.user.id,  // 내가 쓴 게시글 아이디여야한다
 			},
 		});
-		await post.removeLikers(req.user.id)
 		res.status(200).json({PostId: parseInt(req.params.postId, 10)});
 	} catch (error) {
 		console.error(error);

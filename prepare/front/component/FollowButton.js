@@ -7,6 +7,7 @@ import {FOLLOW_REQUEST, UNFOLLOW_REQUEST} from "../reducers/user";
 const FollowButton = ({post}) => {
 	const dispatch = useDispatch()
 	const {me, followLoading, unfollowLoading} = useSelector((state) => state.user)
+
 	// v.id 가 포스트 작성자의 id 라면
 	const isFollowing = me?.Followings.find((v) => v.id === post.User.id)
 
@@ -23,6 +24,11 @@ const FollowButton = ({post}) => {
 			})
 		}
 	}, [isFollowing])
+
+	if (post.User.id === me.id) { // 포스트 작성자의 아이디와 내 아이디가 같다면 팔로우 버튼 null
+		return null
+	}
+
 	return (
 			<Button loading={followLoading || unfollowLoading} onClick={onClickButton}>
 				{isFollowing ? '언팔로우' : '팔로우'} {/*팔로우상태라면 true 상태면 언팔로우, false 라면 팔로우*/}
