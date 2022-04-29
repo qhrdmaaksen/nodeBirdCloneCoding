@@ -1,5 +1,5 @@
 const express = require('express');
-const {Post, Image, Comment, User} = require('../models')
+const {Post, Image, Comment, User, Hashtag} = require('../models')
 const {isLoggedIn} = require('./middlewares')
 const multer = require('multer')
 const path = require('path')
@@ -36,10 +36,19 @@ const upload = multer({
 // 앞에 post 는 app.use post router 가 생략되어있다
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST  /post
 	try {
+		const hashtags = req.body.content.match(/#[^\s#]+/g)
 		const post = await Post.create({ // create 를 하면 post 에 게시물이 담김
 			content: req.body.content,
 			UserId: req.user.id, // 게시글을 누가썼는지
 		})
+		if (hashtags) {
+			// slice(1) 은 해쉬태그(#)를 떼어내기위해 사용, toLowerCase 는 소문자로 만드는것(대소문자구분없이 db 에 저장하기 위해)
+			// 여러 가정을 생각해야함,
+			const result = await Promise.all(hashtags.map((tag) => Hashtag.findOrCreate({
+				where: {name: tag.slice(1).toLowerCase()},
+			}))); // [[노드, true], [리액트, true]] <-와 같이 db 에 등록 됨
+			await post.addHashtags(result.map((v)=> v[0]))
+		}
 		if (req.body.image) { // image path 가 담겨있음, 이미지가 배열인지 아닌지 체크
 			if (Array.isArray(req.body.image)) { // 이미지를 여러 개 올리면 image: [비타민.png, 올마.png]
 				// 배열을 맵으로 시퀄라이즈에 create 해서 배열에 담긴 여러개가 저장이됨
