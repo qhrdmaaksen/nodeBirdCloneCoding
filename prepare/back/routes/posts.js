@@ -1,11 +1,16 @@
 const express = require("express");
+const {Op} = require('sequelize')
 const {Post, User, Image, Comment} = require('../models')
 
 const router = express.Router()
 
 router.get('/', async (req, res, next) => { // GET /posts
 	try {// 여러개 가져올때 사용(findAll)
-		const where = {}
+		const where = {};
+		// lstId 받기
+		if (parseInt(req.query.lastId, 10)) { // 초기 로딩이 아닐때
+			where.id = {[Op.lt]: parseInt(req.query.lastId, 10)} // id 가 lastId 보다 작은([Op.lt]:) < 의미
+		}
 		const posts = await Post.findAll({
 			//where: {id: lastId}, // lastId 는 고정되어있기때문에 사용
 			// offset: 0, 1번 게시글부터 10번 게시글까지, offset 10이면 11번부터 20번까지
@@ -26,11 +31,21 @@ router.get('/', async (req, res, next) => { // GET /posts
 				include: [{
 					model: User, // 댓글의 작성자
 					attributes: ['id', 'nickname'],
-				}]
+					order: [['createdAt', 'DESC']],
+				}],
 			}, {
 				model: User, // 좋아요 누른 사람
 				as: 'Likers',
 				attributes: ['id'],
+			}, {
+				model: Post,
+				as: 'Retweet',
+				include: [{
+					model: User,
+					attributes: ['id', 'nickname'],
+				}, {
+					model: Image,
+				}]
 			}],
 		})
 		console.log(posts)

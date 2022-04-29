@@ -9,6 +9,9 @@ export const initialState = {
 	likePostLoading: false, // 라이크 로드중 로딩
 	likePostDone: false, // 라이크 완료했을때 true 변환
 	likePostError: null,
+	retweetLoading: false, // 리트윗 로드중 로딩
+	retweetDone: false, // 리트윗 완료중 로딩
+	retweetError: null,
 	unlikePostLoading: false, // 언라이크 로드 중 로딩
 	unlikePostDone: false, // 언라이크 완료했을때 true 변환
 	unlikePostError: null,
@@ -77,6 +80,10 @@ export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
 
+export const RETWEET_REQUEST = 'RETWEET_REQUEST';
+export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
+export const RETWEET_FAILURE = 'RETWEET_FAILURE'
+
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'; // 동기 옵션은 하나만 만들어도 된다
 
 export const addPost = (data) => ({
@@ -119,6 +126,24 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 		case REMOVE_IMAGE:
 			draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data)
 			console.log('reducer REMOVE_IMAGE 성공')
+			break
+		case RETWEET_REQUEST:
+			draft.retweetLoading = true
+			draft.retweetDone = false
+			draft.retweetError = null
+			console.log('reducer RETWEET_REQUEST 요청::')
+			break
+		case RETWEET_SUCCESS: {
+			draft.retweetLoading = false
+			draft.retweetDone = true
+			draft.mainPosts.unshift(action.data) // 리트윗된 게시글 메인포스트에 추가
+			console.log('reducer RETWEET_SUCCESS 성공::')
+			break
+		}
+		case RETWEET_FAILURE:
+			draft.retweetLoading = false
+			draft.retweetError = action.error
+			console.error('reducer RETWEET_FAILURE 실패::', action.data)
 			break
 		case LIKE_POST_REQUEST:
 			draft.likePostLoading = true;
@@ -187,9 +212,11 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.loadPostsDone = true
 			// action.data 에 dummy data 가 들어있을것이며, 기존데이터와 합쳐주는것
 			// concat 을 할땐 항상 앞에 대입을 해줘야한다 그래야 합쳐짐
-			draft.mainPosts = action.data.concat(draft.mainPosts)
+			//draft.mainPosts = action.data.concat(draft.mainPosts) front
+			draft.mainPosts = draft.mainPosts.concat(action.data)
 			// 게시물을 50 개까지만 가져오겠다
-			draft.hasMorePosts = draft.mainPosts.length < 50
+			//draft.hasMorePosts = draft.mainPosts.length < 50 front
+			draft.hasMorePosts = action.data.length === 10
 			break;
 		case LOAD_POSTS_FAILURE:
 			draft.loadPostsLoading = false
@@ -235,7 +262,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			//const post = draft.mainPosts.find((v) => v.id === action.data.postId) // 게시글 리스트중에 post 찾기 front
 			const post = draft.mainPosts.find((v) => v.id === action.data.PostId) // 게시글 리스트중에 post 찾기 bak
 			//post.Comments.unshift(dummyComment(action.data.content)) // 찾은 post 에 맨 앞에 가짜 댓글 하나 넣어줌 FRONT
-			post.Comments.unshift(action.data.content) // 찾은 post 에 실제 데이터 back
+			post.Comments.unshift(action.data) // 찾은 post 에 실제 데이터 back
 			draft.addCommentLoading = false
 			draft.addCommentDone = true
 			break;

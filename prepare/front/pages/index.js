@@ -9,7 +9,14 @@ import {LOAD_MY_INFO_REQUEST} from '../reducers/user'
 const Home = () => {
 	const dispatch = useDispatch()
 	const {me} = useSelector((state) => state.user)
-	const {mainPosts, hasMorePosts, loadPostsLoading} = useSelector((state) => state.post)
+	const {mainPosts, hasMorePosts, loadPostsLoading, retweetError} = useSelector((state) => state.post)
+
+
+	useEffect(() => { // retweet 실패 시 alert 출력
+		if (retweetError) {
+			alert(retweetError)
+		}
+	}, [retweetError])
 
 	useEffect(() => { // 컴포넌트 디드마운트와 같은 효과 가능 , 뒤에 빈배열만 넣는다면
 		dispatch({ // 매번 로그인 상태를 복구해주기 위해서 만듬
@@ -29,9 +36,10 @@ const Home = () => {
 			console.log(window.scrollY, document.documentElement.clientHeight, document.documentElement.scrollHeight)
 			if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
 				if (hasMorePosts && !loadPostsLoading) { // 기존에 로딩을 하고있을땐 이부분이 실행이안됨, 로딩이 끝나면 실행
+					const lastId = mainPosts[mainPosts.length - 1]?.id; // 마지막 게시글의 id
 					dispatch({ // 다 내리면 그때 새로운 것 로딩
 						type: LOAD_POSTS_REQUEST,
-						data: mainPosts[mainPosts.length - 1].id,
+						lastId,
 					})
 				}
 			}
@@ -41,7 +49,7 @@ const Home = () => {
 		return () => {
 			window.removeEventListener('scroll', onScroll)
 		};
-	}, [mainPosts, hasMorePosts, loadPostsLoading]);
+	}, [hasMorePosts, loadPostsLoading,mainPosts]);
 
 	return (
 			<AppLayout>
