@@ -27,7 +27,7 @@ import {
 
 
 function logInAPI(data) { // generator 아님
-	//return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄 // front
+													//return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄 // front
 
 	// 실제 서버에 로그인 요청을 보냄 // back
 	//return axios.post('http://localhost:3065/user/login', data)
@@ -85,9 +85,9 @@ function* logOut() {
 }
 
 function changeNicknameAPI(data) { // generator 아님
-	// 실제 서버에 로그인 요청을 보냄 // back
-	//return axios.post('http://localhost:3065/user/login', data)
-	// localhost 중복 없애기
+																	 // 실제 서버에 로그인 요청을 보냄 // back
+																	 //return axios.post('http://localhost:3065/user/login', data)
+																	 // localhost 중복 없애기
 	return axios.patch('/user/nickname', {nickname: data})
 }
 
@@ -111,21 +111,25 @@ function* changeNickname(action) { // login action request 가 action 에 전달
 	}
 }
 
-function loadMyInfoAPI() {
-	return axios.get('/user')
+function loadMyInfoAPI(userId) {
+	// 서버에 요청을 보내는 부분
+	return axios.get(userId ? `/user/${userId}` : '/user/', {
+		withCredentials: true,// 클라이언트에서 요청 보낼 때는 브라우저가 쿠키를 같이 동봉해줘요
+	}); // 서버사이드렌더링일 때는, 브라우저가 없어요.
 }
 
 function* loadMyInfo(action) {
 	try {
 		const result = yield call(loadMyInfoAPI, action.data)
-		console.log('saga loadMyInfo 실행중::', action.data)
+		console.log('saga loadMyInfo 실행 :: ', action.data)
 		yield put({
 			type: LOAD_MY_INFO_SUCCESS,
-			data: result.data
+			data: result.data,
+			me: !action.data
 		})
-		console.log('saga loadMyInfo 완료', result)
+		console.log('saga loadMyInfo 성공:: ', result)
 	} catch (err) {
-		console.error('saga loadMyInfo error : ', err)
+		console.error('saga loadMyInfo error :: ', err)
 		yield put({
 			type: LOAD_MY_INFO_FAILURE,
 			error: err.response.data
@@ -134,7 +138,7 @@ function* loadMyInfo(action) {
 }
 
 function followAPI(data) { // data 에 사용자 id 넣어주기
-	// return axios.post('/api/follow', data) front
+													 // return axios.post('/api/follow', data) front
 	return axios.patch(`/user/${data}/follow`)
 }
 

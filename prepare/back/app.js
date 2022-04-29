@@ -3,6 +3,7 @@ const postRouter = require('./routes/post')
 const postsRouter = require('./routes/posts')
 const userRouter = require('./routes/user')
 const cors = require('cors')
+const path = require('path')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 const passport = require('passport')
@@ -31,8 +32,13 @@ app.use(cors({ // 보안정책
 	credentials: true, // true 로 해주면 쿠키전달됨
 }))
 // middlewares
-app.use(express.json()) // use 는 app 에 express server 에다가 뭔가를 장착한다는 뜻
-app.use(express.urlencoded({extended: true}))
+// use 는 app 에 express server 에다가 뭔가를 장착한다는 뜻
+//app.use('/',express.static 의 / 는 localhost3065 를 의미한다, 원한다면 /images 와 같이 수정 가능
+app.use('/',express.static(path.join(__dirname, 'uploads'))) // 디렉토리 네임은 현재 back 폴더 안에 upload 를 합쳐준다,
+/*여기서 첫번째 express.json은 axios 요청이 올때 axios 두번째 인자의 데이터를 req.body에 넣는역할이고*/
+app.use(express.json())  // axios 로 데이터 보낼때
+/*두번째 express.urlencoded({extended:true})는 프론트에서 form을 통해 데이터가 날아오면 그 데이터들을 req.body에 넣는다*/
+app.use(express.urlencoded({extended: true})) // 일반 폼을 보낼때 urlencoded 로 받음
 // 위 두개의 차이점은 app.use(express.json()) 은 front 에서 json 으로 보냈을때 json 형식을 req.body 에 넣어주고
 // app.use(express.urlencoded({extended: true})) 는 form submit 을 했을때 url encoded 방식으로 넘어오는걸 처리해줌
 
@@ -43,8 +49,8 @@ app.use(session({
 			secret: process.env.COOKIE_SECRET, // .env 에 password setting
 		}
 ))
-app.use(passport.initialize())
-app.use(passport.session())
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
 	res.send('hello express') // end === send

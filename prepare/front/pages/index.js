@@ -14,10 +14,10 @@ const Home = () => {
 	useEffect(() => { // 컴포넌트 디드마운트와 같은 효과 가능 , 뒤에 빈배열만 넣는다면
 		dispatch({ // 매번 로그인 상태를 복구해주기 위해서 만듬
 			type: LOAD_MY_INFO_REQUEST,
-		})
+		});
 		dispatch({
 			type: LOAD_POSTS_REQUEST,
-		})
+		});
 	}, []);
 
 	// 스크롤이 끝까지 내려갔을때 다시 로딩하게하는코드

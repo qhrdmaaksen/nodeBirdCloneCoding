@@ -25,7 +25,8 @@ const ImagesZoom = ({images, onClose}) => {
 						>
 							{images.map((v) => (
 									<ImgWrapper key={v.src}>
-										<img src={v.src} alt={v.src}/>
+										// front 에서 이미지 전송 시 경로 설정
+										<img src={`http://localhost:3065/${v.src}`} alt={v.src}/>
 									</ImgWrapper>
 							))}
 						</Slick>

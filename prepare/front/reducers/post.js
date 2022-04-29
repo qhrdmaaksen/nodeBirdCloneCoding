@@ -9,9 +9,12 @@ export const initialState = {
 	likePostLoading: false, // 라이크 로드중 로딩
 	likePostDone: false, // 라이크 완료했을때 true 변환
 	likePostError: null,
-	unlikePostLoading: false,
-	unlikePostDone: false,
+	unlikePostLoading: false, // 언라이크 로드 중 로딩
+	unlikePostDone: false, // 언라이크 완료했을때 true 변환
 	unlikePostError: null,
+	uploadImagesLoading: false, // 이미지 로드 중 로딩
+	uploadImagesDone: false, // 이미지 로드 완료했을때 true 변환
+	uploadImagesError: null,
 	loadPostsLoading: false, // 화면 로드중 로딩
 	loadPostsDone: false, // 화면 로드 완료되었을때 true 변환
 	loadPostsError: null,
@@ -46,9 +49,9 @@ export const initialState = {
 }))*/
 
 //게시글 액션
-export const  LOAD_POSTS_REQUEST = ' LOAD_POSTS_REQUEST'; // 화면을 로딩하면 바로 LOAD_POSTS_REQUEST 를 호출해줄것
-export const  LOAD_POSTS_SUCCESS = ' LOAD_POSTS_SUCCESS';
-export const  LOAD_POSTS_FAILURE = ' LOAD_POSTS_FAILURE';
+export const LOAD_POSTS_REQUEST = ' LOAD_POSTS_REQUEST'; // 화면을 로딩하면 바로 LOAD_POSTS_REQUEST 를 호출해줄것
+export const LOAD_POSTS_SUCCESS = ' LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = ' LOAD_POSTS_FAILURE';
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST'; // 변수로 따로 만들어줘야 중간에 오타가나는 일을 막을 수 있다
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -57,6 +60,10 @@ export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
 export const LIKE_POST_REQUEST = 'LIKE_POST_REQUEST';
 export const LIKE_POST_SUCCESS = 'LIKE_POST_SUCCESS';
 export const LIKE_POST_FAILURE = 'LIKE_POST_FAILURE';
+
+export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST';
+export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
+export const UPLOAD_IMAGES_FAILURE = 'UPLOAD_IMAGES_FAILURE';
 
 export const UNLIKE_POST_REQUEST = 'UNLIKE_POST_REQUEST';
 export const UNLIKE_POST_SUCCESS = 'UNLIKE_POST_SUCCESS';
@@ -69,6 +76,8 @@ export const REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
 export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
+
+export const REMOVE_IMAGE = 'REMOVE_IMAGE'; // 동기 옵션은 하나만 만들어도 된다
 
 export const addPost = (data) => ({
 	type: ADD_POST_REQUEST,
@@ -107,40 +116,67 @@ const dummyComment = (data) => ({
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	// immer 사용시 state 를 draft 로 교체해주며, switch 문인걸 인식하고 break 를 까먹지말자
 	switch (action.type) {
+		case REMOVE_IMAGE:
+			draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data)
+			console.log('reducer REMOVE_IMAGE 성공')
+			break
 		case LIKE_POST_REQUEST:
 			draft.likePostLoading = true;
 			draft.likePostDone = false;
 			draft.likePostError = null;
+			console.log('reducer LIKE_POST_REQUEST 요청::')
 			break;
 		case LIKE_POST_SUCCESS: {
 			// mainPosts 에서 id 가 액션데이터포스트아이디를 찾아서
 			const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
 			// 게시글 좋아요 누른 사람들에게 사용자 아이디를 넣어준다
-			post.Likers.push({ id: action.data.UserId });
+			post.Likers.push({id: action.data.UserId});
 			draft.likePostLoading = false;
 			draft.likePostDone = true;
+			console.log('reducer LIKE_POST_SUCCESS 성공::')
 			break;
 		}
 		case LIKE_POST_FAILURE:
 			draft.likePostLoading = false;
 			draft.likePostError = action.error;
+			console.error('reducer LIKE_POST_FAILURE 실패:::', action.error)
 			break;
 		case UNLIKE_POST_REQUEST:
 			draft.unlikePostLoading = true;
 			draft.unlikePostDone = false;
 			draft.unlikePostError = null;
+			console.log('reducer UNLIKE_POST_REQUEST 요청::')
 			break;
 		case UNLIKE_POST_SUCCESS: {
 			const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
 			post.Likers = post.Likers.filter((v) => v.id !== action.data.UserId);
 			draft.unlikePostLoading = false;
 			draft.unlikePostDone = true;
+			console.log('reducer UNLIKE_POST_SUCCESS 성공::')
 			break;
 		}
 		case UNLIKE_POST_FAILURE:
 			draft.unlikePostLoading = false;
 			draft.unlikePostError = action.error;
+			console.error('reducer UNLIKE_POST_FAILURE 실패:::', action.error)
 			break;
+		case UPLOAD_IMAGES_REQUEST:
+			draft.uploadImagesLoading = true
+			draft.uploadImagesDone = false
+			draft.uploadImagesError = null
+			console.log('reducer UPLOAD_IMAGES_REQUEST 요청::')
+			break
+		case UPLOAD_IMAGES_SUCCESS:
+			draft.imagePaths = action.data
+			draft.uploadImagesLoading = false
+			draft.uploadImagesDone = true
+			console.log('reducer UPLOAD_IMAGES_SUCCESS 성공::')
+			break
+		case UPLOAD_IMAGES_FAILURE:
+			draft.uploadImagesLoading = false
+			draft.uploadImagesError = action.error
+			console.error('reducer UPLOAD_IMAGES_FAILURE 실패:::', action.error)
+			break
 		case LOAD_POSTS_REQUEST:
 			draft.loadPostsLoading = true;
 			draft.loadPostsDone = false;
@@ -169,6 +205,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.mainPosts.unshift(action.data) // back 실제 데이터
 			draft.addPostLoading = false
 			draft.addPostDone = true
+			draft.imagePaths = [] // add post 성공 시, 사용자 게시글 작성에 이미지 초기화
 			break;
 		case ADD_POST_FAILURE:
 			draft.addPostLoading = false

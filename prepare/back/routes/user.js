@@ -125,7 +125,7 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
 		await User.update({
 			nickname: req.body.nickname, // 프론트에서 제공한 닉네임으로, 닉네임을 수정
 		}, {
-			where: {id: req.user.id} // 내 아이디에 닉네임을 프론트에서 받은 닉네임으로 수정
+			where: {id: req.user.id}, // 내 아이디에 닉네임을 프론트에서 받은 닉네임으로 수정
 		})
 		res.status(200).json({nickname: req.body.nickname})
 	} catch (error) {
@@ -162,6 +162,20 @@ router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => { // DELE
 	}
 })
 
+router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { // DELETE /user/follower/2
+	try {
+		const user = await User.findOne({where: {id: req.params.userId}}) // 대상을 찾고
+		if (!user) {
+			res.status(403).send(':::없는 사람을 차단하려고 하십니다')
+		}
+		await user.removeFollowings(req.user.id) // 내 아이디에서 유저 삭제
+		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
 router.get('/followers', isLoggedIn, async (req, res, next) => { // GET /user/followers
 	try {
 		const user = await User.findOne({where: {id: req.user.id}}) // 나를 찾는다
@@ -190,18 +204,5 @@ router.get('/followings', isLoggedIn, async (req, res, next) => { // GET /user/f
 	}
 })
 
-router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { // DELETE /user/follower/2
-	try {
-		const user = await User.findOne({where: {id: req.params.userId}}) // 대상을 찾고
-		if (!user) {
-			res.status(403).send(':::없는 사람을 차단하려고 하십니다')
-		}
-		await user.removeFollowings(req.user.id) // 내 아이디에서 유저 삭제
-		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
-	} catch (error) {
-		console.error(error)
-		next(error)
-	}
-})
 
 module.exports = router

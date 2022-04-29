@@ -10,6 +10,8 @@ import {FOLLOW_REQUEST, UNFOLLOW_REQUEST, REMOVE_FOLLOWER_REQUEST} from "../redu
 const FollowList = ({header, data}) => {
 	const dispatch = useDispatch()
 
+	/*반복문 안에서 onClick 이있다면 반복문에 대한 데이터는 온클릭으로 넘김
+	고차 함수를 사용해서 아이템에 대한 데이터를 보내고 싶을때 사용*/
 	const onCancel = (id) => () => { // follow 취소
 		if (header === '팔로잉') {
 			dispatch({

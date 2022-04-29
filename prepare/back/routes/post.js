@@ -1,19 +1,58 @@
 const express = require('express');
 const {Post, Image, Comment, User} = require('../models')
 const {isLoggedIn} = require('./middlewares')
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs') // 파일 시스템을 조작할 수 있는 fs 모듈
 
 const router = express.Router()
+
+try {
+	fs.accessSync('uploads')
+} catch (err) {
+	console.log('uploads folder 가 없으므로 생성합니다')
+	fs.mkdirSync('uploads')
+}
+
+const upload = multer({
+	// 저장소, 컴퓨터의 하드디스크에 저장, 나중에는 클라우드에 저장할 것임
+	storage: multer.diskStorage({
+		destination(req, file, done) {
+			done(null, 'uploads') // 폴더 명
+		},
+		filename(req, file, done) { // 비타민.png
+			const ext = path.extname(file.originalname); // 파일 명임, 확장자 추출(.png)
+			const basename = path.basename(file.originalname, ext); // path 를 통해 파일의 확장자를 꺼내올수있따, 비타민
+			done(null, basename + '_' + new Date().getTime() + ext); // 이름 뒤에 시간 초와 확장자 붙여주기, 비타민2022053030203.png
+		},
+	}),
+	limits: {fileSize: 20 * 1024 * 1024}, // 파일 용량 설정 20mb 동영상이라면 좀더 올려줘야한다 100,200mb 정도
+})
+
 /*router.post('/', (req, res) => { // POST  /post
 	res.json({id: 1, content: 'hello'})
 })*/
 // data content 가 req.body.content 로 백엔드에 변환
 // 앞에 post 는 app.use post router 가 생략되어있다
-router.post('/', isLoggedIn, async (req, res, next) => { // POST  /post
+router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST  /post
 	try {
 		const post = await Post.create({ // create 를 하면 post 에 게시물이 담김
 			content: req.body.content,
 			UserId: req.user.id, // 게시글을 누가썼는지
 		})
+		if (req.body.image) { // image path 가 담겨있음, 이미지가 배열인지 아닌지 체크
+			if (Array.isArray(req.body.image)) { // 이미지를 여러 개 올리면 image: [비타민.png, 올마.png]
+				// 배열을 맵으로 시퀄라이즈에 create 해서 배열에 담긴 여러개가 저장이됨
+				// file 은 uploads 폴더에 올라가고, db 에는 file addr 만 가지고있따
+				// 파일은 캐싱을 할 수 있는데, db 에 넣으면 캐싱도 못하고,
+				// 파일은 보통 s3 클라우드에 올려서 cdn 캐싱을 적용하고 db 에는 addr 만 가지고있따
+				const images = await Promise.all(req.body.image.map((image) => Image.create({src: image})))
+				await post.addImages(images) // post create 한게 이미지들이 알아서 추가가됨
+			} else { // 이미지를 하나만 올리면 image: 비타민.png
+				const image = await Image.create({src: req.body.image})
+				await post.addImages(image)
+			}
+		}
 		const fullPost = await Post.findOne({ // 게시글의 모든 정보
 			where: {id: post.id},
 			include: [{
@@ -27,7 +66,7 @@ router.post('/', isLoggedIn, async (req, res, next) => { // POST  /post
 			}, {
 				model: User, // 게시글 작성자
 				attributes: ['id', 'nickname'],
-			},{
+			}, {
 				model: User, // 좋아요 누른 사람
 				as: 'Likers',
 				attributes: ['id'],
@@ -39,6 +78,13 @@ router.post('/', isLoggedIn, async (req, res, next) => { // POST  /post
 		next(error)
 	}
 })
+
+// 이미지를 여러장 올리려고 array 사용, 한장만 올리게하려면 single 사용, text 만 사용은 none() 사용
+router.post('/images', isLoggedIn, upload.array('image'), async (req, res, next) => {
+	console.log('back routes/post : 이미지에대한 정보::: ', req.files)
+	res.json(req.files.map((v) => v.filename)) // 어디로 업로드되었는지 프론트로 응답
+})
+
 // router.post('/:postId/comment', 는 동적으로 게시글이 바뀌기때문에 /:postId/comment 로 설정
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => { // POST  /post/1/comment
 	try {
@@ -69,7 +115,7 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => { // POST 
 	}
 })
 
-router.patch('/:postId/like', isLoggedIn,async (req, res, next) => { // PATCH /post/1/like
+router.patch('/:postId/like', isLoggedIn, async (req, res, next) => { // PATCH /post/1/like
 	try {
 		const post = await Post.findOne({
 			where: {id: req.params.postId}
@@ -85,7 +131,7 @@ router.patch('/:postId/like', isLoggedIn,async (req, res, next) => { // PATCH /p
 	}
 })
 
-router.delete('/:postId/like', isLoggedIn,async (req, res, next) => { // DELETE /post/1/like
+router.delete('/:postId/like', isLoggedIn, async (req, res, next) => { // DELETE /post/1/like
 	try {
 		const post = await Post.findOne({
 			where: {id: req.params.postId}

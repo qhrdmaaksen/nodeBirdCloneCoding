@@ -6,14 +6,22 @@ import {
 	ADD_COMMENT_SUCCESS,
 	ADD_POST_FAILURE,
 	ADD_POST_REQUEST,
-	ADD_POST_SUCCESS, LIKE_POST_FAILURE, LIKE_POST_REQUEST, LIKE_POST_SUCCESS,
+	ADD_POST_SUCCESS,
+	LIKE_POST_FAILURE,
+	LIKE_POST_REQUEST,
+	LIKE_POST_SUCCESS,
 	//generateDummyPost, front
 	LOAD_POSTS_FAILURE,
 	LOAD_POSTS_REQUEST,
 	LOAD_POSTS_SUCCESS,
 	REMOVE_POST_FAILURE,
 	REMOVE_POST_REQUEST,
-	REMOVE_POST_SUCCESS, UNLIKE_POST_FAILURE, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS,
+	REMOVE_POST_SUCCESS,
+	UNLIKE_POST_FAILURE,
+	UNLIKE_POST_REQUEST,
+	UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE,
+	UPLOAD_IMAGES_REQUEST,
+	UPLOAD_IMAGES_SUCCESS,
 } from "../reducers/post";
 import {
 	ADD_POST_TO_ME,
@@ -95,7 +103,9 @@ function* unlikePost(action) { // 1 액션에서
 function addPostAPI(data) { // 3 전달되면
 	//return axios.post('/api/post', data) // 4 데이터가 간다 front
 	// data content 가 req.body.content 로 백엔드에 변환
-	return axios.post('/post', {content: data}) // 4 데이터가 간다
+	//return axios.post('/post', {content: data}) // 4 데이터가 간다,
+	// form data 는 {content: data} 와 같이 감싸면 안된다, 바로 data 로 넣어줘야함
+	return axios.post('/post', data) // 4 데이터가 간다
 }
 
 function* addPost(action) { // 1 액션에서
@@ -182,6 +192,32 @@ function* addComment(action) { // 1 액션에서
 	}
 }
 
+function uploadImagesAPI(data) {
+	return axios.post('/post/images', data) // form data 를 {name:data} 형식으로 감싸면 json 되기때문에 사용하면 안됨
+}
+
+function* uploadImages(action) {
+	try {
+		const result = yield call(uploadImagesAPI, action.data)
+		console.log('saga uploadImages 실행:: ', action.data)
+		yield put({
+			type: UPLOAD_IMAGES_SUCCESS,
+			data: result.data
+		})
+		console.log('saga uploadImages 성공:: ', result)
+	} catch (err) {
+		console.error('saga uploadImages error:: ', err)
+		yield put({
+			type: UPLOAD_IMAGES_FAILURE,
+			error: err.response.data
+		})
+	}
+}
+
+function* watchUploadImages() {
+	yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages)
+}
+
 function* watchLikePost() {
 	yield takeLatest(LIKE_POST_REQUEST, likePost)
 }
@@ -208,6 +244,7 @@ function* watchAddComment() {
 
 export default function* postSaga() {
 	yield all([
+		fork(watchUploadImages),
 		fork(watchLikePost),
 		fork(watchUnlikePost),
 		fork(watchLoadPosts),

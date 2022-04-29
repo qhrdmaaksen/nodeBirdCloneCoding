@@ -106,12 +106,10 @@ const dummyUser = (data) => ({
 	Followers: [{nickname: '까매'}, {nickname: '만두'}, {nickname: '보챙'}, {nickname: '뒷가'}, {nickname: '야덩'}],
 })*/
 
-export const loginRequestAction = (data) => {
-	return {
-		type: LOG_IN_REQUEST,
-		data,
-	}
-}
+export const loginRequestAction = (data) => ({
+	type: LOG_IN_REQUEST,
+	data,
+});
 // 로그아웃 액션 생성기 thunk
 // export const logoutAction = (data) => {
 // 	return (dispatch) => {
