@@ -9,7 +9,7 @@ import {
 	ADD_POST_SUCCESS,
 	LIKE_POST_FAILURE,
 	LIKE_POST_REQUEST,
-	LIKE_POST_SUCCESS,
+	LIKE_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS,
 	//generateDummyPost, front
 	LOAD_POSTS_FAILURE,
 	LOAD_POSTS_REQUEST,
@@ -120,16 +120,16 @@ function* unlikePost(action) { // 1 액션에서
 }
 
 function loadPostsAPI(lastId) { // 3 전달되면
-																//return axios.get('/api/posts', data) // 4 데이터가 간다 front
-																// 보통 get 방식은 데이터를 못 넣기때문에 쿼리스트링으로 넣어줘야한다 (주소), etc : limit=10&offset=10
-																// 포스트 등은 데이터 캐싱이 안되지만, 겟은 데이터 캐싱을 같이 할 수 있다
-																// lastId 가 undefined 인 경우 0
+	//return axios.get('/api/posts', data) // 4 데이터가 간다 front
+	// 보통 get 방식은 데이터를 못 넣기때문에 쿼리스트링으로 넣어줘야한다 (주소), etc : limit=10&offset=10
+	// 포스트 등은 데이터 캐싱이 안되지만, 겟은 데이터 캐싱을 같이 할 수 있다
+	// lastId 가 undefined 인 경우 0
 	return axios.get(`/posts?lastId=${lastId || 0}`) // 4 데이터가 간다 ,
 }
 
 function* loadPosts(action) { // 1 액션에서
 	try {
-		console.log('Sagas:: loadPosts 실행중', action.data)
+		console.log('Sagas:: loadPosts 실행중', action.lastId)
 		const result = yield call(loadPostsAPI, action.lastId) // 2 데이터를 꺼내서
 		//yield delay(1000) front
 		console.log('loadPosts 완료:: ', result)
@@ -143,16 +143,38 @@ function* loadPosts(action) { // 1 액션에서
 		yield put({
 			type: LOAD_POSTS_FAILURE,
 			error: err.response.data,
+		});
+	}
+}
+
+function loadPostAPI(data) {
+	return axios.get(`/post/${data}`)
+}
+
+function* loadPost(action) {
+	try {
+		const result = yield call(loadPostAPI, action.data)
+		console.log('saga loadPost 요청 :: ', action.data)
+		yield put({
+			type: LOAD_POST_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga loadPost 성공 :: ', result)
+	} catch (err) {
+		console.error('saga loadPost 실패 :: ', err)
+		yield put({
+			type: LOAD_POST_FAILURE,
+			error: err.response.data,
 		})
 	}
 }
 
 
 function addPostAPI(data) { // 3 전달되면
-														//return axios.post('/api/post', data) // 4 데이터가 간다 front
-														// data content 가 req.body.content 로 백엔드에 변환
-														//return axios.post('/post', {content: data}) // 4 데이터가 간다,
-														// form data 는 {content: data} 와 같이 감싸면 안된다, 바로 data 로 넣어줘야함
+	//return axios.post('/api/post', data) // 4 데이터가 간다 front
+	// data content 가 req.body.content 로 백엔드에 변환
+	//return axios.post('/post', {content: data}) // 4 데이터가 간다,
+	// form data 는 {content: data} 와 같이 감싸면 안된다, 바로 data 로 넣어줘야함
 	return axios.post('/post', data) // 4 데이터가 간다
 }
 
@@ -186,7 +208,7 @@ function* addPost(action) { // 1 액션에서
 }
 
 function removePostAPI(data) { // 3 전달되면
-															 //return axios.post('/api/post', data) // 4 데이터가 간다 front
+	//return axios.post('/api/post', data) // 4 데이터가 간다 front
 	return axios.delete(`/post/${data}`) // 4 데이터가 간다 back //delete 의 data 는 post.id (PostCard.js)에서 확인 가능
 }
 
@@ -215,8 +237,8 @@ function* removePost(action) { // 1 액션에서
 }
 
 function addCommentAPI(data) { // 3 전달되면
-															 //주소는 백엔드와 프론트의 약속일뿐 정해진건없다
-															 //return axios.post(`/api/post/${data.postId}/comment`, data) // 4 데이터가 간다 // front
+	//주소는 백엔드와 프론트의 약속일뿐 정해진건없다
+	//return axios.post(`/api/post/${data.postId}/comment`, data) // 4 데이터가 간다 // front
 	return axios.post(`/post/${data.postId}/comment`, data) // 4 데이터가 간다 // POST /post/1/comment
 }
 
@@ -240,6 +262,9 @@ function* addComment(action) { // 1 액션에서
 	}
 }
 
+function* watchLoadPost() {
+	yield takeLatest(LOAD_POST_REQUEST, loadPost)
+}
 
 function* watchRetweet() {
 	yield takeLatest(RETWEET_REQUEST, retweet)
@@ -275,6 +300,7 @@ function* watchAddComment() {
 
 export default function* postSaga() {
 	yield all([
+		fork(watchLoadPost),
 		fork(watchRetweet),
 		fork(watchUploadImages),
 		fork(watchLikePost),

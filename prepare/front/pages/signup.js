@@ -3,10 +3,13 @@ import AppLayout from '../component/AppLayout'
 import Head from 'next/head'
 import {Form, Input, Checkbox, Button} from 'antd'
 import useInput from '../hooks/useInput'
+import axios from 'axios'
+import {END} from 'redux-saga'
 import styled from 'styled-components'
-import {SIGN_UP_REQUEST} from "../reducers/user";
+import {LOAD_MY_INFO_REQUEST, SIGN_UP_REQUEST} from "../reducers/user";
 import {useDispatch, useSelector} from "react-redux";
 import Router from "next/router";
+import wrapper from "../store/configureStore";
 
 const ErrorMessage = styled.div`
 	color: red;
@@ -14,7 +17,7 @@ const ErrorMessage = styled.div`
 
 const Signup = () => {
 	const dispatch = useDispatch()
-	const { signUpLoading, signUpDone, signUpError, me } = useSelector((state) => state.user)
+	const {signUpLoading, signUpDone, signUpError, me} = useSelector((state) => state.user)
 
 	useEffect(() => {
 		if (me && me.id) { // 회원가입 페이지에서 로그인했을 경우 main 화면으로
@@ -22,13 +25,13 @@ const Signup = () => {
 		}
 	}, [me && me.id])
 
-	useEffect(()=>{
+	useEffect(() => {
 		if (signUpDone) { // 회원 가입이 완료되면
 			Router.replace('/') // 메인 페이지로 이동
 		}
 	}, [signUpDone])
 
-	useEffect(()=> {
+	useEffect(() => {
 		if (signUpError) {
 			alert('회원가입 에러 : ' + signUpError)
 		}
@@ -115,5 +118,22 @@ const Signup = () => {
 			</AppLayout>
 	)
 }
+
+// login 여부에 따라 화면이 바뀌기 때문에 SSR 적용
+export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+	console.log('signup getServerSideProps start ::')
+	console.log(context.req.headers)
+	const cookie = context.req ? context.req.headers.cookie : '';
+	axios.defaults.headers.Cookie = '';
+	if (context.req && cookie) {
+		axios.defaults.headers.Cookie = cookie;
+	}
+	context.store.dispatch({
+		type: LOAD_MY_INFO_REQUEST,
+	})
+	context.store.dispatch(END)
+	console.log('signup getServerSideProps END::')
+	await context.store.sagaTask.toPromise()
+})
 
 export default Signup

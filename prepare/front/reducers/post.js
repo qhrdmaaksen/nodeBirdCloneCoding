@@ -3,7 +3,8 @@ import produce from 'immer'
 //import faker from 'faker' front
 
 export const initialState = {
-	mainPosts: [],
+	mainPosts: [], // 게시물 여러개
+	singlePost: null, // 게시물 하나만
 	imagePaths: [], // 이미지 경로들이 저장됨
 	hasMorePosts: true, // 더 많은 게시물 가져오기
 	likePostLoading: false, // 라이크 로드중 로딩
@@ -21,6 +22,9 @@ export const initialState = {
 	loadPostsLoading: false, // 화면 로드중 로딩
 	loadPostsDone: false, // 화면 로드 완료되었을때 true 변환
 	loadPostsError: null,
+	loadPostLoading: false, // 게시글 로드중 로딩
+	loadPostDone: false, // 게시글 로드 완료되었을때 true 변환
+	loadPostError: null,
 	addPostLoading: false, // 게시물 등록중 로딩
 	addPostDone: false, // 게시물 추가가 완료되었을때 true 변환
 	addPostError: null,
@@ -55,6 +59,10 @@ export const initialState = {
 export const LOAD_POSTS_REQUEST = ' LOAD_POSTS_REQUEST'; // 화면을 로딩하면 바로 LOAD_POSTS_REQUEST 를 호출해줄것
 export const LOAD_POSTS_SUCCESS = ' LOAD_POSTS_SUCCESS';
 export const LOAD_POSTS_FAILURE = ' LOAD_POSTS_FAILURE';
+
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST' // 게시물을 로딩하면 바로 LOAD_POST_REQUEST 를 호출해줄것
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS'
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE'
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST'; // 변수로 따로 만들어줘야 중간에 오타가나는 일을 막을 수 있다
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -123,6 +131,22 @@ const dummyComment = (data) => ({
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	// immer 사용시 state 를 draft 로 교체해주며, switch 문인걸 인식하고 break 를 까먹지말자
 	switch (action.type) {
+		case LOAD_POST_REQUEST:
+			draft.loadPostLoading = true
+			draft.loadPostDone = false
+			draft.loadPostError = null
+			console.log('reducer LOAD_POST_REQUEST 요청:: ')
+			break
+		case LOAD_POST_SUCCESS:
+			draft.singlePost = action.data // 하나의 게시물만 로드
+			draft.loadPostLoading = false
+			draft.loadPostDone = true
+			console.log('reducer LOAD_POST_SUCCESS 성공:: ')
+			break
+		case LOAD_POST_FAILURE:
+			draft.loadPostLoading = false
+			draft.loadPostError = action.error
+			console.error('reducer LOAD_POST_FAILURE 실패:: ', action.error)
 		case REMOVE_IMAGE:
 			draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data)
 			console.log('reducer REMOVE_IMAGE 성공')

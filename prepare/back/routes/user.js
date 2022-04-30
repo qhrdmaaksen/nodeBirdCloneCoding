@@ -37,6 +37,43 @@ router.get('/', async (req, res, next) => { // GET /user
 		next(error)
 	}
 })
+// 특정 사용자 정보 가져오기
+router.get('/:userId', async (req, res, next) => { // GET /user/1
+	console.log('back req.headers ::: ', req.headers)
+	try { // 사용자 불러오기
+		const fullUserWithoutPassword = await User.findOne({ // 모든 정보를 다 가지고있는 password 제외
+			where: {id: req.params.userId},
+			//attributes: ['id', 'nickname', 'email'], // 내가 원하는 정보만 가져올수있다
+			attributes: {
+				exclude: ['password'], // 비밀번호 정보는 들어오지 못하게한다
+			},
+			include: [{ // models 의 user 에 내가쓴 게시글 팔로우 팔로윙 을 가져옴
+				model: Post,
+				attributes: ['id'],
+			}, {
+				model: User, // as 를 사용해줬다면 똑같이 as 작성해주면됨
+				as: 'Followings',
+				attributes: ['id'],
+			}, {
+				model: User,
+				as: 'Followers',
+				attributes: ['id'],
+			}]
+		})
+		if (fullUserWithoutPassword) {
+			const data = fullUserWithoutPassword.toJSON() // sequel 에서 가져온 data 는 우리가 쓸수있는 data 로 바꿈
+			data.Posts = data.Posts.length // 개인 정보 침해 예방
+			data.Followers = data.Followers.length
+			data.Followings = data.Followings.length
+			res.status(200).json(data)
+		} else {
+			res.status(404).json('존재하지않는 사용자입니다.')
+		}
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
 
 /*router.post('/login', (req, res, next) => { // POST /user/login
 })*/
