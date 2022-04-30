@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react' // Next 에서는 이 구문이 필요가 없다.
 import {useDispatch, useSelector} from 'react-redux'
 import {END} from 'redux-saga'
+import axios from 'axios'
 import AppLayout from '../component/AppLayout'
 import PostForm from '../component/PostForm'
 import PostCard from "../component/PostCard";
@@ -67,9 +68,25 @@ const Home = () => {
 	)
 }
 
-//  Home 보다 먼저 실행이 된다 ( server 쪽에서 실행) (SSR)
+
+//  Home 보다 먼저 실행이 된다 ( browser 가 아닌 front server 쪽에서 실행) (SSR)
 // context 는 요청/응답과 SSR에 관련된 정보가 들어있는 객체이고요
+/*(브라우저) 쿠키 프론트서버로 전달 ->  (프론트서버) 전달받은 쿠키 저장해서
+백엔드 서버로 요청 -> 백엔드서버 쿠키에 따른 데이터 응답 -> 프론트서버
+데이터와 컴포넌트 조합 -> 브라우저*/
 export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+	// server 쪽에서 실행되면 context.req 가 존재함, 서버쪽 쿠키 전달
+	/*getServerSideProps는 프론트 서버에서 실행되는 코드입니다. 사용자들은 많은 수의 브라우저로 접근하지만
+	프론트 서버는 하나이므로 axios.defaults.headers.Cookie=쿠키 로 쿠키를 설정하게 되면 프론트 서버에
+	이 쿠키가 설정되어 버립니다. 모든 브라우저가 프론트 서버를 거쳐 백엔드
+	서버로 요청을 보낼 때 같은 쿠키가 적용되어버리는 것입니다.	그래서 한 번 설정했다가 요청을 보낸 다음에는
+	axios.defaults.headers.Cookie = ''로 비워주는 것입니다.*/
+	const cookie = context.req ? context.req.headers.cookie : '';
+	axios.defaults.headers.Cookie = ''; // 쿠키를 사용하지 않고 요청을 보낼때는 비워줌
+	// cookie 공유 문제를 해결 장치
+	if (context.req && cookie) { // 서버일때와 cookie 가 있을때
+		axios.defaults.headers.Cookie = cookie; // 쿠키를 써서 요청을 보낼땐 쿠키를 넣어줌
+	}
 	context.store.dispatch({ // 매번 로그인 상태를 복구해주기 위해서 만듬
 		type: LOAD_MY_INFO_REQUEST,
 	});

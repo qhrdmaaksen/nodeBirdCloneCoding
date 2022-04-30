@@ -6,6 +6,7 @@ const {isLoggedIn, isNotLoggedIn} = require('./middlewares')
 const router = express.Router()
 
 router.get('/', async (req, res, next) => { // GET /user
+	console.log('back req.headers ::: ', req.headers)
 	try { // 사용자 불러오기
 		if (req.user) { // 사용자가 있다면
 			const fullUserWithoutPassword = await User.findOne({ // 모든 정보를 다 가지고있는 password 제외

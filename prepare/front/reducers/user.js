@@ -1,6 +1,9 @@
 import produce from 'immer'
 
 export const initialState = {
+	loadUserLoading: false, // 상대 정보 보기 시도중일땐 로딩중 띄울거임
+	loadUserDone: false, // 상대 정보 보기 됨
+	loadUserError: null, // 상대 정보 보기중일때 에러 없앰
 	loadMyInfoLoading: false, // 유저 정보 보기 시도중일땐 로딩중 띄울거임
 	loadMyInfoDone: false, // 유저 정보 보기 됨
 	loadMyInfoError: null, // 유저 정보 보기중일때 에러 없앰
@@ -34,6 +37,7 @@ export const initialState = {
 	me: null,
 	signUpData: {}, // 회원 가입 데이터
 	loginData: {},
+	userInfo: null,
 }
 
 // 로그인 액션 생성기 thunk
@@ -52,6 +56,10 @@ export const initialState = {
 // }
 
 // actions
+export const LOAD_USER_REQUEST = 'LOAD_USER_REQUEST'
+export const LOAD_USER_SUCCESS = 'LOAD_USER_SUCCESS'
+export const LOAD_USER_FAILURE = 'LOAD_USER_FAILURE'
+
 export const LOAD_MY_INFO_REQUEST = 'LOAD_MY_INFO_REQUEST'
 export const LOAD_MY_INFO_SUCCESS = 'LOAD_MY_INFO_SUCCESS'
 export const LOAD_MY_INFO_FAILURE = 'LOAD_MY_INFO_FAILURE'
@@ -128,6 +136,25 @@ export const logoutRequestAction = () => ({
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	switch (action.type) {
+		case LOAD_USER_REQUEST:
+			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
+			draft.loadUserLoading = true
+			draft.loadUserDone = false
+			draft.loadUserError = null // 로딩 중일때는 에러 없앰
+			console.log('reducer myInfo 요청')
+			break;
+		case LOAD_USER_SUCCESS:
+			draft.userInfo = action.data // back 상대 정보가 들어있음
+			draft.loadUserLoading = false
+			draft.loadUserDone = true
+			//draft.me = dummyUser(action.data)
+			console.log('reducer myInfo 성공')
+			break;
+		case LOAD_USER_FAILURE:
+			console.error('loadUserFail 실패:: ' + action.error)
+			draft.loadUserLoading = false
+			draft.loadUserError = action.error
+			break;
 		case LOAD_MY_INFO_REQUEST:
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.loadMyInfoLoading = true
@@ -136,7 +163,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			console.log('reducer myInfo 요청')
 			break;
 		case LOAD_MY_INFO_SUCCESS:
-			draft.me = action.data // back 사용자 정보가 들어있음
+			draft.me = action.data // back 내 정보가 들어있음
 			draft.loadMyInfoLoading = false
 			draft.loadMyInfoDone = true
 			//draft.me = dummyUser(action.data)
@@ -148,22 +175,22 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.loadMyInfoError = action.error
 			break;
 		case REMOVE_FOLLOWER_REQUEST:
-			draft.removeFollowerLoading =true
-			draft.removeFollowerDone=false
-			draft.removeFollowerError=null
+			draft.removeFollowerLoading = true
+			draft.removeFollowerDone = false
+			draft.removeFollowerError = null
 			console.log('reducer removeFollower 요청')
 			break;
 		case REMOVE_FOLLOWER_SUCCESS:
 			// 나의 팔로워 제거
-			draft.me.Followers = draft.me.Followers.filter((v)=>v.id !== action.data.UserId)
-			draft.removeFollowerLoading=false
-			draft.removeFollowerDone=true
+			draft.me.Followers = draft.me.Followers.filter((v) => v.id !== action.data.UserId)
+			draft.removeFollowerLoading = false
+			draft.removeFollowerDone = true
 			console.log('reducer removeFollower 성공')
 			break
 		case REMOVE_FOLLOWER_FAILURE:
 			console.error('removeFollowerFail 실패:: ' + action.error)
-			draft.removeFollowerLoading=false
-			draft.removeFollowerError=action.error
+			draft.removeFollowerLoading = false
+			draft.removeFollowerError = action.error
 		case FOLLOW_REQUEST:
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.followLoading = true

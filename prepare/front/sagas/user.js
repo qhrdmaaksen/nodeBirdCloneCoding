@@ -10,7 +10,7 @@ import {
 	LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS,
 	LOAD_MY_INFO_FAILURE,
 	LOAD_MY_INFO_REQUEST,
-	LOAD_MY_INFO_SUCCESS,
+	LOAD_MY_INFO_SUCCESS, LOAD_USER_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS,
 	LOG_IN_FAILURE,
 	LOG_IN_REQUEST,
 	LOG_IN_SUCCESS,
@@ -278,7 +278,29 @@ function* removeFollower(action) {
 		})
 	}
 }
-
+function loadUserAPI(data){
+	return axios.get(`/user/${data}`)
+}
+function* loadUser(action){
+	try {
+	    const result = yield call(loadUserAPI, action.data)
+		console.log('saga loadUser 실행 :: ', action.data)
+		yield put({
+			type: LOAD_USER_SUCCESS,
+			data: result.data
+		})
+		console.log('saga loadUser 성공 :: ', result)
+	}catch (err) {
+		console.error('saga loadUser Failure 실패 :: ', err)
+		yield put({
+			type: LOAD_USER_FAILURE,
+			error: err.response.data
+		})
+	}
+}
+function* watchLoadUser(){
+	yield takeLatest(LOAD_USER_REQUEST, loadUser)
+}
 function* watchRemoveFollower() {
 	yield takeLatest(REMOVE_FOLLOWER_REQUEST, removeFollower)
 }
@@ -321,6 +343,7 @@ function* watchSignUp() {	// 회원가입 액션이 실행될때까지 기다리
 
 export default function* userSaga() {
 	yield all([
+			fork(watchLoadUser),
 		fork(watchRemoveFollower),
 		fork(watchLoadFollowers),
 		fork(watchLoadFollowings),
