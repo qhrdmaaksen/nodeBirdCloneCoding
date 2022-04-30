@@ -13,7 +13,7 @@ import rootSaga from '../sagas'
 // }
 
 const configureStore = (context) => {
-	console.log(context)
+	console.log('configureStore context :: ', context)
 	const sagaMiddleware = createSagaMiddleware() // saga 설정 방법
 	const middlewares = [sagaMiddleware]
 	const enhancer =

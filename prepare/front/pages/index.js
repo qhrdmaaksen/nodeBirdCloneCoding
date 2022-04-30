@@ -1,10 +1,12 @@
 import React, {useEffect} from 'react' // Next 에서는 이 구문이 필요가 없다.
 import {useDispatch, useSelector} from 'react-redux'
+import {END} from 'redux-saga'
 import AppLayout from '../component/AppLayout'
 import PostForm from '../component/PostForm'
 import PostCard from "../component/PostCard";
 import {LOAD_POSTS_REQUEST} from '../reducers/post'
 import {LOAD_MY_INFO_REQUEST} from '../reducers/user'
+import wrapper from "../store/configureStore";
 
 const Home = () => {
 	const dispatch = useDispatch()
@@ -18,6 +20,7 @@ const Home = () => {
 		}
 	}, [retweetError])
 
+	/* CSR
 	useEffect(() => { // 컴포넌트 디드마운트와 같은 효과 가능 , 뒤에 빈배열만 넣는다면
 		dispatch({ // 매번 로그인 상태를 복구해주기 위해서 만듬
 			type: LOAD_MY_INFO_REQUEST,
@@ -25,7 +28,7 @@ const Home = () => {
 		dispatch({
 			type: LOAD_POSTS_REQUEST,
 		});
-	}, []);
+	}, []);*/
 
 	// 스크롤이 끝까지 내려갔을때 다시 로딩하게하는코드
 	/*유즈 이펙트에서 윈도우 addEventListener 를 사용할땐 항상 리턴을 해줘야한다.
@@ -49,7 +52,7 @@ const Home = () => {
 		return () => {
 			window.removeEventListener('scroll', onScroll)
 		};
-	}, [hasMorePosts, loadPostsLoading,mainPosts]);
+	}, [hasMorePosts, loadPostsLoading, mainPosts]);
 
 	return (
 			<AppLayout>
@@ -63,5 +66,20 @@ const Home = () => {
 			</AppLayout>
 	)
 }
+
+//  Home 보다 먼저 실행이 된다 ( server 쪽에서 실행) (SSR)
+// context 는 요청/응답과 SSR에 관련된 정보가 들어있는 객체이고요
+export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+	context.store.dispatch({ // 매번 로그인 상태를 복구해주기 위해서 만듬
+		type: LOAD_MY_INFO_REQUEST,
+	});
+	context.store.dispatch({
+		type: LOAD_POSTS_REQUEST,
+	});
+	// request 가 success 로 바뀌기까지 기다려주기 위한 장치
+	context.store.dispatch(END)
+	await context.store.sagaTask.toPromise()
+	console.log('context :: ', context)
+})
 
 export default Home
