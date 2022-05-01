@@ -7,7 +7,7 @@ const {Op} = require("sequelize");
 const router = express.Router()
 
 router.get('/', async (req, res, next) => { // GET /user
-	console.log('back req.headers ::: ', req.headers)
+	console.log('back req.headers :::: ', req.headers)
 	try { // 사용자 불러오기
 		if (req.user) { // 사용자가 있다면
 			const fullUserWithoutPassword = await User.findOne({ // 모든 정보를 다 가지고있는 password 제외
@@ -38,9 +38,44 @@ router.get('/', async (req, res, next) => { // GET /user
 		next(error)
 	}
 })
+
+router.get('/followers', isLoggedIn, async (req, res, next) => { // GET /user/followers
+	try {
+		const user = await User.findOne({where: {id: req.user.id}}) // 나를 찾는다
+		if (!user) {
+			res.status(403).send('팔로워 :::: 없는 사람을 찾으려고 하십니다')
+		}
+		// 내 팔로워즈 겟 팔로워즈
+		const followers = await user.getFollowers({
+			limit: parseInt(req.query.limit,10), //  limit 만큼 더 보여준다
+		})
+		res.status(200).json(followers) // 팔로워즈 응답
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.get('/followings', isLoggedIn, async (req, res, next) => { // GET /user/followings
+	try {
+		const user = await User.findOne({where: {id: req.user.id}}) // 나를 찾는다
+		if (!user) {
+			res.status(403).send('팔로윙 :::: 없는 사람을 찾으려고 하십니다')
+		}
+		// 내 팔로윙즈 겟 팔로윙즈
+		const followings = await user.getFollowings({
+			limit: parseInt(req.query.limit,10), // limit 만큼 더 보여준다
+		})
+		res.status(200).json(followings) // 팔로윙즈 응답
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
 // 특정 사용자 정보 가져오기
 router.get('/:userId', async (req, res, next) => { // GET /user/1
-	console.log('back req.headers ::: ', req.headers)
+	console.log('back req.headers :::: ', req.headers)
 	try { // 사용자 불러오기
 		const fullUserWithoutPassword = await User.findOne({ // 모든 정보를 다 가지고있는 password 제외
 			where: {id: req.params.userId},
@@ -68,7 +103,7 @@ router.get('/:userId', async (req, res, next) => { // GET /user/1
 			data.Followings = data.Followings.length
 			res.status(200).json(data)
 		} else {
-			res.status(404).json('존재하지않는 사용자입니다.')
+			res.status(404).json('특정 사용자 :::: 존재하지않는 사용자입니다.')
 		}
 	} catch (error) {
 		console.error(error)
@@ -229,7 +264,7 @@ router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => { // PATCH
 	try {
 		const user = await User.findOne({where: {id: req.params.userId}}) // user 가 있는지 확인
 		if (!user) {
-			res.status(403).send(':::없는 사람을 팔로우 하려고 하십니다')
+			res.status(403).send('::::없는 사람을 팔로우 하려고 하십니다')
 		}
 		await user.addFollowers(req.user.id)
 		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
@@ -243,7 +278,7 @@ router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => { // DELE
 	try {
 		const user = await User.findOne({where: {id: req.params.userId}}) // user 가 있는지 확인
 		if (!user) {
-			res.status(403).send(':::없는 사람을 언팔로우 하려고 하십니다')
+			res.status(403).send('::::없는 사람을 언팔로우 하려고 하십니다')
 		}
 		await user.removeFollowers(req.user.id) // 그 사람있는지 검사해서 그 사람의 팔로워(나를)제거
 		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
@@ -257,7 +292,7 @@ router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { // DE
 	try {
 		const user = await User.findOne({where: {id: req.params.userId}}) // 대상을 찾고
 		if (!user) {
-			res.status(403).send(':::없는 사람을 차단하려고 하십니다')
+			res.status(403).send('::::없는 사람을 차단하려고 하십니다')
 		}
 		await user.removeFollowings(req.user.id) // 내 아이디에서 유저 삭제
 		res.status(200).json({UserId: parseInt(req.params.userId, 10)}) // 상대방 아이디
@@ -267,33 +302,7 @@ router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { // DE
 	}
 })
 
-router.get('/followers', isLoggedIn, async (req, res, next) => { // GET /user/followers
-	try {
-		const user = await User.findOne({where: {id: req.user.id}}) // 나를 찾는다
-		if (!user) {
-			res.status(403).send(':::없는 사람을 찾으려고 하십니다')
-		}
-		const followers = await user.getFollowers() // 내 팔로워즈 겟 팔로워즈
-		res.status(200).json(followers) // 팔로워즈 응답
-	} catch (error) {
-		console.error(error)
-		next(error)
-	}
-})
 
-router.get('/followings', isLoggedIn, async (req, res, next) => { // GET /user/followings
-	try {
-		const user = await User.findOne({where: {id: req.user.id}}) // 나를 찾는다
-		if (!user) {
-			res.status(403).send(':::없는 사람을 찾으려고 하십니다')
-		}
-		const followings = await user.getFollowings() // 내 팔로윙즈 겟 팔로윙즈
-		res.status(200).json(followings) // 팔로윙즈 응답
-	} catch (error) {
-		console.error(error)
-		next(error)
-	}
-})
 
 
 module.exports = router

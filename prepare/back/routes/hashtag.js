@@ -22,7 +22,7 @@ router.get('/:hashtag', async (req, res, next) => { // GET /hashtag/노드
 			],
 			include: [{
 				model: Hashtag,
-				where: {name: req.params.hashtag},
+				where: {name: decodeURIComponent(req.params.hashtag)}, //front 에서 encode 로 요청이왔고 응답은 decode 로 설정
 			},{
 				model: User, // 게시글 작성자
 				attributes: ['id', 'nickname'],

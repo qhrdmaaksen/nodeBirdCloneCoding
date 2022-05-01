@@ -48,18 +48,18 @@ function retweetAPI(data) {
 function* retweet(action) {
 	try {
 		const result = yield call(retweetAPI, action.data)
-		console.log('saga retweet 실행::', action.data)
+		console.log('saga retweet 실행:::', action.data)
 		yield put({
 			type: RETWEET_SUCCESS,
 			data: result.data,
 		})
-		console.log('saga retweet 성공::', result)
+		console.log('saga retweet 성공:::', result)
 	} catch (err) {
+		console.error('saga retweet 실패 ::: ', err)
 		yield put({
 			type: RETWEET_FAILURE,
 			error: err.response.data
 		})
-		console.error('saga retweet 실패 :: ', err)
 	}
 }
 
@@ -70,18 +70,18 @@ function uploadImagesAPI(data) {
 function* uploadImages(action) {
 	try {
 		const result = yield call(uploadImagesAPI, action.data)
-		console.log('saga uploadImages 실행:: ', action.data)
+		console.log('saga uploadImages 실행::: ', action.data)
 		yield put({
 			type: UPLOAD_IMAGES_SUCCESS,
 			data: result.data
 		})
-		console.log('saga uploadImages 성공:: ', result)
+		console.log('saga uploadImages 성공::: ', result)
 	} catch (err) {
+		console.error('saga uploadImages error::: ', err)
 		yield put({
 			type: UPLOAD_IMAGES_FAILURE,
 			error: err.response.data
 		})
-		console.error('saga uploadImages error:: ', err)
 	}
 }
 
@@ -92,18 +92,18 @@ function likePostAPI(data) { // 3 전달되면
 function* likePost(action) { // 1 액션에서
 	try {
 		const result = yield call(likePostAPI, action.data) // 2 데이터를 꺼내서
-		console.log('likePost 실행중::', result)
+		console.log('likePost 실행중:::', result)
 		yield put({
 			type: LIKE_POST_SUCCESS,
 			data: result.data, // back, postId, userId 들어있음
 		})
-		console.log('likePost 완료::', result)
+		console.log('likePost 완료:::', result)
 	} catch (err) {
+		console.error('likePost error::: ', err)
 		yield put({
 			type: LIKE_POST_FAILURE,
 			error: err.response.data,
 		})
-		console.error('likePost error:: ', err)
 	}
 }
 
@@ -114,18 +114,18 @@ function unlikePostAPI(data) { // 3 전달되면
 function* unlikePost(action) { // 1 액션에서
 	try {
 		const result = yield call(unlikePostAPI, action.data) // 2 데이터를 꺼내서
-		console.log('unlikePost 실행중::', result)
+		console.log('unlikePost 실행중:::', result)
 		yield put({
 			type: UNLIKE_POST_SUCCESS,
 			data: result.data, // back, postId,userId 들어있음
 		})
-		console.log('UNLIKEPost 완료::', result)
+		console.log('UNLIKEPost 완료:::', result)
 	} catch (err) {
+		console.error('UNLIKEPost error::: ', err)
 		yield put({
 			type: UNLIKE_POST_FAILURE,
 			error: err.response.data
 		})
-		console.error('UNLIKEPost error:: ', err)
 	}
 }
 
@@ -139,21 +139,21 @@ function loadPostsAPI(lastId) { // 3 전달되면
 
 function* loadPosts(action) { // 1 액션에서
 	try {
-		console.log('Sagas:: loadPosts 실행중', action.lastId)
+		console.log('Sagas loadPosts 실행중::: ', action.lastId)
 		const result = yield call(loadPostsAPI, action.lastId) // 2 데이터를 꺼내서
 		//yield delay(1000) front
-		console.log('loadPosts 완료:: ', result)
+		console.log('sagas loadPosts 완료::: ', result)
 		yield put({
 			type: LOAD_POSTS_SUCCESS,
 			// data: generateDummyPost(10), // data 10 개 front
 			data: result.data,
 		})
 	} catch (err) {
+		console.error('saga loadPosts error: ', err)
 		yield put({
 			type: LOAD_POSTS_FAILURE,
 			error: err.response.data,
 		});
-		console.error('saga loadPosts error: ', err)
 	}
 }
 
@@ -164,18 +164,18 @@ function loadPostAPI(data) {
 function* loadPost(action) {
 	try {
 		const result = yield call(loadPostAPI, action.data)
-		console.log('saga loadPost 요청 :: ', action.data)
+		console.log('saga loadPost 요청 ::: ', action.data)
 		yield put({
 			type: LOAD_POST_SUCCESS,
 			data: result.data,
 		})
-		console.log('saga loadPost 성공 :: ', result)
+		console.log('saga loadPost 성공 ::: ', result)
 	} catch (err) {
+		console.error('saga loadPost 실패 ::: ', err)
 		yield put({
 			type: LOAD_POST_FAILURE,
 			error: err.response.data,
 		})
-		console.error('saga loadPost 실패 :: ', err)
 	}
 }
 
@@ -193,7 +193,7 @@ function* addPost(action) { // 1 액션에서
 		const result = yield call(addPostAPI, action.data) // 2 데이터를 꺼내서
 		//yield delay(1000) front
 		//const id = shortId.generate() // front 의 더미 아디
-		console.log('addPost 실행중::', result)
+		console.log('addPost 실행중:::', result)
 		yield put({
 			type: ADD_POST_SUCCESS,
 			/*data: { // front dummy
@@ -202,14 +202,14 @@ function* addPost(action) { // 1 액션에서
 			}*/
 			data: result.data, // back, 실제로 게시글이 들어있음
 		})
-		console.log('addPost 완료::', result)
+		console.log('addPost 완료:::', result)
 		yield put({
 			type: ADD_POST_TO_ME,
 			// data: id, // front dummy
 			data: result.data.id, // back
 		})
 	} catch (err) {
-		console.error('saga addPost error:: ', err)
+		console.error('saga addPost error::: ', err)
 		yield put({
 			type: ADD_POST_FAILURE,
 			error: err.response.data
@@ -226,23 +226,23 @@ function* removePost(action) { // 1 액션에서
 	try { // 포스트 리듀서상태와 유저리듀서상태와 동시에 한방에 바꿀수 없기때문에 액션을 두번으로 바꿔준다,
 		const result = yield call(removePostAPI, action.data) // 2 데이터를 꺼내서
 		//yield delay(1000) front
-		console.log('removePost 실행:: ', action.data)
+		console.log('removePost 실행::: ', action.data)
 		yield put({
 			type: REMOVE_POST_SUCCESS,
 			data: result.data, // 어떤 게시물을 지웠는지 id 가있을것,
 		})
-		console.log('removePost 완료:: ', result)
+		console.log('removePost 완료::: ', result)
 		yield put({
 			type: REMOVE_POST_OF_ME,
 			//data: action.data, front
 			data: action.data,  // action 이 들어왔을때 데이터
 		})
 	} catch (err) {
+		console.error('saga removePost error: ', err)
 		yield put({
 			type: REMOVE_POST_FAILURE,
 			error: err.response.data
 		})
-		console.error('saga removePost error: ', err)
 	}
 }
 
@@ -256,61 +256,68 @@ function* addComment(action) { // 1 액션에서
 	try {
 		const result = yield call(addCommentAPI, action.data) // 2 데이터를 꺼내서 //back
 		//yield delay(1000) front
-		console.log('addComment 실행중 ::', action.data)
+		console.log('addComment 실행중 :::', action.data)
 		yield put({
 			type: ADD_COMMENT_SUCCESS,
 			//data: action.data // front
 			data: result.data,
 		})
-		console.log('addComment 완료::', result)
+		console.log('addComment 완료:::', result)
 	} catch (err) {
+		console.error('saga addComment error::: ', err)
 		yield put({
 			type: ADD_COMMENT_FAILURE,
 			error: err.response.data
 		})
-		console.error('saga addComment error:: ', err)
 	}
 }
-function loadUserPostsAPI(data, lastId){
+
+function loadUserPostsAPI(data, lastId) {
 	return axios.get(`/user/${data}/posts?lastId=${lastId || 0}`)
 }
-function* loadUserPosts(action){
+
+function* loadUserPosts(action) {
 	try {
-	    const result = yield call(loadUserPostsAPI, action.data, action.lastId)
-		console.log('saga loadUserPosts 실행 :: ', action.data, action.lastId)
+		const result = yield call(loadUserPostsAPI, action.data, action.lastId)
+		console.log('saga loadUserPosts 실행 ::: ', action.data, action.lastId)
 		yield put({
 			type: LOAD_USER_POSTS_SUCCESS,
 			data: result.data,
 		})
-		console.log('saga loadPostsSuccess 성공:: ', result)
-	}catch (err) {
+		console.log('saga loadPostsSuccess 성공::: ', result)
+	} catch (err) {
+		console.error('saga loadUserPosts error ::: ', err)
 		yield put({
 			type: LOAD_USER_POSTS_FAILURE,
 			error: err.response.data,
 		})
-		console.error('saga loadUserPosts error :: ', err)
 	}
 }
-function loadHashtagPostsAPI(data, lastId){ // 인자를 두 개 넘겨줄수도 있다
-	return axios.get(`/hashtag/${data}?lastId=${lastId || 0}`)
+
+function loadHashtagPostsAPI(data, lastId) { // 인자를 두 개 넘겨줄수도 있다
+	// 한글or특수문자 들어가면 error, encode 로 감싸주자
+	return axios.get(`/hashtag/${encodeURIComponent(data)}?lastId=${lastId || 0}`)
 }
-function* loadHashtagPosts(action){
-	try{
+
+function* loadHashtagPosts(action) {
+	try {
+		console.log(`loadHashtagPosts log :::`)
 		const result = yield call(loadHashtagPostsAPI, action.data, action.lastId)
-		console.log('saga loadHashtagPosts 요청 :: ', action.data, action.lastId)
+		console.log('saga loadHashtagPosts 요청 ::: ', action.data, action.lastId)
 		yield put({
 			type: LOAD_HASHTAG_POSTS_SUCCESS,
 			data: result.data,
 		})
-		console.log('saga loadHashtagPosts 성공 :: ')
-	}catch (err) {
+		console.log('saga loadHashtagPosts 성공 ::: ')
+	} catch (err) {
+		console.error('saga loadHashtagPosts error ::: ', err)
 		yield put({
 			type: LOAD_HASHTAG_POSTS_FAILURE,
 			error: err.response.data,
 		})
-		console.error('saga loadHashtagPosts error :: ', err)
 	}
 }
+
 function* watchLoadUserPosts() {
 	yield throttle(5000, LOAD_USER_POSTS_REQUEST, loadUserPosts)
 }

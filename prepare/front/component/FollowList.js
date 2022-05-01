@@ -7,7 +7,7 @@ import {FOLLOW_REQUEST, UNFOLLOW_REQUEST, REMOVE_FOLLOWER_REQUEST} from "../redu
 
 
 // eslint-disable-next-line react/prop-types
-const FollowList = ({header, data}) => {
+const FollowList = ({header, data, onClickMore, loading}) => {
 	const dispatch = useDispatch()
 
 	/*반복문 안에서 onClick 이있다면 반복문에 대한 데이터는 온클릭으로 넘김
@@ -30,11 +30,12 @@ const FollowList = ({header, data}) => {
 					grind={{gutter: 4, xs: 2, sm: 2, md: 3, lg: 3, xl: 3, xxl: 4}}
 					size="small"
 					header={<div>{header}</div>}
-					loadMore={
+					loadMore={(
 						<div style={{textAlign: 'center', margin: '10px 0'}}>
-							<Button>더 보기</Button>
+							{/*더보기 누르면 onClickMore 함수 실행(클릭 시 limit +3씩 늘어남)*/}
+							<Button onClick={onClickMore} loading={loading}>더 보기</Button>
 						</div>
-					}
+					)}
 					bordered
 					dataSource={data}
 					renderItem={(item) => (
@@ -50,6 +51,8 @@ const FollowList = ({header, data}) => {
 FollowList.propTypes = {
 	header: PropTypes.string.isRequired,
 	data: PropTypes.array.isRequired,
+	onClickMore: PropTypes.func.isRequired,
+	loading:PropTypes.bool.isRequired,
 }
 
 export default FollowList
