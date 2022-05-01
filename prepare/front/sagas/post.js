@@ -9,17 +9,27 @@ import {
 	ADD_POST_SUCCESS,
 	LIKE_POST_FAILURE,
 	LIKE_POST_REQUEST,
-	LIKE_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS,
+	LIKE_POST_SUCCESS,
+	LOAD_HASHTAG_POSTS_FAILURE,
+	LOAD_HASHTAG_POSTS_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS,
+	LOAD_POST_FAILURE,
+	LOAD_POST_REQUEST,
+	LOAD_POST_SUCCESS,
 	//generateDummyPost, front
 	LOAD_POSTS_FAILURE,
 	LOAD_POSTS_REQUEST,
-	LOAD_POSTS_SUCCESS,
+	LOAD_POSTS_SUCCESS, LOAD_USER_POSTS_FAILURE,
+	LOAD_USER_POSTS_REQUEST, LOAD_USER_POSTS_SUCCESS,
 	REMOVE_POST_FAILURE,
 	REMOVE_POST_REQUEST,
-	REMOVE_POST_SUCCESS, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS,
+	REMOVE_POST_SUCCESS,
+	RETWEET_FAILURE,
+	RETWEET_REQUEST,
+	RETWEET_SUCCESS,
 	UNLIKE_POST_FAILURE,
 	UNLIKE_POST_REQUEST,
-	UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_FAILURE,
+	UNLIKE_POST_SUCCESS,
+	UPLOAD_IMAGES_FAILURE,
 	UPLOAD_IMAGES_REQUEST,
 	UPLOAD_IMAGES_SUCCESS,
 } from "../reducers/post";
@@ -45,11 +55,11 @@ function* retweet(action) {
 		})
 		console.log('saga retweet 성공::', result)
 	} catch (err) {
-		console.error('saga retweet 실패 :: ', err)
 		yield put({
 			type: RETWEET_FAILURE,
 			error: err.response.data
 		})
+		console.error('saga retweet 실패 :: ', err)
 	}
 }
 
@@ -67,11 +77,11 @@ function* uploadImages(action) {
 		})
 		console.log('saga uploadImages 성공:: ', result)
 	} catch (err) {
-		console.error('saga uploadImages error:: ', err)
 		yield put({
 			type: UPLOAD_IMAGES_FAILURE,
 			error: err.response.data
 		})
+		console.error('saga uploadImages error:: ', err)
 	}
 }
 
@@ -89,11 +99,11 @@ function* likePost(action) { // 1 액션에서
 		})
 		console.log('likePost 완료::', result)
 	} catch (err) {
-		console.error('likePost error:: ', err)
 		yield put({
 			type: LIKE_POST_FAILURE,
 			error: err.response.data,
 		})
+		console.error('likePost error:: ', err)
 	}
 }
 
@@ -111,11 +121,11 @@ function* unlikePost(action) { // 1 액션에서
 		})
 		console.log('UNLIKEPost 완료::', result)
 	} catch (err) {
-		console.error('UNLIKEPost error:: ', err)
 		yield put({
 			type: UNLIKE_POST_FAILURE,
 			error: err.response.data
 		})
+		console.error('UNLIKEPost error:: ', err)
 	}
 }
 
@@ -139,11 +149,11 @@ function* loadPosts(action) { // 1 액션에서
 			data: result.data,
 		})
 	} catch (err) {
-		console.error('loadPosts error: ', err)
 		yield put({
 			type: LOAD_POSTS_FAILURE,
 			error: err.response.data,
 		});
+		console.error('saga loadPosts error: ', err)
 	}
 }
 
@@ -161,11 +171,11 @@ function* loadPost(action) {
 		})
 		console.log('saga loadPost 성공 :: ', result)
 	} catch (err) {
-		console.error('saga loadPost 실패 :: ', err)
 		yield put({
 			type: LOAD_POST_FAILURE,
 			error: err.response.data,
 		})
+		console.error('saga loadPost 실패 :: ', err)
 	}
 }
 
@@ -199,7 +209,7 @@ function* addPost(action) { // 1 액션에서
 			data: result.data.id, // back
 		})
 	} catch (err) {
-		console.error('addPost error:: ', err)
+		console.error('saga addPost error:: ', err)
 		yield put({
 			type: ADD_POST_FAILURE,
 			error: err.response.data
@@ -228,11 +238,11 @@ function* removePost(action) { // 1 액션에서
 			data: action.data,  // action 이 들어왔을때 데이터
 		})
 	} catch (err) {
-		console.error('removePost error: ', err)
 		yield put({
 			type: REMOVE_POST_FAILURE,
 			error: err.response.data
 		})
+		console.error('saga removePost error: ', err)
 	}
 }
 
@@ -254,12 +264,59 @@ function* addComment(action) { // 1 액션에서
 		})
 		console.log('addComment 완료::', result)
 	} catch (err) {
-		console.error('addComment error:: ', err)
 		yield put({
 			type: ADD_COMMENT_FAILURE,
 			error: err.response.data
 		})
+		console.error('saga addComment error:: ', err)
 	}
+}
+function loadUserPostsAPI(data, lastId){
+	return axios.get(`/user/${data}/posts?lastId=${lastId || 0}`)
+}
+function* loadUserPosts(action){
+	try {
+	    const result = yield call(loadUserPostsAPI, action.data, action.lastId)
+		console.log('saga loadUserPosts 실행 :: ', action.data, action.lastId)
+		yield put({
+			type: LOAD_USER_POSTS_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga loadPostsSuccess 성공:: ', result)
+	}catch (err) {
+		yield put({
+			type: LOAD_USER_POSTS_FAILURE,
+			error: err.response.data,
+		})
+		console.error('saga loadUserPosts error :: ', err)
+	}
+}
+function loadHashtagPostsAPI(data, lastId){ // 인자를 두 개 넘겨줄수도 있다
+	return axios.get(`/hashtag/${data}?lastId=${lastId || 0}`)
+}
+function* loadHashtagPosts(action){
+	try{
+		const result = yield call(loadHashtagPostsAPI, action.data, action.lastId)
+		console.log('saga loadHashtagPosts 요청 :: ', action.data, action.lastId)
+		yield put({
+			type: LOAD_HASHTAG_POSTS_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga loadHashtagPosts 성공 :: ')
+	}catch (err) {
+		yield put({
+			type: LOAD_HASHTAG_POSTS_FAILURE,
+			error: err.response.data,
+		})
+		console.error('saga loadHashtagPosts error :: ', err)
+	}
+}
+function* watchLoadUserPosts() {
+	yield throttle(5000, LOAD_USER_POSTS_REQUEST, loadUserPosts)
+}
+
+function* watchLoadHashtagPosts() {
+	yield throttle(5000, LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts)
 }
 
 function* watchLoadPost() {
@@ -305,6 +362,8 @@ export default function* postSaga() {
 		fork(watchUploadImages),
 		fork(watchLikePost),
 		fork(watchUnlikePost),
+		fork(watchLoadUserPosts),
+		fork(watchLoadHashtagPosts),
 		fork(watchLoadPosts),
 		fork(watchAddPost),
 		fork(watchRemovePost),

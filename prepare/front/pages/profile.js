@@ -8,6 +8,7 @@ import {END} from 'redux-saga'
 import {useDispatch, useSelector} from "react-redux";
 import Router from "next/router";
 import {LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST, LOAD_MY_INFO_REQUEST} from '../reducers/user'
+import wrapper from "../store/configureStore";
 //import FollowerList from '../component/FollowerList'
 
 
@@ -49,7 +50,7 @@ const Profile = () => {
 	)
 }
 
-export const getServerSideProps = wrappers.getServerSideProps(async (context) => {
+export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
 	console.log('Profile getServerSideProps Start')
 	console.log(context.req.headers)
 	const cookie = context.req ? context.req.headers.cookie : '';

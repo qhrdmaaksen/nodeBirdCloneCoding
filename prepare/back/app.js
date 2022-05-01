@@ -7,6 +7,7 @@ const path = require('path')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 const passport = require('passport')
+const hashtagRouter = require('./routes/hashtag')
 const db = require('./models') // db 에 sequelize 넣어놓은 상태
 const passportConfig = require('./passport') // 호출 한번해주면됨
 const session = require('express-session')
@@ -66,6 +67,7 @@ app.use('/posts', postsRouter)
 })*/
 app.use('/post', postRouter) // post 가 prefix 로 붙는다
 app.use('/user', userRouter) // user 가 prefix 로 붙는다
+app.use('/hashtag', hashtagRouter)
 
 // 에러 처리 미들웨어가 내부적으로 존재함
 /*app.use((err,req,res,next)=>{ // 기본적으로 처리하지만, 특별히 처리하고싶을 경우 에러 처리 미들웨어를 따로 만들어준다

@@ -19,12 +19,18 @@ export const initialState = {
 	uploadImagesLoading: false, // 이미지 로드 중 로딩
 	uploadImagesDone: false, // 이미지 로드 완료했을때 true 변환
 	uploadImagesError: null,
+	/*loadUserPostsLoading: false, // 특정 사용자 게시글 로드중 로딩
+	loadUserPostsDone: false, // 특정 사용자 게시글 로드 완료시 true 변환
+	loadUserPostsError: null,*/
 	loadPostsLoading: false, // 화면 로드중 로딩
 	loadPostsDone: false, // 화면 로드 완료되었을때 true 변환
 	loadPostsError: null,
 	loadPostLoading: false, // 게시글 로드중 로딩
 	loadPostDone: false, // 게시글 로드 완료되었을때 true 변환
 	loadPostError: null,
+	/*loadHashtagPostsLoading: false, // 해쉬태그 게시글들 로드중 로딩
+	loadHashtagPostsDone: false, // 해쉬태그 게시글 로드 완료되었을때 true 변환
+	loadHashtagPostsError: null,*/
 	addPostLoading: false, // 게시물 등록중 로딩
 	addPostDone: false, // 게시물 추가가 완료되었을때 true 변환
 	addPostError: null,
@@ -56,6 +62,14 @@ export const initialState = {
 }))*/
 
 //게시글 액션
+export const LOAD_HASHTAG_POSTS_REQUEST = 'LOAD_HASHTAG_POSTS_REQUEST'
+export const LOAD_HASHTAG_POSTS_SUCCESS = 'LOAD_HASHTAG_POSTS_SUCCESS'
+export const LOAD_HASHTAG_POSTS_FAILURE = 'LOAD_HASHTAG_POSTS_FAILURE'
+
+export const LOAD_USER_POSTS_REQUEST = 'LOAD_USER_POSTS_REQUEST'; // 특정 사용자의 게시글을 로딩하면 바로 LOAD_POSTS_REQUEST 를 호출해줄것
+export const LOAD_USER_POSTS_SUCCESS = 'LOAD_USER_POSTS_SUCCESS';
+export const LOAD_USER_POSTS_FAILURE = 'LOAD_USER_POSTS_FAILURE';
+
 export const LOAD_POSTS_REQUEST = ' LOAD_POSTS_REQUEST'; // 화면을 로딩하면 바로 LOAD_POSTS_REQUEST 를 호출해줄것
 export const LOAD_POSTS_SUCCESS = ' LOAD_POSTS_SUCCESS';
 export const LOAD_POSTS_FAILURE = ' LOAD_POSTS_FAILURE';
@@ -131,6 +145,89 @@ const dummyComment = (data) => ({
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	// immer 사용시 state 를 draft 로 교체해주며, switch 문인걸 인식하고 break 를 까먹지말자
 	switch (action.type) {
+		case ADD_COMMENT_REQUEST:
+			draft.addCommentLoading = true
+			draft.addCommentDone = false
+			draft.addCommentError = null
+			break;
+		case ADD_COMMENT_SUCCESS: {
+			//action.data.content, postId, userId
+			//const post = draft.mainPosts.find((v) => v.id === action.data.postId) // 게시글 리스트중에 post 찾기 front
+			const post = draft.mainPosts.find((v) => v.id === action.data.PostId) // 게시글 리스트중에 post 찾기 bak
+			//post.Comments.unshift(dummyComment(action.data.content)) // 찾은 post 에 맨 앞에 가짜 댓글 하나 넣어줌 FRONT
+			post.Comments.unshift(action.data) // 찾은 post 에 실제 데이터 back
+			draft.addCommentLoading = false
+			draft.addCommentDone = true
+			break;
+		}
+		case ADD_COMMENT_FAILURE:
+			draft.addCommentLoading = false
+			draft.addCommentError = action.error
+			break;
+		case LIKE_POST_REQUEST:
+			draft.likePostLoading = true;
+			draft.likePostDone = false;
+			draft.likePostError = null;
+			console.log('reducer LIKE_POST_REQUEST 요청::')
+			break;
+		case LIKE_POST_SUCCESS: {
+			// mainPosts 에서 id 가 액션데이터포스트아이디를 찾아서
+			const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+			// 게시글 좋아요 누른 사람들에게 사용자 아이디를 넣어준다
+			post.Likers.push({id: action.data.UserId});
+			draft.likePostLoading = false;
+			draft.likePostDone = true;
+			console.log('reducer LIKE_POST_SUCCESS 성공::')
+			break;
+		}
+		case LIKE_POST_FAILURE:
+			draft.likePostLoading = false;
+			draft.likePostError = action.error;
+			console.error('reducer LIKE_POST_FAILURE 실패:::', action.error)
+			break;
+			/*보통 이렇게 같이 쓸수있는 경우는 한 페이지에서 액션 두개가 같이 사용되지 않을때는 상태가 서로 공유되도 된다*/
+		case LOAD_USER_POSTS_REQUEST:
+		case LOAD_HASHTAG_POSTS_REQUEST:
+		case LOAD_POSTS_REQUEST:
+			draft.loadPostsLoading = true;
+			draft.loadPostsDone = false;
+			draft.loadPostsError = null;
+			break;
+		case LOAD_USER_POSTS_SUCCESS:
+		case LOAD_HASHTAG_POSTS_SUCCESS:
+		case LOAD_POSTS_SUCCESS:
+			draft.loadPostsLoading = false
+			draft.loadPostsDone = true
+			// action.data 에 dummy data 가 들어있을것이며, 기존데이터와 합쳐주는것
+			// concat 을 할땐 항상 앞에 대입을 해줘야한다 그래야 합쳐짐
+			//draft.mainPosts = action.data.concat(draft.mainPosts) front
+			draft.mainPosts = draft.mainPosts.concat(action.data)
+			// 게시물을 50 개까지만 가져오겠다
+			//draft.hasMorePosts = draft.mainPosts.length < 50 front
+			draft.hasMorePosts = action.data.length === 10
+			break;
+		case LOAD_USER_POSTS_FAILURE:
+		case LOAD_HASHTAG_POSTS_FAILURE:
+		case LOAD_POSTS_FAILURE:
+			draft.loadPostsLoading = false
+			draft.loadPostsError = action.error
+			break;
+		case ADD_POST_REQUEST:
+			draft.addPostLoading = true;
+			draft.addPostDone = false;
+			draft.addPostError = null;
+			break;
+		case ADD_POST_SUCCESS:
+			// draft.mainPosts.unshift(dummyPost(action.data)) // front dummy
+			draft.mainPosts.unshift(action.data) // back 실제 데이터
+			draft.addPostLoading = false
+			draft.addPostDone = true
+			draft.imagePaths = [] // add post 성공 시, 사용자 게시글 작성에 이미지 초기화
+			break;
+		case ADD_POST_FAILURE:
+			draft.addPostLoading = false
+			draft.addPostError = action.error
+			break;
 		case LOAD_POST_REQUEST:
 			draft.loadPostLoading = true
 			draft.loadPostDone = false
@@ -169,27 +266,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.retweetError = action.error
 			console.error('reducer RETWEET_FAILURE 실패::', action.data)
 			break
-		case LIKE_POST_REQUEST:
-			draft.likePostLoading = true;
-			draft.likePostDone = false;
-			draft.likePostError = null;
-			console.log('reducer LIKE_POST_REQUEST 요청::')
-			break;
-		case LIKE_POST_SUCCESS: {
-			// mainPosts 에서 id 가 액션데이터포스트아이디를 찾아서
-			const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
-			// 게시글 좋아요 누른 사람들에게 사용자 아이디를 넣어준다
-			post.Likers.push({id: action.data.UserId});
-			draft.likePostLoading = false;
-			draft.likePostDone = true;
-			console.log('reducer LIKE_POST_SUCCESS 성공::')
-			break;
-		}
-		case LIKE_POST_FAILURE:
-			draft.likePostLoading = false;
-			draft.likePostError = action.error;
-			console.error('reducer LIKE_POST_FAILURE 실패:::', action.error)
-			break;
 		case UNLIKE_POST_REQUEST:
 			draft.unlikePostLoading = true;
 			draft.unlikePostDone = false;
@@ -226,42 +302,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.uploadImagesError = action.error
 			console.error('reducer UPLOAD_IMAGES_FAILURE 실패:::', action.error)
 			break
-		case LOAD_POSTS_REQUEST:
-			draft.loadPostsLoading = true;
-			draft.loadPostsDone = false;
-			draft.loadPostsError = null;
-			break;
-		case LOAD_POSTS_SUCCESS:
-			draft.loadPostsLoading = false
-			draft.loadPostsDone = true
-			// action.data 에 dummy data 가 들어있을것이며, 기존데이터와 합쳐주는것
-			// concat 을 할땐 항상 앞에 대입을 해줘야한다 그래야 합쳐짐
-			//draft.mainPosts = action.data.concat(draft.mainPosts) front
-			draft.mainPosts = draft.mainPosts.concat(action.data)
-			// 게시물을 50 개까지만 가져오겠다
-			//draft.hasMorePosts = draft.mainPosts.length < 50 front
-			draft.hasMorePosts = action.data.length === 10
-			break;
-		case LOAD_POSTS_FAILURE:
-			draft.loadPostsLoading = false
-			draft.loadPostsError = action.error
-			break;
-		case ADD_POST_REQUEST:
-			draft.addPostLoading = true;
-			draft.addPostDone = false;
-			draft.addPostError = null;
-			break;
-		case ADD_POST_SUCCESS:
-			// draft.mainPosts.unshift(dummyPost(action.data)) // front dummy
-			draft.mainPosts.unshift(action.data) // back 실제 데이터
-			draft.addPostLoading = false
-			draft.addPostDone = true
-			draft.imagePaths = [] // add post 성공 시, 사용자 게시글 작성에 이미지 초기화
-			break;
-		case ADD_POST_FAILURE:
-			draft.addPostLoading = false
-			draft.addPostError = action.error
-			break;
 		case REMOVE_POST_REQUEST:
 			draft.removePostLoading = true
 			draft.removePostDone = false
@@ -275,25 +315,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 		case REMOVE_POST_FAILURE:
 			draft.removePostLoading = false
 			draft.removePostError = action.error
-			break;
-		case ADD_COMMENT_REQUEST:
-			draft.addCommentLoading = true
-			draft.addCommentDone = false
-			draft.addCommentError = null
-			break;
-		case ADD_COMMENT_SUCCESS: {
-			//action.data.content, postId, userId
-			//const post = draft.mainPosts.find((v) => v.id === action.data.postId) // 게시글 리스트중에 post 찾기 front
-			const post = draft.mainPosts.find((v) => v.id === action.data.PostId) // 게시글 리스트중에 post 찾기 bak
-			//post.Comments.unshift(dummyComment(action.data.content)) // 찾은 post 에 맨 앞에 가짜 댓글 하나 넣어줌 FRONT
-			post.Comments.unshift(action.data) // 찾은 post 에 실제 데이터 back
-			draft.addCommentLoading = false
-			draft.addCommentDone = true
-			break;
-		}
-		case ADD_COMMENT_FAILURE:
-			draft.addCommentLoading = false
-			draft.addCommentError = action.error
 			break;
 		default:
 			break;
