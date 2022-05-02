@@ -1,5 +1,6 @@
 //import shortId from 'shortid' front
-import produce from 'immer'
+//import produce from 'immer'
+import produce from '../util/produce' // ie11 지원하기위해 따로 produce 함수 만듬
 //import faker from 'faker' front
 
 export const initialState = {

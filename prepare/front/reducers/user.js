@@ -1,4 +1,5 @@
-import produce from 'immer'
+//import produce from 'immer'
+import produce from '../util/produce' // ie11 지원하기위해 따로 produce 함수 만듬
 
 export const initialState = {
 	loadUserLoading: false, // 상대 정보 보기 시도중일땐 로딩중 띄울거임

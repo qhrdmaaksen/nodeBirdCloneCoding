@@ -1639,8 +1639,9 @@ const getStaticProps = _store_configureStore__WEBPACK_IMPORTED_MODULE_6__[/* def
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "C", function() { return REMOVE_POST_OF_ME; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "K", function() { return loginRequestAction; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "L", function() { return logoutRequestAction; });
-/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("T5ka");
-/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(immer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _util_produce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("ionj");
+//import produce from 'immer'
+ // ie11 지원하기위해 따로 produce 함수 만듬
 
 const initialState = {
   loadUserLoading: false,
@@ -1793,7 +1794,7 @@ const logoutRequestAction = () => ({
   type: LOG_OUT_REQUEST
 });
 
-const reducer = (state = initialState, action) => immer__WEBPACK_IMPORTED_MODULE_0___default()(state, draft => {
+const reducer = (state = initialState, action) => Object(_util_produce__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(state, draft => {
   switch (action.type) {
     case LOAD_USER_REQUEST:
       // store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
@@ -3719,6 +3720,21 @@ function parseRelativeUrl(url, base) {
 
 /***/ }),
 
+/***/ "ionj":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("T5ka");
+/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(immer__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["a"] = ((...args) => {
+  // 프로듀스 함수 확장
+  Object(immer__WEBPACK_IMPORTED_MODULE_0__["enableES5"])();
+  return immer__WEBPACK_IMPORTED_MODULE_0___default()(...args);
+});
+
+/***/ }),
+
 /***/ "nOHt":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3912,10 +3928,11 @@ function makePublicRouterInstance(router) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "v", function() { return REMOVE_IMAGE; });
 /* unused harmony export addPost */
 /* unused harmony export addComment */
-/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("T5ka");
-/* harmony import */ var immer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(immer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _util_produce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("ionj");
 //import shortId from 'shortid' front
- //import faker from 'faker' front
+//import produce from 'immer'
+ // ie11 지원하기위해 따로 produce 함수 만듬
+//import faker from 'faker' front
 
 const initialState = {
   mainPosts: [],
@@ -4073,7 +4090,7 @@ const dummyComment = (data) => ({
 })*/
 // 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수
 
-const reducer = (state = initialState, action) => immer__WEBPACK_IMPORTED_MODULE_0___default()(state, draft => {
+const reducer = (state = initialState, action) => Object(_util_produce__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(state, draft => {
   // immer 사용시 state 를 draft 로 교체해주며, switch 문인걸 인식하고 break 를 까먹지말자
   switch (action.type) {
     case ADD_COMMENT_REQUEST:
