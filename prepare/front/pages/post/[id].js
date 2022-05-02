@@ -8,8 +8,8 @@ import {END} from 'redux-saga'
 import {LOAD_MY_INFO_REQUEST} from "../../reducers/user";
 import {LOAD_POST_REQUEST} from '../../reducers/post'
 import {getStaticProps} from "../about";
-import AppLayout from '../../component/AppLayout'
-import PostCard from "../../component/PostCard";
+import AppLayout from '../../components/AppLayout'
+import PostCard from "../../components/PostCard";
 import {useSelector} from "react-redux";
 import Head from "next/head";
 

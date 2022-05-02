@@ -2,9 +2,9 @@ import React, {useEffect} from 'react' // Next 에서는 이 구문이 필요가
 import {useDispatch, useSelector} from 'react-redux'
 import {END} from 'redux-saga'
 import axios from 'axios'
-import AppLayout from '../component/AppLayout'
-import PostForm from '../component/PostForm'
-import PostCard from "../component/PostCard";
+import AppLayout from '../components/AppLayout'
+import PostForm from '../components/PostForm'
+import PostCard from "../components/PostCard";
 import {LOAD_POSTS_REQUEST} from '../reducers/post'
 import {LOAD_MY_INFO_REQUEST} from '../reducers/user'
 import wrapper from "../store/configureStore";
@@ -57,7 +57,7 @@ const Home = () => {
 
 	return (
 			<AppLayout>
-				{/*AppLayout 을 사용한다, 만약 다른 레이아웃을 사용하고싶다면 따로 component 에 만들어서 이와같이 감싸면된다.*/}
+				{/*AppLayout 을 사용한다, 만약 다른 레이아웃을 사용하고싶다면 따로 components 에 만들어서 이와같이 감싸면된다.*/}
 				{/*뭔가 묶일 수 있는 단위가있을 것 같으면 먼저 컴포넌트 이름을 정해주자*/}
 				{me && <PostForm/>} {/*모두 참 인경우 마지막 피 연산자를 반환*/}
 				{mainPosts.map((post) => (

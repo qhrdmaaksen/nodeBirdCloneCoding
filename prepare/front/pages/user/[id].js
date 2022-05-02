@@ -8,9 +8,9 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { LOAD_USER_POSTS_REQUEST } from '../../reducers/post';
 import { LOAD_MY_INFO_REQUEST, LOAD_USER_REQUEST } from '../../reducers/user';
-import PostCard from '../../component/PostCard';
+import PostCard from '../../components/PostCard';
 import wrapper from '../../store/configureStore';
-import AppLayout from '../../component/AppLayout';
+import AppLayout from '../../components/AppLayout';
 
 const User = () => {
 	const dispatch = useDispatch();
@@ -43,8 +43,7 @@ const User = () => {
 				{userInfo && (
 						<Head>
 							<title>
-								{userInfo.nickname}
-								님의 글
+								{userInfo.nickname}	님의 글
 							</title>
 							<meta name="description" content={`${userInfo.nickname}님의 게시글`} />
 							<meta property="og:title" content={`${userInfo.nickname}님의 게시글`} />
@@ -58,18 +57,15 @@ const User = () => {
 								<Card
 										actions={[
 											<div key="twit">
-												짹짹
-												<br />
+												짹짹<br />
 												{userInfo.Posts}
 											</div>,
 											<div key="following">
-												팔로잉
-												<br />
+												팔로잉<br />
 												{userInfo.Followings}
 											</div>,
 											<div key="follower">
-												팔로워
-												<br />
+												팔로워<br />
 												{userInfo.Followers}
 											</div>,
 										]}

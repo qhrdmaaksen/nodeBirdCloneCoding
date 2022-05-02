@@ -4,7 +4,7 @@ import Head from 'next/head';
 import {END} from 'redux-saga';
 
 import {Avatar, Card} from 'antd';
-import AppLayout from '../component/AppLayout';
+import AppLayout from '../components/AppLayout';
 import wrapper from '../store/configureStore';
 import {LOAD_USER_REQUEST} from '../reducers/user';
 

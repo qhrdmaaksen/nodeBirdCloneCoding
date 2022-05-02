@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import Head from 'next/head'
-import AppLayout from '../component/AppLayout'
-import NicknameEditForm from '../component/NicknameEditForm'
-import FollowList from '../component/FollowList'
+import AppLayout from '../components/AppLayout'
+import NicknameEditForm from '../components/NicknameEditForm'
+import FollowList from '../components/FollowList'
 import axios from 'axios'
 import {END} from 'redux-saga'
 import useSWR, {useSWRPages} from 'swr'
@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import Router from "next/router";
 import {LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST, LOAD_MY_INFO_REQUEST} from '../reducers/user'
 import wrapper from "../store/configureStore";
-//import FollowerList from '../component/FollowerList'
+//import FollowerList from '../components/FollowerList'
 
 // fetcher 를 다른걸로 바꾸면 graphql 도 쓸수있다
 const fetcher = (url) => axios.get(url, {withCredentials: true}).then((result) => result.data)

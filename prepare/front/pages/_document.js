@@ -10,7 +10,7 @@ export default class MyDocument extends Document {
 		const originalRenderPage = ctx.renderPage;
 
 		try {
-			// 원래 document 기능에다가 styleSheet 가 styled component 를 ssr 을 해주는 기능
+			// 원래 document 기능에다가 styleSheet 가 styled components 를 ssr 을 해주는 기능
 			ctx.renderPage = () => originalRenderPage({
 				enhanceApp: App => props => sheet.collectStyles(<App {...props} />),
 			});

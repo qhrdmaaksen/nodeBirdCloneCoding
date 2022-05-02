@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import AppLayout from '../component/AppLayout'
+import AppLayout from '../components/AppLayout'
 import Head from 'next/head'
 import {Form, Input, Checkbox, Button} from 'antd'
 import useInput from '../hooks/useInput'
