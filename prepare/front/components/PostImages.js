@@ -13,7 +13,7 @@ const PostImages = ({images}) => {
 		setShowImagesZoom(false)
 	}, [])
 
-	if (images.length === 1) { // 화면의 100% 차지
+	if (images.length === 1) { // 화면의 100 % 차지
 		return (
 				<>
 					{/* front 에서 이미지 전송 시 경로 설정*/}
