@@ -6,7 +6,6 @@ import axios from 'axios'
 import {END} from 'redux-saga'
 import {LOAD_MY_INFO_REQUEST} from "../../reducers/user";
 import {LOAD_HASHTAG_POSTS_REQUEST, LOAD_POSTS_REQUEST} from '../../reducers/post'
-import {getStaticProps} from "../about";
 import AppLayout from '../../components/AppLayout'
 import PostCard from "../../components/PostCard";
 import {useDispatch, useSelector} from "react-redux";
