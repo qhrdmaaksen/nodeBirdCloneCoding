@@ -88,6 +88,7 @@ app.use('/hashtag', hashtagRouter)
 
 })*/
 
-app.listen(3065, () => { // localhost:3065
+/*app.listen(3065, () => { // localhost:3065 front*/
+app.listen(80, () => { // aws port number
 	console.log('서버 실행 중')
 })

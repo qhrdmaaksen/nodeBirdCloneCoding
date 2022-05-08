@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import PropTypes from "prop-types"
 import Slick from 'react-slick'
 import {CloseBtn, Global, Header, ImgWrapper, Indicator, Overlay, SlickWrapper} from "./styled";
+import {backUrl} from "../../config/config";
 
 
 const ImagesZoom = ({images, onClose}) => {
@@ -26,7 +27,8 @@ const ImagesZoom = ({images, onClose}) => {
 							{images.map((v) => (
 									<ImgWrapper key={v.src}>
 										// front 에서 이미지 전송 시 경로 설정
-										<img src={`http://localhost:3065/${v.src}`} alt={v.src}/>
+										{/*<img src={`http://localhost:3065/${v.src}`} alt={v.src}/> front*/}
+										<img src={`${backUrl}/${v.src}`} alt={v.src}/>
 									</ImgWrapper>
 							))}
 						</Slick>
