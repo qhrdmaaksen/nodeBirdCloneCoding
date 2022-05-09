@@ -36,16 +36,23 @@ if (process.env.NODE_ENV === 'production') { // 배포모드
 	/*개발 모드일땐 hpp, helmet 을 꼭넣어주자 (보안관련)*/
 	app.use(hpp())
 	app.use(helmet())
+	app.use(cors({ // 보안정책
+		/*
+		* 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자,
+		 access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생	*/
+		origin: ['http://vitamin777.shop'], //front local, siteName, aws ip (넣지않으면 cors error 발생)
+		credentials: true, // true 로 해주면 쿠키전달됨
+	}))
 } else {
 	app.use(morgan('dev')) // morgan 라이브러리
+	app.use(cors({ // 보안정책
+		/*
+		* 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자,
+		 access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생	*/
+		origin: ['http://localhost:3060'], //front local, siteName, aws ip (넣지않으면 cors error 발생)
+		credentials: true, // true 로 해주면 쿠키전달됨
+	}))
 }
-app.use(cors({ // 보안정책
-							 /*
-							 * 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자,
-								access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생	*/
-	origin: ['http://localhost:3060', 'http://vitamin777.shop'], //front local, siteName, aws ip (넣지않으면 cors error 발생)
-	credentials: true, // true 로 해주면 쿠키전달됨
-}))
 // middlewares
 // use 는 app 에 express server 에다가 뭔가를 장착한다는 뜻
 //app.use('/',express.static 의 / 는 localhost3065 를 의미한다, 원한다면 /images 와 같이 수정 가능
