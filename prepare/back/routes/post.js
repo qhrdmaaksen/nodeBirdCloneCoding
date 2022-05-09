@@ -17,7 +17,7 @@ try {
 }
 
 AWS.config.update({ // AWS S3 KEY 구성
-	accessKeyId: process.env.S3_SECRET_ACCESS_KEY_ID,
+	accessKeyId: process.env.S3_ACCESS_KEY_ID,
 	secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
 	region: 'ap-northeast-2', //서울
 })
