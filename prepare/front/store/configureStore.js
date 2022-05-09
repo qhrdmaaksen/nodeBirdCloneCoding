@@ -7,15 +7,15 @@ import reducer from '../reducers'
 import rootSaga from '../sagas'
 
 
-// const loggerMiddleware = ({ dispatch, getState}) => (next) => (action) => {
-//   console.log(action) // 미들웨어를 활용해 리덕스 데브툴즈 처럼 액션 로그 찍히게 하기
-//   return next(action)
-// }
+const loggerMiddleware = ({ dispatch, getState}) => (next) => (action) => {
+  console.log(action) // 미들웨어를 활용해 리덕스 데브툴즈 처럼 액션 로그 찍히게 하기
+  return next(action)
+}
 
-const configureStore = (context) => {
-	console.log('configureStore context :: ', context)
+const configureStore = () => {
+	console.log('configureStore context :: ')
 	const sagaMiddleware = createSagaMiddleware() // saga 설정 방법
-	const middlewares = [sagaMiddleware]
+	const middlewares = [sagaMiddleware,loggerMiddleware]
 	const enhancer =
 			process.env.NODE_ENV === 'production'
 					? compose(applyMiddleware(...middlewares))

@@ -1,1 +1,1 @@
-export const backUrl = 'http://3.34.255.178'
+export const backUrl = 'http://api.vitamin777.shop'

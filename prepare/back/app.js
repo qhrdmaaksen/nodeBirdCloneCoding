@@ -43,7 +43,7 @@ app.use(cors({ // 보안정책
 							 /*
 							 * 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자,
 								access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생	*/
-	origin: ['http://localhost:3060', 'nodebird.com','http://13.124.190.2'], //front local, siteName, aws ip (넣지않으면 cors error 발생)
+	origin: ['http://localhost:3060', 'http://vitamin777.shop'], //front local, siteName, aws ip (넣지않으면 cors error 발생)
 	credentials: true, // true 로 해주면 쿠키전달됨
 }))
 // middlewares
@@ -62,6 +62,11 @@ app.use(session({
 			saveUninitialized: false,
 			resave: false,
 			secret: process.env.COOKIE_SECRET, // .env 에 password setting
+			cookie: {
+				httpOnly: true, // cookie 는 js 로 접근 못하게
+				secure: false, //나중에 https 적용할땐 true 로 변경
+				domain: process.env.NODE_ENV === 'production' && '.vitamin777.shop'
+			}
 		}
 ))
 app.use(passport.initialize());
