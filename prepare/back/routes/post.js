@@ -4,6 +4,8 @@ const {isLoggedIn} = require('./middlewares')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs') // 파일 시스템을 조작할 수 있는 fs 모듈
+const AWS = require('aws-sdk')
+const multerS3 = require('multer-s3')
 
 const router = express.Router()
 
@@ -14,8 +16,25 @@ try {
 	fs.mkdirSync('uploads')
 }
 
+AWS.config.update({ // AWS S3 KEY 구성
+	accessKeyId: process.env.S3_SECRET_ACCESS_KEY_ID,
+	secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+	region: 'ap-northeast-2', //서울
+})
+
+const upload = multer({ // aws cloud save images
+	storage: multerS3({
+		s3: new AWS.S3(), //S3 권한
+		bucket: 'vitamin777-s3',
+		key(req, file, cb) {
+			cb(null, `original/${Date.now()}_${path.basename(file.originalname)}`) // folder, 확장자, 파일이름
+		}
+	}),
+	limits: {fileSize: 20 * 1024 * 1024}, // 파일 용량 설정 20mb 동영상이라면 좀더 올려줘야한다 100,200mb 정도
+})
+/*
+// 저장소, 컴퓨터의 하드디스크에 저장, 나중에는 클라우드에 저장할 것임
 const upload = multer({
-	// 저장소, 컴퓨터의 하드디스크에 저장, 나중에는 클라우드에 저장할 것임
 	storage: multer.diskStorage({
 		destination(req, file, done) {
 			done(null, 'uploads') // 폴더 명
@@ -27,7 +46,7 @@ const upload = multer({
 		},
 	}),
 	limits: {fileSize: 20 * 1024 * 1024}, // 파일 용량 설정 20mb 동영상이라면 좀더 올려줘야한다 100,200mb 정도
-})
+})*/
 
 /*router.post('/', (req, res) => { // POST  /post
 	res.json({id: 1, content: 'hello'})
@@ -91,7 +110,8 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST 
 // 이미지를 여러장 올리려고 array 사용, 한장만 올리게하려면 single 사용, text 만 사용은 none() 사용
 router.post('/images', isLoggedIn, upload.array('image'), async (req, res, next) => {// POST /post/images
 	console.log('back routes/post : 이미지에대한 정보::: ', req.files)
-	res.json(req.files.map((v) => v.filename)) // 어디로 업로드되었는지 프론트로 응답
+	//res.json(req.files.map((v) => v.filename)) // 어디로 업로드되었는지 프론트로 응답
+	res.json(req.files.map((v) => v.location)) // s3 에 올릴땐 location 을 프론트로
 })
 // 게시글 불러오는건 isLoggedIn 없어야함
 router.get('/:postId', async (req, res, next) => { // GET  /post/1
