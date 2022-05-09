@@ -28,7 +28,8 @@ const ImagesZoom = ({images, onClose}) => {
 									<ImgWrapper key={v.src}>
 										// front 에서 이미지 전송 시 경로 설정
 										{/*<img src={`http://localhost:3065/${v.src}`} alt={v.src}/> front*/}
-										<img src={`${backUrl}/${v.src}`} alt={v.src}/>
+										{/*<img src={`${backUrl}/${v.src}`} alt={v.src}/>s3 를 사용하기에 더이상 backUrl 필요없음*/}
+										<img src={`${v.src}`} alt={v.src}/>
 									</ImgWrapper>
 							))}
 						</Slick>
