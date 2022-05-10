@@ -293,7 +293,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			console.log('reducer UPLOAD_IMAGES_REQUEST 요청::')
 			break
 		case UPLOAD_IMAGES_SUCCESS:
-			draft.imagePaths = action.data
+			draft.imagePaths = draft.imagePaths.concat(action.data)//기존이미지가있으면 기존이미지에 추가된 이미지 같이 업로드되게
 			draft.uploadImagesLoading = false
 			draft.uploadImagesDone = true
 			console.log('reducer UPLOAD_IMAGES_SUCCESS 성공::')

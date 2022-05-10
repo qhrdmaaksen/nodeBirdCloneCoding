@@ -27,7 +27,8 @@ const upload = multer({ // aws cloud save images
 		s3: new AWS.S3(), //S3 권한
 		bucket: 'vitamin777-s3',
 		key(req, file, cb) {
-			cb(null, `original/${Date.now()}_${path.basename(file.originalname)}`) // folder, 확장자, 파일이름
+			/*<img role="presentation" src="https://vitamin777-s3.s3.ap-northeast-2.amazonaws.com/original/1652141255301_breaktime.jpg" 이와 같이 경로 표기가 됨*/
+			cb(null, `original/${Date.now()}_${path.basename(file.originalname)}`) // folder,파일이름, 확장자
 		}
 	}),
 	limits: {fileSize: 20 * 1024 * 1024}, // 파일 용량 설정 20mb 동영상이라면 좀더 올려줘야한다 100,200mb 정도
