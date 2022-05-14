@@ -9,10 +9,10 @@ const s3 = new AWS.S3()
 exports.handler = async (event, context, callback) => {
 	const Bucket = event.Records[0].s3.bucket.name // vitamin777-s3
 	// Key : file name
-	const Key = event.Records[0].s3.object.key // original/123123123_abc.png
+	const Key = decodeURIComponent(event.Records[0].s3.object.key) // original/123123123_abc.png, decodeURIComponent 한글 uri 해결
 	console.log('lambda : Bucket, Key :::::', Bucket, Key)
 	const filename = Key.split('/')[Key.split('/').length - 1] // file name 추출
-	const ext = Key.split('.')[Key.split('.').length - 1] // .png 등 확장자 떼기
+	const ext = Key.split('.')[Key.split('.').length - 1].toLowerCase // .png 등 확장자 떼기,toLoserCase 로 대문자 확장자 해결
 	const requiredFormat = ext === 'jpg' ? 'jpeg' : ext // jpg 인 경우 jpeg 로 바꿔줘야함
 	console.log('lambda : filename :::::', filename, ', ext ::::: ', ext)
 	try {
