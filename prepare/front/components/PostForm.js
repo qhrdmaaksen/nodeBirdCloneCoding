@@ -77,7 +77,8 @@ const PostForm = () => {
 								<div key={v} style={{display: 'inline-block'}}>
 									{/*<img src={`http://localhost:3065/${v}`} style={{width: '200px'}} alt={v}/> front*/}
 									{/*<img src={`${backUrl}/${v}`} style={{width: '200px'}} alt={v}/> s3 를 사용하기에 더이상 backUrl 필요없음*/}
-									<img src={v} style={{width: '200px'}} alt={v}/> {/*이미지 라우터에 로케이션의 주소가 바로 전달됨*/}
+									{/*원본 보기 v.replace(/\/thumb\//, '/original/'*/}
+									<img src={v.replace(/\/thumb\//, '/original/')} style={{width: '200px'}} alt={v}/> {/*이미지 라우터에 로케이션의 주소가 바로 전달됨*/}
 									<div>
 										<Button onClick={onRemoveImage(i)}>제거</Button>
 									</div>
