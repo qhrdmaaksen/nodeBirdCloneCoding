@@ -112,7 +112,8 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST 
 router.post('/images', isLoggedIn, upload.array('image'), async (req, res, next) => {// POST /post/images
 	console.log('back routes/post : 이미지에대한 정보::: ', req.files)
 	//res.json(req.files.map((v) => v.filename)) // 어디로 업로드되었는지 프론트로 응답
-	res.json(req.files.map((v) => v.location)) // s3 에 올릴땐 location 을 프론트로
+	// original folder 가 있으면 thumb 로
+	res.json(req.files.map((v) => v.location.replace(/\/original\//, '/thumb/'))) // s3 에 올릴땐 location 을 프론트로
 })
 // 게시글 불러오는건 isLoggedIn 없어야함
 router.get('/:postId', async (req, res, next) => { // GET  /post/1
