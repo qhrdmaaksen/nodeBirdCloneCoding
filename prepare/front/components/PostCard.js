@@ -112,7 +112,7 @@ const PostCard = ({post}) => {
 										<div style={{float: 'right'}}>{moment(post.createdAt).format('YYYY.MM.DD')}</div>
 										<Card.Meta
 												avatar={(
-														<Link href={`/user/${post.Retweet.User.id}`}>
+														<Link href={`/user/${post.Retweet.User.id}`} prefetch={false}>
 															<a><Avatar>{post.Retweet.User.nickname[0]}
 															</Avatar>
 															</a>
@@ -129,7 +129,7 @@ const PostCard = ({post}) => {
 										<div style={{float: 'right'}}>{moment(post.createdAt).format('YYYY.MM.DD')}</div>
 										<Card.Meta
 												avatar={( /*avatar 누르면 그사람이 쓴 글 볼 수있게*/
-														<Link href={`/user/${post.User.id}`}>
+														<Link href={`/user/${post.User.id}`} prefetch={false}>
 															<a>
 																<Avatar>
 																	{post.User.nickname[0]}
@@ -156,7 +156,7 @@ const PostCard = ({post}) => {
 												<Comment
 														author={item.User.nickname}
 														avatar={( /*댓글의 avatar 를 눌러도 그 사람이 쓴 글 볼 수있게*/
-																<Link href={`/user/${item.User.id}`}>
+																<Link href={`/user/${item.User.id}`} prefetch={false}>
 																	<a>
 																		<Avatar>
 																			{item.User.nickname[0]}

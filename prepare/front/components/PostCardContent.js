@@ -7,7 +7,7 @@ const PostCardContent = ({postData}) => { // 첫 번째 게시글 #해시태그 
 			<div>
 				{postData.toString().split(/(#[^\s#]+)/g).map((v, i) => {
 					if (v.match(/(#[^\s#]+)/)) { // 해시태그와 일치하는지
-						return <Link href={`/hashtag/${v.slice(1)}`} key={i}><a>{v}</a></Link>
+						return <Link href={`/hashtag/${v.slice(1)}`} prefetch={false} key={i}><a>{v}</a></Link>
 					}
 					return v;
 				})}
