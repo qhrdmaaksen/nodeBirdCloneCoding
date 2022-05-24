@@ -1,1 +1,1 @@
-export const backUrl = 'https://api.vitamin777.shop'
+export const backUrl = 'http://api.vitamin777.shop'
