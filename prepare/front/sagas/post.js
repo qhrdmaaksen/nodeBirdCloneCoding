@@ -1,5 +1,6 @@
-import {all, call, delay, fork, put, takeLatest, throttle} from "redux-saga/effects";
-import axios from "axios";
+import axios from 'axios';
+import { all, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
+
 import {
 	ADD_COMMENT_FAILURE,
 	ADD_COMMENT_REQUEST,
@@ -32,17 +33,14 @@ import {
 	UPLOAD_IMAGES_FAILURE,
 	UPLOAD_IMAGES_REQUEST,
 	UPLOAD_IMAGES_SUCCESS,
-} from "../reducers/post";
-import {
-	ADD_POST_TO_ME,
-	REMOVE_POST_OF_ME,
-} from "../reducers/user";
+} from '../reducers/post';
+import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 //import shortId from "shortid"; front
 
 // restAPI
 function retweetAPI(data) {
-	return axios.post(`/post/${data}/retweet`)
+	return axios.post(`/post/${data}/retweet`);
 }
 
 function* retweet(action) {
@@ -129,36 +127,8 @@ function* unlikePost(action) { // 1 액션에서
 	}
 }
 
-function loadPostsAPI(lastId) { // 3 전달되면
-	//return axios.get('/api/posts', data) // 4 데이터가 간다 front
-	// 보통 get 방식은 데이터를 못 넣기때문에 쿼리스트링으로 넣어줘야한다 (주소), etc : limit=10&offset=10
-	// 포스트 등은 데이터 캐싱이 안되지만, 겟은 데이터 캐싱을 같이 할 수 있다
-	// lastId 가 undefined 인 경우 0
-	return axios.get(`/posts?lastId=${lastId || 0}`) // 4 데이터가 간다 ,
-}
-
-function* loadPosts(action) { // 1 액션에서
-	try {
-		console.log('Sagas loadPosts 실행중::: ', action.lastId)
-		const result = yield call(loadPostsAPI, action.lastId) // 2 데이터를 꺼내서
-		//yield delay(1000) front
-		console.log('sagas loadPosts 완료::: ', result)
-		yield put({
-			type: LOAD_POSTS_SUCCESS,
-			// data: generateDummyPost(10), // data 10 개 front
-			data: result.data,
-		})
-	} catch (err) {
-		console.error('saga loadPosts error: ', err)
-		yield put({
-			type: LOAD_POSTS_FAILURE,
-			error: err.response.data,
-		});
-	}
-}
-
 function loadPostAPI(data) {
-	return axios.get(`/post/${data}`)
+	return axios.get(`/post/${data}`);
 }
 
 function* loadPost(action) {
@@ -171,11 +141,85 @@ function* loadPost(action) {
 		})
 		console.log('saga loadPost 성공 ::: ', result)
 	} catch (err) {
-		console.error('saga loadPost 실패 ::: ', err)
+		console.dir('saga loadPost 실패 ::: ', err)
 		yield put({
 			type: LOAD_POST_FAILURE,
 			error: err.response.data,
 		})
+	}
+}
+
+function loadHashtagPostsAPI(data, lastId) { // 인자를 두 개 넘겨줄수도 있다
+	// 한글 or 특수문자 들어가면 error, encode 로 감싸주자
+	return axios.get(`/hashtag/${encodeURIComponent(data)}?lastId=${lastId || 0}`);
+}
+
+function* loadHashtagPosts(action) {
+	try {
+		console.log(`loadHashtagPosts log :::`)
+		const result = yield call(loadHashtagPostsAPI, action.data, action.lastId);
+		console.log('saga loadHashtagPosts 요청 ::: ', action.data, action.lastId)
+		yield put({
+			type: LOAD_HASHTAG_POSTS_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga loadHashtagPosts 성공 ::: ')
+	} catch (err) {
+		console.error('saga loadHashtagPosts error ::: ', err)
+		yield put({
+			type: LOAD_HASHTAG_POSTS_FAILURE,
+			error: err.response.data,
+		})
+	}
+}
+
+function loadUserPostsAPI(data, lastId) {
+	return axios.get(`/user/${data}/posts?lastId=${lastId || 0}`);
+}
+
+function* loadUserPosts(action) {
+	try {
+		const result = yield call(loadUserPostsAPI, action.data, action.lastId);
+		console.log('saga loadUserPosts 실행 ::: ', action.data, action.lastId)
+		yield put({
+			type: LOAD_USER_POSTS_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga loadPostsSuccess 성공::: ', result)
+	} catch (err) {
+		console.dir('saga loadUserPosts error ::: ', err)
+		yield put({
+			type: LOAD_USER_POSTS_FAILURE,
+			error: err.response.data,
+		});
+	}
+}
+
+function loadPostsAPI(lastId) { // 3 전달되면
+	//return axios.get('/api/posts', data) // 4 데이터가 간다 front
+	// 보통 get 방식은 데이터를 못 넣기때문에 쿼리스트링으로 넣어줘야한다 (주소), etc : limit=10&offset=10
+	// 포스트 등은 데이터 캐싱이 안되지만, 겟은 데이터 캐싱을 같이 할 수 있다
+	// lastId 가 undefined 인 경우 0
+	return axios.get(`/posts?lastId=${lastId || 0}`); // 4 데이터가 간다 ,
+}
+
+function* loadPosts(action) { // 1 액션에서
+	try {
+		console.log('Sagas loadPosts 실행중::: ', action.lastId)
+		const result = yield call(loadPostsAPI, action.lastId); // 2 데이터를 꺼내서
+		//yield delay(1000) front
+		console.log('sagas loadPosts 완료::: ', result)
+		yield put({
+			type: LOAD_POSTS_SUCCESS,
+			// data: generateDummyPost(10), // data 10 개 front
+			data: result.data,
+		});
+	} catch (err) {
+		console.dir('saga loadPosts error: ', err);
+		yield put({
+			type: LOAD_POSTS_FAILURE,
+			error: err.response.data,
+		});
 	}
 }
 
@@ -272,63 +316,6 @@ function* addComment(action) { // 1 액션에서
 	}
 }
 
-function loadUserPostsAPI(data, lastId) {
-	return axios.get(`/user/${data}/posts?lastId=${lastId || 0}`)
-}
-
-function* loadUserPosts(action) {
-	try {
-		const result = yield call(loadUserPostsAPI, action.data, action.lastId)
-		console.log('saga loadUserPosts 실행 ::: ', action.data, action.lastId)
-		yield put({
-			type: LOAD_USER_POSTS_SUCCESS,
-			data: result.data,
-		})
-		console.log('saga loadPostsSuccess 성공::: ', result)
-	} catch (err) {
-		console.error('saga loadUserPosts error ::: ', err)
-		yield put({
-			type: LOAD_USER_POSTS_FAILURE,
-			error: err.response.data,
-		})
-	}
-}
-
-function loadHashtagPostsAPI(data, lastId) { // 인자를 두 개 넘겨줄수도 있다
-	// 한글or특수문자 들어가면 error, encode 로 감싸주자
-	return axios.get(`/hashtag/${encodeURIComponent(data)}?lastId=${lastId || 0}`)
-}
-
-function* loadHashtagPosts(action) {
-	try {
-		console.log(`loadHashtagPosts log :::`)
-		const result = yield call(loadHashtagPostsAPI, action.data, action.lastId)
-		console.log('saga loadHashtagPosts 요청 ::: ', action.data, action.lastId)
-		yield put({
-			type: LOAD_HASHTAG_POSTS_SUCCESS,
-			data: result.data,
-		})
-		console.log('saga loadHashtagPosts 성공 ::: ')
-	} catch (err) {
-		console.error('saga loadHashtagPosts error ::: ', err)
-		yield put({
-			type: LOAD_HASHTAG_POSTS_FAILURE,
-			error: err.response.data,
-		})
-	}
-}
-
-function* watchLoadUserPosts() {
-	yield throttle(5000, LOAD_USER_POSTS_REQUEST, loadUserPosts)
-}
-
-function* watchLoadHashtagPosts() {
-	yield throttle(5000, LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts)
-}
-
-function* watchLoadPost() {
-	yield takeLatest(LOAD_POST_REQUEST, loadPost)
-}
 
 function* watchRetweet() {
 	yield takeLatest(RETWEET_REQUEST, retweet)
@@ -344,6 +331,18 @@ function* watchLikePost() {
 
 function* watchUnlikePost() {
 	yield takeLatest(UNLIKE_POST_REQUEST, unlikePost)
+}
+
+function* watchLoadPost() {
+	yield takeLatest(LOAD_POST_REQUEST, loadPost)
+}
+
+function* watchLoadHashtagPosts() {
+	yield throttle(5000, LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts)
+}
+
+function* watchLoadUserPosts() {
+	yield throttle(5000, LOAD_USER_POSTS_REQUEST, loadUserPosts)
 }
 
 function* watchLoadPosts() {
@@ -364,16 +363,16 @@ function* watchAddComment() {
 
 export default function* postSaga() {
 	yield all([
-		fork(watchLoadPost),
 		fork(watchRetweet),
 		fork(watchUploadImages),
 		fork(watchLikePost),
 		fork(watchUnlikePost),
+		fork(watchAddPost),
+		fork(watchLoadPost),
 		fork(watchLoadUserPosts),
 		fork(watchLoadHashtagPosts),
 		fork(watchLoadPosts),
-		fork(watchAddPost),
 		fork(watchRemovePost),
 		fork(watchAddComment),
-	])
+	]);
 }

@@ -137,6 +137,77 @@ export const logoutRequestAction = () => ({
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
 	switch (action.type) {
+		case REMOVE_FOLLOWER_REQUEST:
+			draft.removeFollowerLoading = true
+			draft.removeFollowerError = null
+			draft.removeFollowerDone = false
+			console.log('reducer removeFollower 요청')
+			break;
+		case REMOVE_FOLLOWER_SUCCESS:
+			// 나의 팔로워 제거
+			draft.removeFollowerLoading = false
+			draft.me.Followers = draft.me.Followers.filter((v) => v.id !== action.data.UserId)
+			draft.removeFollowerDone = true
+			console.log('reducer removeFollower 성공')
+			break
+		case REMOVE_FOLLOWER_FAILURE:
+			console.error('removeFollowerFail 실패:: ' + action.error)
+			draft.removeFollowerLoading = false
+			draft.removeFollowerError = action.error
+			break;
+		case LOAD_FOLLOWINGS_REQUEST:
+			draft.loadFollowingsLoading = true
+			draft.loadFollowingsError = null
+			draft.loadFollowingsDone = false
+			console.log('reducer LOAD_FOLLOWINGS_REQUEST 요청')
+			break
+		case LOAD_FOLLOWINGS_SUCCESS:
+			draft.loadFollowingsLoading = false
+			draft.me.Followings = action.data
+			draft.loadFollowingsDone = true
+			console.log('reducer LOAD_FOLLOWINGS_SUCCESS 성공')
+			break;
+		case LOAD_FOLLOWINGS_FAILURE:
+			draft.loadFollowingsLoading = false
+			draft.loadFollowingsError = action.error
+			console.error('reducer LOAD_FOLLOWINGS 실패', action.error)
+			break;
+		case LOAD_FOLLOWERS_REQUEST:
+			draft.loadFollowersLoading = true
+			draft.loadFollowersError = null
+			draft.loadFollowersDone = false
+			console.log('reducer LOAD_FOLLOWERS_REQUEST 요청')
+			break
+		case LOAD_FOLLOWERS_SUCCESS:
+			draft.loadFollowersLoading = false
+			draft.me.Followers = action.data
+			draft.loadFollowersDone = true
+			console.log('reducer LOAD_FOLLOWERS_SUCCESS 성공')
+			break;
+		case LOAD_FOLLOWERS_FAILURE:
+			draft.loadFollowersLoading = false
+			draft.loadFollowersError = action.error
+			console.error('reducer LOAD_FOLLOWERS 실패', action.error)
+			break;
+		case LOAD_MY_INFO_REQUEST:
+			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
+			draft.loadMyInfoLoading = true
+			draft.loadMyInfoError = null // 로딩 중일때는 에러 없앰
+			draft.loadMyInfoDone = false
+			console.log('reducer myInfo 요청')
+			break;
+		case LOAD_MY_INFO_SUCCESS:
+			draft.me = action.data // back 내 정보가 들어있음
+			draft.loadMyInfoLoading = false
+			//draft.me = dummyUser(action.data)
+			draft.loadMyInfoDone = true
+			console.log('reducer myInfo 성공')
+			break;
+		case LOAD_MY_INFO_FAILURE:
+			console.error('loadMyInfoFail 실패:: ' + action.error)
+			draft.loadMyInfoLoading = false
+			draft.loadMyInfoError = action.error
+			break;
 		case LOAD_USER_REQUEST:
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.loadUserLoading = true
@@ -145,8 +216,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			console.log('reducer myInfo 요청')
 			break;
 		case LOAD_USER_SUCCESS:
-			draft.userInfo = action.data // back 상대 정보가 들어있음
 			draft.loadUserLoading = false
+			draft.userInfo = action.data // back 상대 정보가 들어있음
 			draft.loadUserDone = true
 			//draft.me = dummyUser(action.data)
 			console.log('reducer myInfo 성공')
@@ -156,42 +227,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.loadUserLoading = false
 			draft.loadUserError = action.error
 			break;
-		case LOAD_MY_INFO_REQUEST:
-			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
-			draft.loadMyInfoLoading = true
-			draft.loadMyInfoDone = false
-			draft.loadMyInfoError = null // 로딩 중일때는 에러 없앰
-			console.log('reducer myInfo 요청')
-			break;
-		case LOAD_MY_INFO_SUCCESS:
-			draft.me = action.data // back 내 정보가 들어있음
-			draft.loadMyInfoLoading = false
-			draft.loadMyInfoDone = true
-			//draft.me = dummyUser(action.data)
-			console.log('reducer myInfo 성공')
-			break;
-		case LOAD_MY_INFO_FAILURE:
-			console.error('loadMyInfoFail 실패:: ' + action.error)
-			draft.loadMyInfoLoading = false
-			draft.loadMyInfoError = action.error
-			break;
-		case REMOVE_FOLLOWER_REQUEST:
-			draft.removeFollowerLoading = true
-			draft.removeFollowerDone = false
-			draft.removeFollowerError = null
-			console.log('reducer removeFollower 요청')
-			break;
-		case REMOVE_FOLLOWER_SUCCESS:
-			// 나의 팔로워 제거
-			draft.me.Followers = draft.me.Followers.filter((v) => v.id !== action.data.UserId)
-			draft.removeFollowerLoading = false
-			draft.removeFollowerDone = true
-			console.log('reducer removeFollower 성공')
-			break
-		case REMOVE_FOLLOWER_FAILURE:
-			console.error('removeFollowerFail 실패:: ' + action.error)
-			draft.removeFollowerLoading = false
-			draft.removeFollowerError = action.error
 		case FOLLOW_REQUEST:
 			// store 에서 보낸 state 가 만들어짐, state 자체가 user.js 의 state 임
 			draft.followLoading = true
@@ -289,6 +324,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			console.log('reducer CHANGE_NICKNAME_REQUEST 요청')
 			break
 		case CHANGE_NICKNAME_SUCCESS:
+			draft.me.nickname = action.data.nickname;
 			draft.changeNicknameLoading = false
 			draft.changeNicknameDone = true
 			console.log('reducer CHANGE_NICKNAME_SUCCESS 성공')
@@ -298,44 +334,10 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 			draft.changeNicknameError = action.error
 			console.error('reducer CHANGE_NICKNAME 실패', action.error)
 			break;
-		case LOAD_FOLLOWERS_REQUEST:
-			draft.loadFollowersLoading = true
-			draft.loadFollowersDone = false
-			draft.loadFollowersError = null
-			console.log('reducer LOAD_FOLLOWERS_REQUEST 요청')
-			break
-		case LOAD_FOLLOWERS_SUCCESS:
-			draft.loadFollowersLoading = false
-			draft.loadFollowersDone = true
-			draft.me.Followers = action.data
-			console.log('reducer LOAD_FOLLOWERS_SUCCESS 성공')
-			break;
-		case LOAD_FOLLOWERS_FAILURE:
-			draft.loadFollowersLoading = false
-			draft.loadFollowersError = action.error
-			console.error('reducer LOAD_FOLLOWERS 실패', action.error)
-			break;
-		case LOAD_FOLLOWINGS_REQUEST:
-			draft.loadFollowingsLoading = true
-			draft.loadFollowingsDone = false
-			draft.loadFollowingsError = null
-			console.log('reducer LOAD_FOLLOWINGS_REQUEST 요청')
-			break
-		case LOAD_FOLLOWINGS_SUCCESS:
-			draft.loadFollowingsLoading = false
-			draft.loadFollowingsDone = true
-			draft.me.Followings = action.data
-			console.log('reducer LOAD_FOLLOWINGS_SUCCESS 성공')
-			break;
-		case LOAD_FOLLOWINGS_FAILURE:
-			draft.loadFollowingsLoading = false
-			draft.loadFollowingsError = action.error
-			console.error('reducer LOAD_FOLLOWINGS 실패', action.error)
-			break;
 		case ADD_POST_TO_ME: // 게시글을 쓰면 게시글 아이디가 여기로 들어와서 하나가 추가된다
 			draft.me.Posts.unshift({id: action.data})
 			console.log('ADD_POST_TO_ME 성공')
-			break
+			break;
 			// return {
 			// 	...state,
 			// 	me: {

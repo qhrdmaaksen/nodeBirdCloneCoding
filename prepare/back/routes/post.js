@@ -1,11 +1,12 @@
 const express = require('express');
-const {Post, Image, Comment, User, Hashtag} = require('../models')
-const {isLoggedIn} = require('./middlewares')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs') // 파일 시스템을 조작할 수 있는 fs 모듈
-const AWS = require('aws-sdk')
 const multerS3 = require('multer-s3')
+const AWS = require('aws-sdk')
+
+const {Post, Image, Comment, User, Hashtag} = require('../models')
+const {isLoggedIn} = require('./middlewares')
 
 const router = express.Router()
 
@@ -143,18 +144,14 @@ router.get('/:postId', async (req, res, next) => { // GET  /post/1
 				model: User,
 				as: 'Likers',
 				attributes: ['id', 'nickname'],
-			} ,	{
+			}, {
 				model: Image,
 			}, {
 				model: Comment,
 				include: [{
 					model: User,
 					attributes: ['id', 'nickname'],
-				}]
-			}, {
-				model: User,
-				as: 'Likers',
-				attributes: ['id'],
+				}],
 			}],
 		})
 		res.status(200).json(fullPost);// front 에 응답
@@ -212,17 +209,17 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => { // POST 
 				model: User,
 				attributes: ['id', 'nickname'],
 			}, {
+				model: User, // 좋아요 누른 사람
+				as: 'Likers',
+				attributes: ['id'],
+			}, {
 				model: Image,
 			}, {
 				model: Comment,
 				include: [{
 					model: User,
 					attributes: ['id', 'nickname'],
-				}]
-			}, {
-				model: User,
-				as: 'Likers',
-				attributes: ['id'],
+				}],
 			}],
 		})
 		res.status(201).json(retweetWithPrevPost);// front 에 응답
@@ -264,9 +261,7 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => { // POST 
 
 router.patch('/:postId/like', isLoggedIn, async (req, res, next) => { // PATCH /post/1/like
 	try {
-		const post = await Post.findOne({
-			where: {id: req.params.postId}
-		})
+		const post = await Post.findOne({where: {id: req.params.postId}})
 		if (!post) {
 			return res.status(403).send('게시글이 존재하지 않습니다!')
 		}
@@ -281,8 +276,7 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => { // PATCH /
 router.delete('/:postId/like', isLoggedIn, async (req, res, next) => { // DELETE /post/1/like
 	try {
 		const post = await Post.findOne({
-			where: {id: req.params.postId}
-		})
+			where: {id: req.params.postId}})
 		if (!post) {
 			return res.status(403).send('게시글이 존재하지 않습니다!')
 		}

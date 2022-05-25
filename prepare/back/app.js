@@ -1,19 +1,20 @@
 const express = require('express')
+const cors = require('cors')
+const session = require('express-session')
+const cookieParser = require('cookie-parser')
+const passport = require('passport')
+const dotenv = require('dotenv')
+const morgan = require('morgan')
+const path = require('path')
+const hpp = require('hpp')
+const helmet = require('helmet')
+
 const postRouter = require('./routes/post')
 const postsRouter = require('./routes/posts')
 const userRouter = require('./routes/user')
-const cors = require('cors')
-const path = require('path')
-const dotenv = require('dotenv')
-const morgan = require('morgan')
-const hpp = require('hpp')
-const helmet = require('helmet')
-const passport = require('passport')
 const hashtagRouter = require('./routes/hashtag')
 const db = require('./models') // db 에 sequelize 넣어놓은 상태
 const passportConfig = require('./passport') // 호출 한번해주면됨
-const session = require('express-session')
-const cookieParser = require('cookie-parser')
 
 
 dotenv.config()
@@ -24,7 +25,6 @@ db.sequelize.sync() // server 시작할때 db 연결도 같이한다, sync 할�
 			console.log('db 연결 성공')
 		})
 		.catch(console.error)
-
 passportConfig()
 
 // req.body 사용하려고 설정
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'production') { // 배포모드
 	app.use(morgan('combined')) // morgan 라이브러리
 	/*개발 모드일땐 hpp, helmet 을 꼭넣어주자 (보안관련)*/
 	app.use(hpp())
-	app.use(helmet())
+	app.use(helmet({ contentSecurityPolicy: false}))
 	app.use(cors({ // 보안정책
 		/*
 		* 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자,
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === 'production') { // 배포모드
 		/*
 		* 대신 보낸 곳의 주소가 자동으로 들어가 편리하다,또는 직접 주소를적어주자,
 		 access allow control origin, 쿠기가 전달되면서 보안강화해줘야하기에 * 를 사용하면 에러발생	*/
-		origin: ['http://localhost:3060'], //front local, siteName, aws ip (넣지않으면 cors error 발생)
+		origin: true,
 		credentials: true, // true 로 해주면 쿠키전달됨
 	}))
 }

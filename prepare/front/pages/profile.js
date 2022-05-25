@@ -1,13 +1,14 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import Head from 'next/head'
+import {useDispatch, useSelector} from "react-redux";
+import Router from "next/router";
+import {END} from 'redux-saga'
+import axios from 'axios'
+import useSWR, {useSWRPages} from 'swr'
+
 import AppLayout from '../components/AppLayout'
 import NicknameEditForm from '../components/NicknameEditForm'
 import FollowList from '../components/FollowList'
-import axios from 'axios'
-import {END} from 'redux-saga'
-import useSWR, {useSWRPages} from 'swr'
-import {useDispatch, useSelector} from "react-redux";
-import Router from "next/router";
 import {LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST, LOAD_MY_INFO_REQUEST} from '../reducers/user'
 import wrapper from "../store/configureStore";
 import {backUrl} from "../config/config";
@@ -54,19 +55,13 @@ const Profile = () => {
 
 	// callback 함수는 최소한 return 위쪽에 적자
 	// 버튼을 눌러주면 limit 가 기존 limit 보다 3 씩 늘어난다
-	const loadMoreFollowings = useCallback(
-			() => {
-				setFollowingsLimit((prev) => prev + 3);
-			},
-			[],
-	);
+	const loadMoreFollowings = useCallback(() => {
+		setFollowingsLimit((prev) => prev + 3);
+	}, []);
 
-	const loadMoreFollowers = useCallback(
-			() => {
-				setFollowersLimit((prev) => prev + 3)
-			},
-			[],
-	);
+	const loadMoreFollowers = useCallback(() => {
+		setFollowersLimit((prev) => prev + 3)
+	}, []);
 
 
 	if (!me) { // 내가 없으면 못들어가게
@@ -86,11 +81,11 @@ const Profile = () => {
 				<AppLayout>
 					<NicknameEditForm/>
 					{/*swr 에서는 data 도 없고 error 도 없을때가 loading 중*/}
-					<FollowList header="팔로윙 목록"
+					<FollowList header="팔로잉"
 											data={followingsData}
 											onClickMore={loadMoreFollowings}
 											loading={!followingsData && !followingError}/>
-					<FollowList header="팔로워 목록"
+					<FollowList header="팔로워"
 											data={followersData}
 											onClickMore={loadMoreFollowers}
 											loading={!followersData && !followerError}/>

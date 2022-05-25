@@ -1,9 +1,10 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
-const {User, Post, Comment, Image} = require('../models')
 const passport = require('passport')
-const {isLoggedIn, isNotLoggedIn} = require('./middlewares')
 const {Op} = require("sequelize");
+
+const {User, Post, Comment, Image} = require('../models')
+const {isLoggedIn, isNotLoggedIn} = require('./middlewares')
 const router = express.Router()
 
 router.get('/', async (req, res, next) => { // GET /user
@@ -47,7 +48,7 @@ router.get('/followers', isLoggedIn, async (req, res, next) => { // GET /user/fo
 		}
 		// 내 팔로워즈 겟 팔로워즈
 		const followers = await user.getFollowers({
-			limit: parseInt(req.query.limit,10), //  limit 만큼 더 보여준다
+			limit: parseInt(req.query.limit, 10), //  limit 만큼 더 보여준다
 		})
 		res.status(200).json(followers) // 팔로워즈 응답
 	} catch (error) {
@@ -64,7 +65,7 @@ router.get('/followings', isLoggedIn, async (req, res, next) => { // GET /user/f
 		}
 		// 내 팔로윙즈 겟 팔로윙즈
 		const followings = await user.getFollowings({
-			limit: parseInt(req.query.limit,10), // limit 만큼 더 보여준다
+			limit: parseInt(req.query.limit, 10), // limit 만큼 더 보여준다
 		})
 		res.status(200).json(followings) // 팔로윙즈 응답
 	} catch (error) {
@@ -125,9 +126,7 @@ router.get('/:userId/posts', async (req, res, next) => { // GET /user/1/posts
 			limit: 10, // 10 개 가져와라, 10개 가져온 후 또 10개 10개 10개 ...
 			// 2 차원 배열,  DESC 는 최신 게시글 부터 가져옴 오래된순은 ASC
 			order: [
-				['createdAt', 'DESC'], // 게시글 생성일부터 내림차순 정렬
-				[Comment, 'createdAt', 'DESC'], // 댓글들을 내림 차순 정렬
-			],
+				['createdAt', 'DESC']], // 게시글 생성일부터 내림차순 정렬
 			include: [{
 				model: User, // 게시글 작성자
 				attributes: ['id', 'nickname'],
@@ -217,7 +216,7 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {//await 을 사용하
 			// 실패 상태는 403 을 보냄
 			return res.status(403).send('이미 사용중인 아이디입니다')
 		}
-		const hashedPassword = await bcrypt.hash(req.body.password, 11) // 11 은 해쉬화 하는것, 숫자가 높을 수록 보안성 높아지며 단점은 시간이 오래걸림
+		const hashedPassword = await bcrypt.hash(req.body.password, 12) // 11 은 해쉬화 하는것, 숫자가 높을 수록 보안성 높아지며 단점은 시간이 오래걸림
 		/* POST/user/ === front 의
 			axios.post('http://localhost:3065/user') 와 같다 */
 		// require 로 구조 분해했기에 db.User.create 와 같다
@@ -238,6 +237,7 @@ router.post('/', isNotLoggedIn, async (req, res, next) => {//await 을 사용하
 		next(error) // status 500
 	}
 })
+
 router.post('/logout', isLoggedIn, (req, res) => {
 	console.log('logout user : ' + req.user)
 	console.log('login check : ', req.isUnauthenticated())
@@ -301,8 +301,6 @@ router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => { // DE
 		next(error)
 	}
 })
-
-
 
 
 module.exports = router

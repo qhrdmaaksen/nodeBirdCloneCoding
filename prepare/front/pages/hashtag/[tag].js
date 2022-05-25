@@ -1,16 +1,16 @@
 // hashtag/[tag].js
-
-import {useRouter} from "next/router";
-import wrapper from "../../store/configureStore";
-import axios from 'axios'
-import {END} from 'redux-saga'
-import {LOAD_MY_INFO_REQUEST} from "../../reducers/user";
-import {LOAD_HASHTAG_POSTS_REQUEST, LOAD_POSTS_REQUEST} from '../../reducers/post'
-import AppLayout from '../../components/AppLayout'
-import PostCard from "../../components/PostCard";
+import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
+import {useRouter} from "next/router";
+import {END} from 'redux-saga'
+
+import axios from 'axios'
+import {LOAD_HASHTAG_POSTS_REQUEST, LOAD_POSTS_REQUEST} from '../../reducers/post'
+import PostCard from "../../components/PostCard";
+import wrapper from "../../store/configureStore";
+import {LOAD_MY_INFO_REQUEST} from "../../reducers/user";
+import AppLayout from '../../components/AppLayout'
 import Head from "next/head";
-import {useEffect} from "react";
 
 
 const Hashtag = () => {
@@ -31,7 +31,7 @@ const Hashtag = () => {
 				if (hasMorePosts && !loadPostsLoading) { // 기존에 로딩을 하고있을땐 이부분이 실행이안됨, 로딩이 끝나면 실행
 					dispatch({ // 다 내리면 그때 새로운 것 로딩
 						type: LOAD_HASHTAG_POSTS_REQUEST,
-						lastId: mainPosts[mainPosts.length - 1]&& mainPosts[mainPosts.length - 1].id, // 마지막 게시글의 id
+						lastId: mainPosts[mainPosts.length - 1] && mainPosts[mainPosts.length - 1].id, // 마지막 게시글의 id
 						data: tag,
 					});
 				}
@@ -55,12 +55,12 @@ const Hashtag = () => {
 /*getServerSideProps&getStaticProps 안의 context 에서는 context.params.id&context.query.id 하면
 useRouter 에 똑같이 접근 할 수 있다*/
 export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
-	console.log(context)
 	const cookie = context.req ? context.req.headers.cookie : '';
+	console.log(context)
 	console.log('dynamic routing Post getServerSideProps Start ::')
-	axios.defaults.headers.Cookie = ''
+	axios.defaults.headers.Cookie = '';
 	if (context.req && cookie) {
-		axios.defaults.headers.Cookie = cookie
+		axios.defaults.headers.Cookie = cookie;
 	}
 	context.store.dispatch({ // 내 정보 요청
 		type: LOAD_MY_INFO_REQUEST,

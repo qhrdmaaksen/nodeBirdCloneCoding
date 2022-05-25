@@ -1,4 +1,4 @@
-import {all, call, delay, fork, put, takeLatest} from "redux-saga/effects";
+import {all, call, fork, put, takeLatest} from "redux-saga/effects";
 import axios from "axios";
 import {
 	CHANGE_NICKNAME_FAILURE,
@@ -25,6 +25,146 @@ import {
 	UNFOLLOW_SUCCESS,
 } from "../reducers/user";
 
+
+function removeFollowerAPI(data) {
+	return axios.delete(`/user/follower/${data}`) // 몇번째의 팔로워를 제거한다
+}
+
+function* removeFollower(action) {
+	try {
+		const result = yield call(removeFollowerAPI, action.data)
+		console.log('saga removeFollower 요청:: ', action.data)
+		yield put({
+			type: REMOVE_FOLLOWER_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga removeFollower 성공:: ', result)
+	} catch (err) {
+		console.error('saga removeFollower 실패:: ', err)
+		yield put({
+			type: REMOVE_FOLLOWER_FAILURE,
+			error: err.response.data
+		})
+	}
+}
+
+function loadFollowersAPI(data) {
+	return axios.get('/user/followers', data)
+}
+
+function* loadFollowers(action) {
+	try {
+		const result = yield call(loadFollowersAPI, action.data)
+		console.log('saga followers:: 요청', action.data)
+		yield put({
+			type: LOAD_FOLLOWERS_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga followers:: 성공', result)
+	} catch (err) {
+		console.error('saga followers::', err)
+		yield put({
+			type: LOAD_FOLLOWERS_FAILURE,
+			error: err.response.data,
+		})
+	}
+}
+
+function loadFollowingsAPI(data) {
+	return axios.get('/user/followings', data)
+}
+
+function* loadFollowings(action) {
+	try {
+		const result = yield call(loadFollowingsAPI, action.data)
+		console.log('saga followings 요청::', action.data)
+		yield put({
+			type: LOAD_FOLLOWINGS_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga followings 성공::', result)
+	} catch (err) {
+		console.error('saga followings 실패::', err)
+		yield put({
+			type: LOAD_FOLLOWINGS_FAILURE,
+			error: err.response.data,
+		})
+	}
+}
+
+function changeNicknameAPI(data) { // generator 아님
+	// 실제 서버에 로그인 요청을 보냄 // back
+	//return axios.post('http://localhost:3065/user/login', data)
+	// localhost 중복 없애기
+	return axios.patch('/user/nickname', {nickname: data})
+}
+
+function* changeNickname(action) { // login action request 가 action 에 전달
+	try { // 요청 실패 대비
+		//yield delay(1000) // front
+		const result = yield call(changeNicknameAPI, action.data) // 서버에서 받은 결과 값을 받음
+		console.log('saga changeNickname 실행중::', action.data)
+		yield put({
+			type: CHANGE_NICKNAME_SUCCESS,
+			//data: action.data, // front
+			data: result.data // (성공 결과 담김) back
+		})
+		console.log('saga changeNickname 완료 ::', result)
+	} catch (err) {
+		console.error('changeNickname', err)
+		yield put({ // put 은 dispatch 라고 생각하자
+			type: CHANGE_NICKNAME_FAILURE,
+			error: err.response.data // (실패 결과 담김)
+		})
+	}
+}
+
+function loadUserAPI(data) {
+	return axios.get(`/user/${data}`)
+}
+
+function* loadUser(action) {
+	try {
+		const result = yield call(loadUserAPI, action.data)
+		console.log('saga loadUser 실행 :: ', result.data)
+		yield put({
+			type: LOAD_USER_SUCCESS,
+			data: result.data
+		})
+		console.log('saga loadUser 성공 :: ', result)
+	} catch (err) {
+		console.error('saga loadUser Failure 실패 :: ', err)
+		yield put({
+			type: LOAD_USER_FAILURE,
+			error: err.response.data,
+		})
+	}
+}
+
+//function loadMyInfoAPI(userId) {
+function loadMyInfoAPI() {
+	// 서버에 요청을 보내는 부분
+	return axios.get('/user'); // 서버사이드렌더링일 때는, 브라우저가 없어요.
+}
+
+function* loadMyInfo() {
+	try {
+		const result = yield call(loadMyInfoAPI)
+		console.log('saga loadMyInfo 실행 :: ')
+		yield put({
+			type: LOAD_MY_INFO_SUCCESS,
+			data: result.data,
+		})
+		console.log('saga loadMyInfo 성공:: ', result)
+	} catch (err) {
+		console.error('saga loadMyInfo error :: ', err)
+		console.dir('saga loadMyInfo error :: ', err)
+		yield put({
+			type: LOAD_MY_INFO_FAILURE,
+			error: err.response.data,
+		});
+	}
+}
 
 function logInAPI(data) { // generator 아님
 													//return axios.post('/api/login', data) // 실제 서버에 로그인 요청을 보냄 // front
@@ -84,56 +224,32 @@ function* logOut() {
 	}
 }
 
-function changeNicknameAPI(data) { // generator 아님
-																	 // 실제 서버에 로그인 요청을 보냄 // back
-																	 //return axios.post('http://localhost:3065/user/login', data)
-																	 // localhost 중복 없애기
-	return axios.patch('/user/nickname', {nickname: data})
+function signUpAPI(data) {
+	// back end server addr
+	// data 는 email, nickname, password object
+	//return axios.post('/api/signup', data) // front
+	return axios.post('/user', data) // back
 }
 
-function* changeNickname(action) { // login action request 가 action 에 전달
-	try { // 요청 실패 대비
-		//yield delay(1000) // front
-		const result = yield call(changeNicknameAPI, action.data) // 서버에서 받은 결과 값을 받음
-		console.log('saga changeNickname 실행중::', action.data)
-		yield put({
-			type: CHANGE_NICKNAME_SUCCESS,
-			//data: action.data, // front
-			data: result.data // (성공 결과 담김) back
-		})
-		console.log('saga changeNickname 완료 ::', result)
-	} catch (err) {
-		console.error('changeNickname', err)
-		yield put({ // put 은 dispatch 라고 생각하자
-			type: CHANGE_NICKNAME_FAILURE,
-			error: err.response.data // (실패 결과 담김)
-		})
-	}
-}
-
-//function loadMyInfoAPI(userId) {
-function loadMyInfoAPI() {
-	// 서버에 요청을 보내는 부분
-	return axios.get('/user'); // 서버사이드렌더링일 때는, 브라우저가 없어요.
-}
-
-function* loadMyInfo() {
+function* signUp(action) {
 	try {
-		const result = yield call(loadMyInfoAPI)
-		console.log('saga loadMyInfo 실행 :: ')
+		//yield delay(1000)
+		const result = yield call(signUpAPI, action.data)
+		console.log('saga sign up result 실행중 :: ', action.data)
 		yield put({
-			type: LOAD_MY_INFO_SUCCESS,
-			data: result.data,
+			type: SIGN_UP_SUCCESS,
+			//data: result.data
 		})
-		console.log('saga loadMyInfo 성공:: ', result)
+		console.log('saga sign up 완료 :: ', result)
 	} catch (err) {
-		console.error('saga loadMyInfo error :: ', err)
+		console.error('saga signUp error : ', err)
 		yield put({
-			type: LOAD_MY_INFO_FAILURE,
+			type: SIGN_UP_FAILURE,
 			error: err.response.data
 		})
 	}
 }
+
 
 function followAPI(data) { // data 에 사용자 id 넣어주기
 													 // return axios.post('/api/follow', data) front
@@ -185,120 +301,6 @@ function* unfollow(action) {
 	}
 }
 
-function signUpAPI(data) {
-	// back end server addr
-	// data 는 email, nickname, password object
-	//return axios.post('/api/signup', data) // front
-	return axios.post('/user', data) // back
-}
-
-function* signUp(action) {
-	try {
-		//yield delay(1000)
-		const result = yield call(signUpAPI, action.data)
-		console.log('saga sign up result 실행중 :: ', action.data)
-		yield put({
-			type: SIGN_UP_SUCCESS,
-			//data: result.data
-		})
-		console.log('saga sign up 완료 :: ', result)
-	} catch (err) {
-		console.error('saga signUp error : ', err)
-		yield put({
-			type: SIGN_UP_FAILURE,
-			error: err.response.data
-		})
-	}
-}
-
-function loadFollowersAPI(data) {
-	return axios.get('/user/followers', data)
-}
-
-function* loadFollowers(action) {
-	try {
-		const result = yield call(loadFollowersAPI, action.data)
-		console.log('saga followers:: 요청', action.data)
-		yield put({
-			type: LOAD_FOLLOWERS_SUCCESS,
-			data: result.data,
-		})
-		console.log('saga followers:: 성공', result)
-	} catch (err) {
-		console.error('saga followers::', err)
-		yield put({
-			type: LOAD_FOLLOWERS_FAILURE,
-			error: err.response.data,
-		})
-	}
-}
-
-function loadFollowingsAPI(data) {
-	return axios.get('/user/followings', data)
-}
-
-function* loadFollowings(action) {
-	try {
-		const result = yield call(loadFollowingsAPI, action.data)
-		console.log('saga followings 요청::', action.data)
-		yield put({
-			type: LOAD_FOLLOWINGS_SUCCESS,
-			data: result.data
-		})
-		console.log('saga followings 성공::', result)
-	} catch (err) {
-		console.error('saga followings 실패::', err)
-		yield put({
-			type: LOAD_FOLLOWINGS_FAILURE,
-			error: err.response.data
-		})
-	}
-}
-
-function removeFollowerAPI(data) {
-	return axios.delete(`/user/follower/${data}`) // 몇번째의 팔로워를 제거한다
-}
-
-function* removeFollower(action) {
-	try {
-		const result = yield call(removeFollowerAPI, action.data)
-		console.log('saga removeFollower 요청:: ', action.data)
-		yield put({
-			type: REMOVE_FOLLOWER_SUCCESS,
-			data: result.data
-		})
-		console.log('saga removeFollower 성공:: ', result)
-	} catch (err) {
-		console.error('saga removeFollower 실패:: ', err)
-		yield put({
-			type: REMOVE_FOLLOWER_FAILURE,
-			error: err.response.data
-		})
-	}
-}
-function loadUserAPI(data){
-	return axios.get(`/user/${data}`)
-}
-function* loadUser(action){
-	try {
-	    const result = yield call(loadUserAPI, action.data)
-		console.log('saga loadUser 실행 :: ', action.data)
-		yield put({
-			type: LOAD_USER_SUCCESS,
-			data: result.data
-		})
-		console.log('saga loadUser 성공 :: ', result)
-	}catch (err) {
-		console.error('saga loadUser Failure 실패 :: ', err)
-		yield put({
-			type: LOAD_USER_FAILURE,
-			error: err.response.data
-		})
-	}
-}
-function* watchLoadUser(){
-	yield takeLatest(LOAD_USER_REQUEST, loadUser)
-}
 function* watchRemoveFollower() {
 	yield takeLatest(REMOVE_FOLLOWER_REQUEST, removeFollower)
 }
@@ -315,6 +317,10 @@ function* watchChangeNickname() {
 	yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname)
 }
 
+function* watchLoadUser() {
+	yield takeLatest(LOAD_USER_REQUEST, loadUser)
+}
+
 function* watchLoadMyInfo() {
 	yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo)
 }
@@ -323,7 +329,7 @@ function* watchFollow() {
 	yield takeLatest(FOLLOW_REQUEST, follow)
 }
 
-function* watchUnFollow() {
+function* watchUnfollow() {
 	yield takeLatest(UNFOLLOW_REQUEST, unfollow)
 }
 
@@ -341,14 +347,14 @@ function* watchSignUp() {	// 회원가입 액션이 실행될때까지 기다리
 
 export default function* userSaga() {
 	yield all([
-			fork(watchLoadUser),
+		fork(watchLoadUser),
 		fork(watchRemoveFollower),
 		fork(watchLoadFollowers),
 		fork(watchLoadFollowings),
 		fork(watchChangeNickname),
 		fork(watchLoadMyInfo),
 		fork(watchFollow),
-		fork(watchUnFollow),
+		fork(watchUnfollow),
 		fork(watchLogIn),
 		fork(watchLogOut),
 		fork(watchSignUp),

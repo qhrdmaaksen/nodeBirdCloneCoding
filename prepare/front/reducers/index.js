@@ -59,7 +59,7 @@ const rootReducer = (state, action) => { // (이전상태 state, 액션) => 다�
 	}
 }
 
-/*reducers/index.js 보시면 user랑 post를 불러와서 합치고 있습니다.
-rootReducer가 state고, user와 post는 각각 state.user, state.post가 됩니다.
+/*reducers/index.js 보시면 user 랑 post 를 불러와서 합치고 있습니다.
+rootReducer 가 state 고, user 와 post 는 각각 state.user, state.post 가 됩니다.
 user.js의 me는 state.user.me가 됩니다.*/
 export default rootReducer

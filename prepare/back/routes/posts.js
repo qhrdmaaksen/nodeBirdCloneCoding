@@ -1,5 +1,6 @@
 const express = require("express");
 const {Op} = require('sequelize')
+
 const {Post, User, Image, Comment} = require('../models')
 
 const router = express.Router()
@@ -31,7 +32,6 @@ router.get('/', async (req, res, next) => { // GET /posts
 				include: [{
 					model: User, // 댓글의 작성자
 					attributes: ['id', 'nickname'],
-					order: [['createdAt', 'DESC']],
 				}],
 			}, {
 				model: User, // 좋아요 누른 사람

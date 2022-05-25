@@ -44,7 +44,7 @@ const UserProfile = () => {
 			>
 				<Card.Meta
 						avatar={( // 내 아바타 클릭 시
-								<Link href={`/user/${me.id}`}>
+								<Link href={`/user/${me.id}`} prefetch={false}>
 									<a>
 										<Avatar>
 											{me.nickname[0]}

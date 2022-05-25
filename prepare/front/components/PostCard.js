@@ -89,7 +89,7 @@ const PostCard = ({post}) => {
 										{id && post.User.id === id
 												? ( /*내가 쓴 글이면 수정 삭제 가능*/
 														<>
-															<Button>수정</Button>
+															{!post.RetweetId &&	<Button>수정</Button>} {/*리트윗이 아닐경우 수정가능*/}
 															<Button type="danger" loading={removePostLoading} onClick={onRemovePost}>삭제</Button>
 														</>
 												)

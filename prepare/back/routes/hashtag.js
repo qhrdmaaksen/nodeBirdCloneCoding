@@ -16,10 +16,7 @@ router.get('/:hashtag', async (req, res, next) => { // GET /hashtag/노드
 			where,
 			limit: 10, // 10 개 가져와라, 10개 가져온 후 또 10개 10개 10개 ...
 			// 2 차원 배열,  DESC 는 최신 게시글 부터 가져옴 오래된순은 ASC
-			order: [
-				['createdAt', 'DESC'], // 게시글 생성일부터 내림차순 정렬
-				[Comment, 'createdAt', 'DESC'], // 댓글들을 내림 차순 정렬
-			],
+			order: [['createdAt', 'DESC']], // 게시글 생성일부터 내림차순 정렬
 			include: [{
 				model: Hashtag,
 				where: {name: decodeURIComponent(req.params.hashtag)}, //front 에서 encode 로 요청이왔고 응답은 decode 로 설정
