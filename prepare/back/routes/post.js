@@ -276,12 +276,27 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => { // PATCH /
 router.delete('/:postId/like', isLoggedIn, async (req, res, next) => { // DELETE /post/1/like
 	try {
 		const post = await Post.findOne({
-			where: {id: req.params.postId}})
+			where: {id: req.params.postId}
+		})
 		if (!post) {
 			return res.status(403).send('게시글이 존재하지 않습니다!')
 		}
 		await post.removeLikers(req.user.id)
 		res.json({PostId: post.id, UserId: req.user.id})
+	} catch (error) {
+		console.error(error)
+		next(error)
+	}
+})
+
+router.patch('/:postId', isLoggedIn, async (req, res, next) => {
+	try { // 자신의 게시글 수정 로직
+		await Post.update({
+			content: req.params.postId,
+			UserId: req.user.id,
+		})
+		// 수정된거 json 으로 보냄
+		res.status(200).json({PostId: parseInt(req.params.postId, 10), content: req.body.content})
 	} catch (error) {
 		console.error(error)
 		next(error)

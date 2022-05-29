@@ -35,6 +35,9 @@ export const initialState = {
 	addPostLoading: false, // 게시물 등록중 로딩
 	addPostDone: false, // 게시물 추가가 완료되었을때 true 변환
 	addPostError: null,
+	updatePostLoading: false, // 게시글 수정 로딩
+	updatePostDone: false, // 게시글 수정 완료 후 로딩
+	updatePostError:null,
 	removePostLoading: false, // 게시물 삭제중 로딩
 	removePostDone: false, // 게시물 삭제가 완료되었을때 true 변환
 	removePostError: null,
@@ -82,6 +85,10 @@ export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE'
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST'; // 변수로 따로 만들어줘야 중간에 오타가나는 일을 막을 수 있다
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
+
+export const UPDATE_POST_REQUEST = 'UPDATE_POST_REQUEST';
+export const UPDATE_POST_SUCCESS = 'UPDATE_POST_SUCCESS';
+export const UPDATE_POST_FAILURE = 'UPDATE_POST_FAILURE';
 
 export const LIKE_POST_REQUEST = 'LIKE_POST_REQUEST';
 export const LIKE_POST_SUCCESS = 'LIKE_POST_SUCCESS';
@@ -241,7 +248,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 		case LOAD_POST_FAILURE:
 			draft.loadPostLoading = false
 			draft.loadPostError = action.error
-			console.error('reducer LOAD_POST_FAILURE 실패:: ', action.error)
 			break;
 			/*보통 이렇게 같이 쓸수있는 경우는 한 페이지에서 액션 두개가 같이 사용되지 않을때는 상태가 서로 공유되도 된다*/
 		case LOAD_USER_POSTS_REQUEST:
@@ -285,6 +291,20 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 		case ADD_POST_FAILURE:
 			draft.addPostLoading = false;
 			draft.addPostError = action.error;
+			break;
+		case UPDATE_POST_REQUEST:
+			draft.updatePostLoading=true;
+			draft.updatePostDone=false;
+			draft.updatePostError=null;
+			break;
+		case UPDATE_POST_SUCCESS:
+			draft.updatePostLoading=false;
+			draft.updatePostDone=true;
+			draft.mainPosts.find((v) => v.id === action.data.PostId).content = action.data.content;
+			break;
+		case UPDATE_POST_FAILURE:
+			draft.updatePostLoading=false;
+			draft.updatePostError= action.error;
 			break;
 		case REMOVE_POST_REQUEST:
 			draft.removePostLoading = true

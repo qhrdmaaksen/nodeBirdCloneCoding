@@ -5,8 +5,8 @@ import postSaga from './post'
 import userSaga from './user'
 import {backUrl} from "../config/config";
 
-//axios.defaults.baseURL = 'http://localhost:3065' // front
-axios.defaults.baseURL = backUrl // back, aws ip
+axios.defaults.baseURL = 'http://localhost:3065' // front
+//axios.defaults.baseURL = backUrl // back, aws ip
 
 axios.defaults.withCredentials = true;
 

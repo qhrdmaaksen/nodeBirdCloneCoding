@@ -21,6 +21,18 @@ const PostCard = ({post}) => {
 	const [commentFormOpened, setCommentFormOpened] = useState(false)
 	const id = useSelector((state) => state.user.me?.id) //state.user.me && state.user.me.id
 //	const [liked, setLiked] = useState(false) front
+	const [editMode, setEditMode] = useState(false)
+
+	const onChangePost = useCallback(()=> {
+		setEditMode(true)
+	}, [])
+
+	const onCancelUpdate = useCallback(
+			() => {
+				setEditMode(false)
+			},
+			[],
+	);
 
 
 	const onLike = useCallback(() => { // 좋아요 클릭
@@ -89,7 +101,7 @@ const PostCard = ({post}) => {
 										{id && post.User.id === id
 												? ( /*내가 쓴 글이면 수정 삭제 가능*/
 														<>
-															{!post.RetweetId &&	<Button>수정</Button>} {/*리트윗이 아닐경우 수정가능*/}
+															{!post.RetweetId && <Button onClick={onChangePost}>수정</Button>} {/*리트윗이 아닐경우 수정가능*/}
 															<Button type="danger" loading={removePostLoading} onClick={onRemovePost}>삭제</Button>
 														</>
 												)
@@ -139,6 +151,8 @@ const PostCard = ({post}) => {
 												)}
 												title={post.User.nickname}
 												description={<PostCardContent
+														editMode={editMode}
+														onCancelUpdate={onCancelUpdate}
 														postData={post.content}/>} // 특수한 기능을 처리하는 것을 만들기 위해선 따로 컴포넌트로 빼주는게 보기 깔끔하다
 										/>
 									</>
