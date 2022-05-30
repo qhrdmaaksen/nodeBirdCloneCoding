@@ -9,7 +9,13 @@ import moment from 'moment'
 import PostImages from "./PostImages";
 import CommentForm from "./CommentForm";
 import PostCardContent from "./PostCardContent";
-import {LIKE_POST_REQUEST, REMOVE_POST_REQUEST, UNLIKE_POST_REQUEST, RETWEET_REQUEST} from "../reducers/post";
+import {
+	LIKE_POST_REQUEST,
+	REMOVE_POST_REQUEST,
+	UNLIKE_POST_REQUEST,
+	RETWEET_REQUEST,
+	UPDATE_POST_REQUEST
+} from "../reducers/post";
 import FollowButton from "./FollowButton";
 
 
@@ -23,7 +29,7 @@ const PostCard = ({post}) => {
 //	const [liked, setLiked] = useState(false) front
 	const [editMode, setEditMode] = useState(false)
 
-	const onChangePost = useCallback(()=> {
+	const onClickUpdate = useCallback(() => {
 		setEditMode(true)
 	}, [])
 
@@ -34,6 +40,16 @@ const PostCard = ({post}) => {
 			[],
 	);
 
+	/*이미 정보들이 담겨있는 post card 로 위로 끌여 올라온것?*/
+	const onChangePost = useCallback((editText) => {
+		dispatch({
+			type: UPDATE_POST_REQUEST,
+			data: {
+				PostId: post.id,
+				content: editText,
+			}
+		})
+	}, [post])
 
 	const onLike = useCallback(() => { // 좋아요 클릭
 		if (!id) { // 로그인이 안되어있다면 바로바로 막아주는게 좋다
@@ -101,7 +117,7 @@ const PostCard = ({post}) => {
 										{id && post.User.id === id
 												? ( /*내가 쓴 글이면 수정 삭제 가능*/
 														<>
-															{!post.RetweetId && <Button onClick={onChangePost}>수정</Button>} {/*리트윗이 아닐경우 수정가능*/}
+															{!post.RetweetId && <Button onClick={onClickUpdate}>수정</Button>} {/*리트윗이 아닐경우 수정가능*/}
 															<Button type="danger" loading={removePostLoading} onClick={onRemovePost}>삭제</Button>
 														</>
 												)
@@ -132,7 +148,8 @@ const PostCard = ({post}) => {
 												)}
 												title={post.Retweet.User.nickname}
 												description={<PostCardContent
-														postData={post.Retweet.content}/>} // 특수한 기능을 처리하는 것을 만들기 위해선 따로 컴포넌트로 빼주는게 보기 깔끔하다
+														postData={post.Retweet.content} onChangePost={onChangePost}
+														onCancelUpdate={onCancelUpdate}/>} // 특수한 기능을 처리하는 것을 만들기 위해선 따로 컴포넌트로 빼주는게 보기 깔끔하다
 										/>
 									</Card>
 							)
@@ -152,6 +169,7 @@ const PostCard = ({post}) => {
 												title={post.User.nickname}
 												description={<PostCardContent
 														editMode={editMode}
+														onChangePost={onChangePost}
 														onCancelUpdate={onCancelUpdate}
 														postData={post.content}/>} // 특수한 기능을 처리하는 것을 만들기 위해선 따로 컴포넌트로 빼주는게 보기 깔끔하다
 										/>

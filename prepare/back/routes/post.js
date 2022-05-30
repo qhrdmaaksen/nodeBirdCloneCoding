@@ -292,7 +292,9 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => { // DELETE
 router.patch('/:postId', isLoggedIn, async (req, res, next) => {
 	try { // 자신의 게시글 수정 로직
 		await Post.update({
-			content: req.params.postId,
+			content: req.body.content
+		},{
+			id: req.params.postId,
 			UserId: req.user.id,
 		})
 		// 수정된거 json 으로 보냄
