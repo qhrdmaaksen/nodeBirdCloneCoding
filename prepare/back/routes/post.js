@@ -290,13 +290,24 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => { // DELETE
 })
 
 router.patch('/:postId', isLoggedIn, async (req, res, next) => {
+	const hashtags = req.body.content.match(/#[^\s#]+/g)
 	try { // 자신의 게시글 수정 로직
 		await Post.update({
 			content: req.body.content
-		},{
-			id: req.params.postId,
-			UserId: req.user.id,
+		}, {
+			where: {
+				id: req.params.postId,
+				UserId: req.user.id,
+			}
 		})
+		const post = await Post.findOne({where:{id:req.params.postId}})
+		if (hashtags){
+			const result = await Promise.all(hashtags.map((tag)=> Hashtag.findOrCreate({
+				where:{
+					name: tag.slice(1).toLowerCase()},
+			})))
+			await post.setHashtags(result.map((v)=> v[0]))
+		}
 		// 수정된거 json 으로 보냄
 		res.status(200).json({PostId: parseInt(req.params.postId, 10), content: req.body.content})
 	} catch (error) {
