@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import PropTypes from 'prop-types'
 import {useDispatch, useSelector} from "react-redux";
 import {Avatar, Button, Card, Comment, List, Popover} from "antd";
@@ -33,21 +33,18 @@ const PostCard = ({post}) => {
 		setEditMode(true)
 	}, [])
 
-	const onCancelUpdate = useCallback(
-			() => {
-				setEditMode(false)
-			},
-			[],
-	);
+	const onCancelUpdate = useCallback(() => {
+		setEditMode(false)
+	}, []);
 
 	/*이미 정보들이 담겨있는 post card 로 위로 끌여 올라온것?*/
-	const onChangePost = useCallback((editText) => {
+	const onChangePost = useCallback((editText) => () => {
 		dispatch({
 			type: UPDATE_POST_REQUEST,
 			data: {
 				PostId: post.id,
 				content: editText,
-			}
+			},
 		})
 	}, [post])
 
@@ -60,7 +57,7 @@ const PostCard = ({post}) => {
 			data: post.id, // 게시글 아이디
 		})
 	}, [id])
-	const onUnLike = useCallback(() => { // 좋아요 해제 클릭
+	const onUnlike = useCallback(() => { // 좋아요 해제 클릭
 		if (!id) { // 로그인이 안되어있다면 바로바로 막아주는게 좋다
 			return alert('로그인이 필요합니다!')
 		}
@@ -109,7 +106,7 @@ const PostCard = ({post}) => {
 						actions={[
 							<RetweetOutlined key="retweet" onClick={onRetweet}/>, // 리트윗 버튼
 							liked
-									? <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={onUnLike}/> // 하트 버튼
+									? <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={onUnlike}/> // 하트 버튼
 									: <HeartOutlined key="heart" onClick={onLike}/>, // 하트 버튼
 							<MessageOutlined key="comment" onClick={onToggleComment}/>, // 댓글 버튼
 							<Popover key="more" content={( // 더 보기 버튼
